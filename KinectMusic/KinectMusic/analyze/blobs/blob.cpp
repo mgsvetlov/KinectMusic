@@ -51,7 +51,7 @@ Blob::Blob(cv::Mat mat16, std::list<std::vector<int>>& lvBlobs, cv::Mat matBlobs
             }
         }
     }
-    if(lvBlobs.back().size() < 50)
+    if(lvBlobs.back().size() < BLOB_MIN_SIZE)
         lvBlobs.pop_back();
 }
 

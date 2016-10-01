@@ -107,6 +107,8 @@ void Visualization::visualizeMap(cv::Mat mat, const std::list<std::vector<int>>&
                     break;
             }
         }
+        if(blob.size() > BLOB_MIN_SIZE_LAST)
+            break;
         blobCount++;
     }
     
@@ -122,8 +124,6 @@ void Visualization::visualizeMap(cv::Mat mat, const std::list<std::vector<int>>&
     cv::Mat img;
     cv::merge(channels, img);
     cv::flip(img, img, 1);
-    
-    
     
     cv::imshow( "Display window", img);
     
