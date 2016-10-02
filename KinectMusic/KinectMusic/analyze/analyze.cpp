@@ -31,13 +31,12 @@ void analyzeLoop(){
     cv::Mat mat16(h, w, CV_16U, depthAnalyze);
     pthread_mutex_unlock(&depth_mutex);
     
-    static const uint16_t resize_pow(2);
     cv::Mat mat16_resized;
     cv::resize(mat16, mat16_resized, cv::Size(w>>BLOBS_RESIZE_POW, h>>BLOBS_RESIZE_POW));
-    std::list<std::vector<int>> lvBlobs;
-    cv::Mat matBlolbsMap = Blob::findBlobs(mat16_resized, lvBlobs);
+    std::list<Blob> lBlobs;
+    Blob::findBlobs(mat16_resized, lBlobs);
     
-    Visualization::visualizeMap(matBlolbsMap, lvBlobs);
+    Visualization::visualizeMap(mat16_resized.size(), mat16.size(), lBlobs);
     
     if(cv::waitKey(30) == 27) {
         die = 1;

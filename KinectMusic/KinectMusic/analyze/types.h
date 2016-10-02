@@ -12,7 +12,7 @@
 #define MAX_KINECT_VALUE 2047
 #define BLOBS_RESIZE_POW 2
 #define BLOB_MIN_SIZE 25
-#define BLOB_MIN_SIZE_LAST 500
+#define BLOB_MIN_SIZE_LAST 5000
 
 #include "opencv/cv.h"
 #include "opencv/highgui.h"

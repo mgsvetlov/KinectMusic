@@ -11,14 +11,15 @@
 
 #include "../types.h"
 
+class Blob;
+
 class Visualization {
 private:
     Visualization();
 public:
     static void visualize(cv::Mat mat);
-    static void visualizeMap(cv::Mat mat, const std::list<std::vector<int>>& lvBlobs);
+    static void visualizeMap(const cv::Size& size, const cv::Size& fullSize, const std::list<Blob>& lBlobs);
 private:
-    static cv::Size fullSize;
     static Visualization* p_vis;
 };
 

@@ -8,9 +8,9 @@
 
 #include <stdio.h>
 #include "visualization.h"
+#include "../blobs/blob.h"
 
 Visualization* Visualization::p_vis = nullptr;
-cv::Size Visualization::fullSize;
 
 Visualization::Visualization() {
     cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );
@@ -21,9 +21,9 @@ Visualization::Visualization() {
 void Visualization::visualize(cv::Mat mat) {
     
     if(p_vis == nullptr){
-        fullSize = mat.size();
         Visualization();
     }
+    
     int w = mat.cols;
     int h = mat.rows;
     cv::Mat r  = cv::Mat_<unsigned char>::zeros(cv::Size(w, h));
@@ -58,47 +58,49 @@ void Visualization::visualize(cv::Mat mat) {
     
 }
 
-void Visualization::visualizeMap(cv::Mat mat, const std::list<std::vector<int>>& lvBlobs){
+void Visualization::visualizeMap(const cv::Size& size, const cv::Size& fullSize, const std::list<Blob>& lBlobs){
     if(p_vis == nullptr) {
-        fullSize= cv::Size(mat.cols<<BLOBS_RESIZE_POW, mat.rows<<BLOBS_RESIZE_POW);
         Visualization();
     }
 
-    cv::Mat r  = cv::Mat_<unsigned char>::zeros(mat.size());
-    cv::Mat g  = cv::Mat_<unsigned char>::zeros(mat.size());
-    cv::Mat b  = cv::Mat_<unsigned char>::zeros(mat.size());
+    cv::Mat r  = cv::Mat_<unsigned char>::zeros(size);
+    cv::Mat g  = cv::Mat_<unsigned char>::zeros(size);
+    cv::Mat b  = cv::Mat_<unsigned char>::zeros(size);
     int blobCount(0);
-    for(auto& blob : lvBlobs) {
-        for(auto& ind :blob) {
+    for(auto& blob : lBlobs) {
+        auto& lCells = blob.getLCellsConst();
+        for(auto& cell : lCells) {
+            int ind = cell.ind;
+            int col = cell.val >> 2;
             unsigned char* p_r = (unsigned char*)(r.data) + ind;
             unsigned char* p_g = (unsigned char*)(g.data) + ind;
             unsigned char* p_b = (unsigned char*)(b.data) + ind;
             int num = blobCount < 3 ? blobCount : (blobCount % 3) + 3;
             switch(num){
                 case 0:
-                    *p_r = 255;
+                    *p_r = col;
                     *p_g = 0;
                     *p_b = 0;
                     break;
                 case 1:
                     *p_r = 0;
-                    *p_g = 255;
+                    *p_g = col;
                     *p_b = 0;
                     break;
                 case 2:
                     *p_r = 0;
                     *p_g = 0;
-                    *p_b = 255;
+                    *p_b = col;
                     break;
                 case 3:
-                    *p_r = 255;
-                    *p_g = 255;
+                    *p_r = col;
+                    *p_g = col;
                     *p_b = 0;
                     break;
                 case 4:
-                    *p_r = 255;
+                    *p_r = col;
                     *p_g = 0;
-                    *p_b = 255;
+                    *p_b = col;
                     break;
                 case 5:
                     *p_r = 0;
@@ -107,8 +109,6 @@ void Visualization::visualizeMap(cv::Mat mat, const std::list<std::vector<int>>&
                     break;
             }
         }
-        if(blob.size() > BLOB_MIN_SIZE_LAST)
-            break;
         blobCount++;
     }
     

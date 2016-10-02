@@ -9,16 +9,18 @@
 #include "blob.h"
 #include <queue>
 
-Blob::Blob(cv::Mat mat16, std::list<std::vector<int>>& lvBlobs, cv::Mat matBlobsMap, int x, int y, int thresh, int blobNum){
-    lvBlobs.push_back(std::vector<int>());
+Blob::Blob(cv::Mat mat16, int x, int y, int thresh) :
+lCells(std::list<Cell>()),
+p_maxValCell(nullptr),
+p_minValCell(nullptr)
+{
     int w = mat16.cols;
     int h = mat16.rows;
     uint16_t* p_mat16 = (uint16_t*)(mat16.data);
-    uint32_t* p_matBlobsMap = (uint32_t*)(matBlobsMap.data);
     std::queue<int> q;
     int indStart = y*w + x;
-    *(p_matBlobsMap + indStart) = blobNum;
-    lvBlobs.back().push_back(indStart);
+    addCell(indStart, *(p_mat16 + indStart));
+    p_minValCell = &lCells.front();
     q.push(indStart);
     while(!q.empty()){
         const int ind = q.front();
@@ -35,41 +37,56 @@ Blob::Blob(cv::Mat mat16, std::list<std::vector<int>>& lvBlobs, cv::Mat matBlobs
                 if(xNeighb < 0 || xNeighb >= w)
                     continue;
                 int indNeighb = yNeighb * w + xNeighb;
-                if(*(p_matBlobsMap + indNeighb) != 0)
-                    continue;
                 uint16_t valNeighb =  *(p_mat16 + indNeighb);
                 if(valNeighb >= MAX_KINECT_VALUE || valNeighb == 0)
                     continue;
-                //static float ratio = static_cast<float>(valNeighb)/val;
-                //static float coeff(1.03);
-                //static float coeff_rev(1./coeff);
-                if(abs(valNeighb-val) < thresh/*ratio < coeff && ratio > coeff_rev*/){
-                    *(p_matBlobsMap + indNeighb) = blobNum;
-                    lvBlobs.back().push_back(indNeighb);
+                if(abs(valNeighb-val) < thresh){
+                    addCell(indNeighb, *(p_mat16 + indNeighb));
                     q.push(indNeighb);
                 }
             }
         }
     }
-    if(lvBlobs.back().size() < BLOB_MIN_SIZE)
-        lvBlobs.pop_back();
 }
 
-cv::Mat Blob::findBlobs(cv::Mat mat16, std::list<std::vector<int>>& lvBlobs){
+void Blob::addCell(int ind, int val){
+    lCells.push_back(Cell(ind, val));
+    if(!p_maxValCell || p_maxValCell->val < val)
+        p_maxValCell = &lCells.back();
+}
+
+void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs){
     cv::Mat mat16_clone = mat16.clone();
-    cv::Mat matBlobsMap = cv::Mat_<uint32_t>::zeros(mat16_clone.size());
     int num(1);
+    int largeBlobMaxVal(-1), largeBlobMinVal(-1);
     while(true){
         double minVal;
         int minIdx[mat16.dims];
         cv::minMaxIdx(mat16_clone,  &minVal, NULL, minIdx, NULL);
-        //std::cout << minVal << "\t";
-        //std::cout << minIdx[1] << "\t" << minIdx[0] << std::endl;
         if(minVal >= MAX_KINECT_VALUE)
             break;
         
-        Blob nearestBlob(mat16_clone, lvBlobs, matBlobsMap, minIdx[1], minIdx[0], 5, num++);
+        Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0], 5);
+        
+        if(nearestBlob.getLCells().size() < BLOB_MIN_SIZE)
+            continue;
+        if(largeBlobMaxVal != -1 && nearestBlob.getLCells().size() > BLOB_MIN_SIZE_LAST)
+            continue;
+        
+        if(largeBlobMaxVal != -1 && nearestBlob.getP_minValCell()->val > largeBlobMinVal*0.7+largeBlobMaxVal*0.3){
+            break;
+        }
+        
+        if(nearestBlob.getLCells().size() > BLOB_MIN_SIZE_LAST){
+            largeBlobMaxVal = nearestBlob.getP_maxValCell()->val;
+            largeBlobMinVal = nearestBlob.getP_minValCell()->val;
+            lBlobs.push_front(nearestBlob);
+            std::cout << "largest size  " << nearestBlob.getLCells().size() << std::endl;
+        }
+        else {
+            lBlobs.push_back(nearestBlob);
+        }
+        
     }
-    std::cout << "blobsCount " << num -1 << " large " << lvBlobs.size() << std::endl;
-    return matBlobsMap;
+    
 }
