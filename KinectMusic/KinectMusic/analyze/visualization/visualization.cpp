@@ -13,8 +13,10 @@
 Visualization* Visualization::p_vis = nullptr;
 
 Visualization::Visualization() {
-    cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );
-    cv::moveWindow("Display window", 300, 10);
+    cv::namedWindow( "Display window1", cv::WINDOW_AUTOSIZE );
+    cv::moveWindow("Display window1", 0, 10);
+    cv::namedWindow( "Display window2", cv::WINDOW_AUTOSIZE );
+    cv::moveWindow("Display window2", 640, 10);
     p_vis = this;
 }
 
@@ -54,15 +56,17 @@ void Visualization::visualize(cv::Mat mat) {
     cv::Mat img;
     cv::merge(channels, img);
     cv::flip(img, img, 1);
-    cv::imshow( "Display window", img);
-    
+    cv::imshow( "Display window2", img);
+    static int count(0);
+    std::cout << "frame " << count++ << std::endl;
+    return;
 }
 
 void Visualization::visualizeMap(const cv::Size& size, const cv::Size& fullSize, const std::list<Blob>& lBlobs){
     if(p_vis == nullptr) {
         Visualization();
     }
-
+    
     cv::Mat r  = cv::Mat_<unsigned char>::zeros(size);
     cv::Mat g  = cv::Mat_<unsigned char>::zeros(size);
     cv::Mat b  = cv::Mat_<unsigned char>::zeros(size);
@@ -116,6 +120,7 @@ void Visualization::visualizeMap(const cv::Size& size, const cv::Size& fullSize,
     cv::resize(g, g, fullSize);
     cv::resize(b, b, fullSize);
     
+    
     std::vector<cv::Mat> channels;
     channels.push_back(b);
     channels.push_back(g);
@@ -124,8 +129,8 @@ void Visualization::visualizeMap(const cv::Size& size, const cv::Size& fullSize,
     cv::Mat img;
     cv::merge(channels, img);
     cv::flip(img, img, 1);
-    
-    cv::imshow( "Display window", img);
+
+    cv::imshow( "Display window1", img);
     
 }
 

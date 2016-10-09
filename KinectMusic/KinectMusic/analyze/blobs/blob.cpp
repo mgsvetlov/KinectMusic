@@ -9,7 +9,7 @@
 #include "blob.h"
 #include <queue>
 
-Blob::Blob(cv::Mat mat16, int x, int y, int thresh) :
+Blob::Blob(cv::Mat mat16, int x, int y) :
 lCells(std::list<Cell>()),
 p_maxValCell(nullptr),
 p_minValCell(nullptr)
@@ -40,7 +40,7 @@ p_minValCell(nullptr)
                 uint16_t valNeighb =  *(p_mat16 + indNeighb);
                 if(valNeighb >= MAX_KINECT_VALUE || valNeighb == 0)
                     continue;
-                if(abs(valNeighb-val) < thresh){
+                if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
                     addCell(indNeighb, *(p_mat16 + indNeighb));
                     q.push(indNeighb);
                 }
@@ -57,8 +57,7 @@ void Blob::addCell(int ind, int val){
 
 void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs){
     cv::Mat mat16_clone = mat16.clone();
-    int num(1);
-    int largeBlobMaxVal(-1), largeBlobMinVal(-1);
+    int largeBlobMaxVal(-1), blobsMinVal(-1);
     while(true){
         double minVal;
         int minIdx[mat16.dims];
@@ -66,20 +65,20 @@ void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs){
         if(minVal >= MAX_KINECT_VALUE)
             break;
         
-        Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0], 5);
+        if(blobsMinVal == -1)
+            blobsMinVal = minVal;
+        
+        Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0]);
         
         if(nearestBlob.getLCells().size() < BLOB_MIN_SIZE)
             continue;
-        if(largeBlobMaxVal != -1 && nearestBlob.getLCells().size() > BLOB_MIN_SIZE_LAST)
-            continue;
         
-        if(largeBlobMaxVal != -1 && nearestBlob.getP_minValCell()->val > largeBlobMinVal*0.7+largeBlobMaxVal*0.3){
+        if(largeBlobMaxVal != -1 && nearestBlob.getP_minValCell()->val > /*blobsMinVal*0.7+*/largeBlobMaxVal/* *0.3 */){
             break;
         }
         
         if(nearestBlob.getLCells().size() > BLOB_MIN_SIZE_LAST){
             largeBlobMaxVal = nearestBlob.getP_maxValCell()->val;
-            largeBlobMinVal = nearestBlob.getP_minValCell()->val;
             lBlobs.push_front(nearestBlob);
             std::cout << "largest size  " << nearestBlob.getLCells().size() << std::endl;
         }

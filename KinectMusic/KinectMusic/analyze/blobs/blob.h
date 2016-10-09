@@ -23,7 +23,7 @@ class Blob {
 public:
     Blob(){}
 private:
-    Blob(cv::Mat mat16, int x, int y, int thresh);
+    Blob(cv::Mat mat16, int x, int y);
 public:
     static void findBlobs(cv::Mat mat16, std::list<Blob>& lvBlobs);
     std::list<Cell>& getLCells() {return lCells;}
