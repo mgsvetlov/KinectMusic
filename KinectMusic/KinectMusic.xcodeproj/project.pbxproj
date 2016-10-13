@@ -81,6 +81,9 @@
 		722141A31D9FC2B400B697E8 /* blob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blob.h; path = analyze/blobs/blob.h; sourceTree = "<group>"; };
 		722141BD1DAA772400B697E8 /* blobsmask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = blobsmask.cpp; path = analyze/blobs/blobsmask.cpp; sourceTree = "<group>"; };
 		722141BE1DAA772400B697E8 /* blobsmask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blobsmask.h; path = analyze/blobs/blobsmask.h; sourceTree = "<group>"; };
+		722141C11DB015AE00B697E8 /* libfreenect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect.h; sourceTree = "<group>"; };
+		722141C21DB015AE00B697E8 /* libfreenect_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect_audio.h; sourceTree = "<group>"; };
+		722141C31DB015AE00B697E8 /* libfreenect_registration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect_registration.h; sourceTree = "<group>"; };
 		7262270F1D906ED600644016 /* libopencv_calib3d.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_calib3d.dylib; path = ../../../../../../../usr/local/lib/libopencv_calib3d.dylib; sourceTree = "<group>"; };
 		726227111D906EF300644016 /* libopencv_core.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_core.dylib; path = ../../../../../../../usr/local/lib/libopencv_core.dylib; sourceTree = "<group>"; };
 		726227131D906F0200644016 /* libopencv_features2d.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_features2d.dylib; path = ../../../../../../../usr/local/lib/libopencv_features2d.dylib; sourceTree = "<group>"; };
@@ -200,6 +203,7 @@
 		7201649E1A6C023800BC721A /* KinectMusic */ = {
 			isa = PBXGroup;
 			children = (
+				722141C01DB015AE00B697E8 /* include */,
 				7298B7261D8D85840093134C /* main.cpp */,
 				7298B7231D8D76CE0093134C /* analyze */,
 				720164A81A6C058B00BC721A /* src */,
@@ -254,6 +258,16 @@
 			);
 			name = blolbs;
 			sourceTree = "<group>";
+		};
+		722141C01DB015AE00B697E8 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				722141C11DB015AE00B697E8 /* libfreenect.h */,
+				722141C21DB015AE00B697E8 /* libfreenect_audio.h */,
+				722141C31DB015AE00B697E8 /* libfreenect_registration.h */,
+			);
+			path = include;
+			sourceTree = SOURCE_ROOT;
 		};
 		7298B7231D8D76CE0093134C /* analyze */ = {
 			isa = PBXGroup;

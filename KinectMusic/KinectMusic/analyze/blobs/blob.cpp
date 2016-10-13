@@ -59,9 +59,20 @@ void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs){
     cv::Mat mat16_clone = mat16.clone();
     int largeBlobMaxVal(-1), blobsMinVal(-1);
     while(true){
-        double minVal;
+        double minVal = MAX_KINECT_VALUE;
         int minIdx[mat16.dims];
-        cv::minMaxIdx(mat16_clone,  &minVal, NULL, minIdx, NULL);
+        uint16_t* p_mat16_clone = (uint16_t*)(mat16_clone.data);
+        for(int y = 0; y < mat16_clone.rows; y++)
+        for(int x = 0 ; x < mat16_clone.cols; x++){
+            uint16_t val = *p_mat16_clone++;
+            if(val && val < minVal){
+                minVal = val;
+                minIdx[1] = x;
+                minIdx[0] = y;
+            }
+        }
+        
+        //cv::minMaxIdx(mat16_clone,  &minVal, NULL, minIdx, NULL);
         if(minVal >= MAX_KINECT_VALUE)
             break;
         

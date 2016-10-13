@@ -31,7 +31,7 @@
 #include <assert.h>
 #include "libfreenect.h"*/
 
-
+#include <unistd.h>
 #include <math.h>
 
 #include "kinect.h"
@@ -91,7 +91,13 @@ int main(int argc, char **argv)
 	}
     
     while(true) {
-        analyzeLoop();
+        if(newFrame){
+            newFrame = false;
+            analyzeLoop();
+        }
+        else {
+            usleep(10);
+        }
     }
     //freenect_threadfunc(NULL);
     /*res = pthread_create(&csound_thread, NULL, csound_threadfunc, NULL);

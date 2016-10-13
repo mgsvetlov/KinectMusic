@@ -8,6 +8,7 @@
 
 #include "kinect.h"
 #include  "analyze/analyze.h"
+#include  "analyze/types.h"
 
 uint8_t *rgb_back, *rgb_mid, *rgb_front;
 //uint8_t *depth_mid;
@@ -76,7 +77,7 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
         }
     }*/
     got_depth++;
-
+    newFrame = true;
     pthread_mutex_unlock(&depth_mutex);
 }
 
@@ -100,7 +101,23 @@ void *freenect_threadfunc(void *arg)
     freenect_set_depth_callback(f_dev, depth_cb);
     freenect_set_video_callback(f_dev, video_cb);
     freenect_set_video_mode(f_dev, freenect_find_video_mode(current_resolution, current_format));
-    freenect_set_depth_mode(f_dev, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_11BIT));
+    freenect_depth_format depth_format = FREENECT_DEPTH_REGISTERED; //FREENECT_DEPTH_11BIT
+    switch(depth_format){
+        case FREENECT_DEPTH_11BIT:
+            MAX_KINECT_VALUE  = FREENECT_DEPTH_RAW_MAX_VALUE;
+            MAX_NEIGHB_DIFF_COARSE  = 4;
+            MAX_NEIGHB_DIFF_FINE  = 1;
+            break;
+        case FREENECT_DEPTH_REGISTERED:
+            MAX_KINECT_VALUE  = FREENECT_DEPTH_MM_MAX_VALUE;
+            MAX_NEIGHB_DIFF_COARSE  = 40;
+            MAX_NEIGHB_DIFF_FINE  = 10;
+            break;
+            break;
+            
+    }
+    
+    freenect_set_depth_mode(f_dev, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, depth_format));
     rgb_back = (uint8_t*)malloc(freenect_find_video_mode(current_resolution, current_format).bytes);
     rgb_mid = (uint8_t*)malloc(freenect_find_video_mode(current_resolution, current_format).bytes);
     rgb_front = (uint8_t*)malloc(freenect_find_video_mode(current_resolution, current_format).bytes);
@@ -110,6 +127,7 @@ void *freenect_threadfunc(void *arg)
     freenect_start_video(f_dev);
     
     int status = 0;
+    
     while (!die && status >= 0) {
         status = freenect_process_events(f_ctx);
         if (requested_format != current_format || requested_resolution != current_resolution) {

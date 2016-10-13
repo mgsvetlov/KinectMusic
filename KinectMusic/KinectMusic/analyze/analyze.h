@@ -23,6 +23,8 @@ extern uint16_t * const depthAnalyze;
 
 extern uint8_t *rgb_back, *rgb_mid, *rgb_front;
 
+extern volatile bool newFrame;
+
 extern int w, h;
 
 void analyzeLoop();

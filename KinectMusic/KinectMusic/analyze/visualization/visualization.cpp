@@ -14,9 +14,9 @@ Visualization* Visualization::p_vis = nullptr;
 
 Visualization::Visualization() {
     cv::namedWindow( "Display window1", cv::WINDOW_AUTOSIZE );
-    cv::moveWindow("Display window1", 0, 10);
-    cv::namedWindow( "Display window2", cv::WINDOW_AUTOSIZE );
-    cv::moveWindow("Display window2", 640, 10);
+    cv::moveWindow("Display window1", 320, 10);
+    /*cv::namedWindow( "Display window2", cv::WINDOW_AUTOSIZE );
+    cv::moveWindow("Display window2", 640, 10);*/
     p_vis = this;
 }
 
@@ -37,8 +37,9 @@ void Visualization::visualize(cv::Mat mat) {
     unsigned char* p_b = (unsigned char*)(b.data);
     for(int i = 0; i < w*h; i++) {
         uint16_t d16 = *p_mat16;
-        if(d16 < MAX_KINECT_VALUE) {
-            *p_r = d16 >> 2;
+        
+        if(d16 && d16 < MAX_KINECT_VALUE) {
+            *p_r = 255 - d16 * 255. / MAX_KINECT_VALUE;
             *p_b = 0;
         }
         else {
@@ -56,9 +57,7 @@ void Visualization::visualize(cv::Mat mat) {
     cv::Mat img;
     cv::merge(channels, img);
     cv::flip(img, img, 1);
-    cv::imshow( "Display window2", img);
-    static int count(0);
-    std::cout << "frame " << count++ << std::endl;
+    cv::imshow( "Display window1", img);
     return;
 }
 
@@ -75,7 +74,7 @@ void Visualization::visualizeMap(const cv::Size& size, const cv::Size& fullSize,
         auto& lCells = blob.getLCellsConst();
         for(auto& cell : lCells) {
             int ind = cell.ind;
-            int col = cell.val >> 2;
+            unsigned char col = cell.val ? 255 - cell.val * 255. / MAX_KINECT_VALUE : 0;
             unsigned char* p_r = (unsigned char*)(r.data) + ind;
             unsigned char* p_g = (unsigned char*)(g.data) + ind;
             unsigned char* p_b = (unsigned char*)(b.data) + ind;

@@ -9,12 +9,12 @@
 #ifndef types_h
 #define types_h
 
-#define MAX_KINECT_VALUE 2047
-#define BLOBS_RESIZE_POW 2
-#define BLOB_MIN_SIZE 25
-#define BLOB_MIN_SIZE_LAST 3000 
-#define MAX_NEIGHB_DIFF_COARSE 4
-#define MAX_NEIGHB_DIFF_FINE 1
+extern int MAX_KINECT_VALUE;
+extern int BLOBS_RESIZE_POW;
+extern int BLOB_MIN_SIZE;
+extern int BLOB_MIN_SIZE_LAST;
+extern int MAX_NEIGHB_DIFF_COARSE;
+extern int MAX_NEIGHB_DIFF_FINE;
 
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
