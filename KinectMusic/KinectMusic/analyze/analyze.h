@@ -12,10 +12,10 @@
 #include  <stdint.h>
 #include <pthread.h>
 
-extern pthread_t freenect_thread;
 
 extern pthread_mutex_t depth_mutex;
 extern pthread_mutex_t video_mutex;
+extern pthread_mutex_t visualisation_mutex;
 
 extern volatile int die;
 
@@ -27,5 +27,8 @@ extern volatile bool newFrame;
 
 extern int w, h;
 
-void analyzeLoop();
+extern volatile int frameNum;
+
+void *analyze_threadfunc(void *arg);
+
 #endif /* analyze_h */

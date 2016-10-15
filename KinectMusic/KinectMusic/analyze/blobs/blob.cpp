@@ -91,7 +91,7 @@ void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs){
         if(nearestBlob.getLCells().size() > BLOB_MIN_SIZE_LAST){
             largeBlobMaxVal = nearestBlob.getP_maxValCell()->val;
             lBlobs.push_front(nearestBlob);
-            std::cout << "largest size  " << nearestBlob.getLCells().size() << std::endl;
+            //std::cout << "largest size  " << nearestBlob.getLCells().size() << std::endl;
         }
         else {
             lBlobs.push_back(nearestBlob);

@@ -5,10 +5,11 @@
 //  Created by Mikhail Svetlov on 20/09/15.
 //  Copyright (c) 2015 mgsvetlov. All rights reserved.
 //
-
+#include <ctime>
 #include "kinect.h"
 #include  "analyze/analyze.h"
 #include  "analyze/types.h"
+
 
 uint8_t *rgb_back, *rgb_mid, *rgb_front;
 //uint8_t *depth_mid;
@@ -29,7 +30,19 @@ int got_rgb = 0;
 
 void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 {
+    static std::clock_t t = clock();
+    if(frameNum % 30 == 0){
+        std::clock_t next_t = clock();
+        if(frameNum) {
+            double elapsed_sec = double(next_t - t)/CLOCKS_PER_SEC;
+            std::cout << "kinect fps " <<30./elapsed_sec << std::endl;
+        }
+        t = next_t;
+    }
+    //std::cout << "kinect frameNum " << frameNum << std::endl;
+    
     pthread_mutex_lock(&depth_mutex);
+    ++frameNum;
     uint16_t *p_depth1 = (uint16_t*)v_depth;
     uint16_t *p_depth2 = depthAnalyze;
     for (int i = 0; i < w * h; i++) {

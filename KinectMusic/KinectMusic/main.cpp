@@ -36,7 +36,12 @@
 
 #include "kinect.h"
 #include "analyze.h"
-//#include "csound_.h"
+#include "visualization.h"
+
+//#define USE_CSOUND //csound should be switched to cpp version
+#ifdef USE_CSOUND
+#include "csound_.h"
+#endif //USE_CSOUND
 //#include "opengl_.h"
 
 
@@ -82,7 +87,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
    
-    
+    pthread_t freenect_thread;
 	res = pthread_create(&freenect_thread, NULL, freenect_threadfunc, NULL);
 	if (res) {
 		printf("pthread_create freenect_thread failed\n");
@@ -90,22 +95,49 @@ int main(int argc, char **argv)
 		return 1;
 	}
     
+    size_t analyzeThreadsCount = 2;
+    pthread_t* p_analyze_create = new pthread_t[analyzeThreadsCount];
+    for(int i = 0; i < analyzeThreadsCount; i++){
+        res = pthread_create(&p_analyze_create[i], NULL, analyze_threadfunc, NULL);
+        if (res) {
+            printf("pthread_create   p_analyze_create[%u] failed\n", i);
+            return 1;
+        }
+    }
+    
+#ifdef USE_CSOUND
+    res = pthread_create(&csound_thread, NULL, csound_threadfunc, NULL);
+     if (res) {
+         printf("pthread_create csound_thread failed\n");
+         freenect_shutdown(f_ctx);
+         return 1;
+     }
+#endif //USE_CSOUND
+    
     while(true) {
-        if(newFrame){
-            newFrame = false;
-            analyzeLoop();
+        if(Visualization::getIsNeedRedraw()){
+            if(!Visualization::showImage())
+                break;
         }
         else {
             usleep(10);
         }
     }
-    //freenect_threadfunc(NULL);
-    /*res = pthread_create(&csound_thread, NULL, csound_threadfunc, NULL);
-    if (res) {
-        printf("pthread_create csound_thread failed\n");
-        freenect_shutdown(f_ctx);
-        return 1;
-    }*/
+    
+    die = 1;
+    pthread_join(freenect_thread, NULL);
+    for(int i = 0; i < analyzeThreadsCount; i++){
+        pthread_join(p_analyze_create[i], NULL);
+    }
+#ifdef USE_CSOUND
+    pthread_join(csound_thread, NULL);
+#endif //USE_CSOUND
+    free(rgb_back);
+    free(rgb_mid);
+    free(rgb_front);
+
+    
+
     
 	// OS X requires GLUT to run on the main thread
 	//gl_threadfunc(NULL);
