@@ -55,9 +55,10 @@ void Blob::addCell(int ind, int val){
         p_maxValCell = &lCells.back();
 }
 
-void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs){
+void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int type ){
+
     cv::Mat mat16_clone = mat16.clone();
-    int largeBlobMaxVal(-1), blobsMinVal(-1);
+    int largeBlobMaxVal(-1);
     while(true){
         double minVal = MAX_KINECT_VALUE;
         int minIdx[mat16.dims];
@@ -72,19 +73,25 @@ void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs){
             }
         }
         
-        //cv::minMaxIdx(mat16_clone,  &minVal, NULL, minIdx, NULL);
+        if(type){
+            if(minVal == MAX_KINECT_VALUE)
+                break;
+            Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0]);
+            if(nearestBlob.getLCells().size() > 100)
+                lBlobs.push_back(nearestBlob);
+            continue;
+        }
+        
         if(minVal >= MAX_KINECT_VALUE)
             break;
-        
-        if(blobsMinVal == -1)
-            blobsMinVal = minVal;
+
         
         Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0]);
         
         if(nearestBlob.getLCells().size() < BLOB_MIN_SIZE)
             continue;
         
-        if(largeBlobMaxVal != -1 && nearestBlob.getP_minValCell()->val > /*blobsMinVal*0.7+*/largeBlobMaxVal/* *0.3 */){
+        if(largeBlobMaxVal != -1 && nearestBlob.getP_minValCell()->val > largeBlobMaxVal){
             break;
         }
         
@@ -99,4 +106,19 @@ void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs){
         
     }
     
+}
+
+cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
+    cv::Mat mat = cv::Mat_<uint16_t>::zeros(size);
+    
+    for(auto& blob : lBlobs) {
+        auto& lCells = blob.getLCellsConst();
+        for(auto& cell : lCells) {
+            int ind = cell.ind;
+            uint16_t* p_mat = (uint16_t*)(mat.data) + ind;
+            *p_mat = cell.val;
+        }
+    }
+    
+    return mat;
 }

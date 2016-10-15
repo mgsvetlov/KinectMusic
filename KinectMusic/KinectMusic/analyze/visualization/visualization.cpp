@@ -48,7 +48,8 @@ bool Visualization::showImage() {
     return true;
 }
 
-cv::Mat Visualization::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
+
+cv::Mat Visualization::blobs2img_mark(const std::list<Blob>& lBlobs, const cv::Size& size) {
     cv::Mat r  = cv::Mat_<unsigned char>::zeros(size);
     cv::Mat g  = cv::Mat_<unsigned char>::zeros(size);
     cv::Mat b  = cv::Mat_<unsigned char>::zeros(size);
@@ -110,11 +111,7 @@ cv::Mat Visualization::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& 
     return img;
 }
 
-void Visualization::visualize(cv::Mat mat) {
-    
-    if(p_vis == nullptr){
-        Visualization();
-    }
+cv::Mat Visualization::mat2img(cv::Mat mat) {
     
     int w = mat.cols;
     int h = mat.rows;
@@ -147,80 +144,9 @@ void Visualization::visualize(cv::Mat mat) {
     cv::Mat img;
     cv::merge(channels, img);
     cv::flip(img, img, 1);
-    cv::imshow( "Display window", img);
-    return;
+    return img;
 }
 
-void Visualization::visualizeMap(const cv::Size& size, const cv::Size& fullSize, const std::list<Blob>& lBlobs){
-    if(p_vis == nullptr) {
-        Visualization();
-    }
-    
-    cv::Mat r  = cv::Mat_<unsigned char>::zeros(size);
-    cv::Mat g  = cv::Mat_<unsigned char>::zeros(size);
-    cv::Mat b  = cv::Mat_<unsigned char>::zeros(size);
-    int blobCount(0);
-    for(auto& blob : lBlobs) {
-        auto& lCells = blob.getLCellsConst();
-        for(auto& cell : lCells) {
-            int ind = cell.ind;
-            unsigned char col = cell.val ? 255 - cell.val * 255. / MAX_KINECT_VALUE : 0;
-            unsigned char* p_r = (unsigned char*)(r.data) + ind;
-            unsigned char* p_g = (unsigned char*)(g.data) + ind;
-            unsigned char* p_b = (unsigned char*)(b.data) + ind;
-            int num = blobCount < 3 ? blobCount : (blobCount % 3) + 3;
-            switch(num){
-                case 0:
-                    *p_r = col;
-                    *p_g = 0;
-                    *p_b = 0;
-                    break;
-                case 1:
-                    *p_r = 0;
-                    *p_g = col;
-                    *p_b = 0;
-                    break;
-                case 2:
-                    *p_r = 0;
-                    *p_g = 0;
-                    *p_b = col;
-                    break;
-                case 3:
-                    *p_r = col;
-                    *p_g = col;
-                    *p_b = 0;
-                    break;
-                case 4:
-                    *p_r = col;
-                    *p_g = 0;
-                    *p_b = col;
-                    break;
-                case 5:
-                    *p_r = 0;
-                    *p_g = 255;
-                    *p_b = 255;
-                    break;
-            }
-        }
-        blobCount++;
-    }
-    
-    cv::resize(r, r, fullSize);
-    cv::resize(g, g, fullSize);
-    cv::resize(b, b, fullSize);
-    
-    
-    std::vector<cv::Mat> channels;
-    channels.push_back(b);
-    channels.push_back(g);
-    channels.push_back(r);
-    
-    cv::Mat img;
-    cv::merge(channels, img);
-    cv::flip(img, img, 1);
 
-    cv::imshow( "Display window", img);
-    
-}
 
 

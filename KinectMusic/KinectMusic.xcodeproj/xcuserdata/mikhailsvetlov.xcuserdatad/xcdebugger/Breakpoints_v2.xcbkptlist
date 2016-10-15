@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/analyze/blobs/blob.cpp"
-            timestampString = "498083257.274888"
+            timestampString = "498237715.5369"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "79"
-            endingLineNumber = "79"
-            landmarkName = "Blob::findBlobs(cv::Mat mat16, std::list&lt;Blob&gt;&amp; lBlobs)"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
+            landmarkName = "Blob::findBlobs(cv::Mat mat16, std::list&lt;Blob&gt;&amp; lBlobs, int type )"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -33,6 +33,22 @@
             endingLineNumber = "129"
             landmarkName = "main(int argc, char **argv)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KinectMusic/analyze/visualization/visualization.cpp"
+            timestampString = "498231419.289356"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
+            landmarkName = "Visualization::showImage()"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

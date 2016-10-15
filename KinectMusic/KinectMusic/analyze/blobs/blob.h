@@ -25,11 +25,12 @@ public:
 private:
     Blob(cv::Mat mat16, int x, int y);
 public:
-    static void findBlobs(cv::Mat mat16, std::list<Blob>& lvBlobs);
+    static void findBlobs(cv::Mat mat16, std::list<Blob>& lvBlobs, int type = 0);
     std::list<Cell>& getLCells() {return lCells;}
     const std::list<Cell>& getLCellsConst() const {return lCells;}
     const Cell* getP_maxValCell() {return p_maxValCell;}
     const Cell* getP_minValCell() {return p_minValCell;}
+    static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
 private:
     void addCell(int ind, int val);
 private:
