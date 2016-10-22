@@ -55,7 +55,7 @@ void Blob::addCell(int ind, int val){
         p_maxValCell = &lCells.back();
 }
 
-void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int type ){
+void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
 
     cv::Mat mat16_clone = mat16.clone();
     int largeBlobMaxVal(-1);
@@ -73,11 +73,11 @@ void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int type ){
             }
         }
         
-        if(type){
+        if(mode == 1){ //hands head segmentation
             if(minVal == MAX_KINECT_VALUE)
                 break;
             Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0]);
-            if(nearestBlob.getLCells().size() > 100)
+            //if(nearestBlob.getLCells().size() > 10)
                 lBlobs.push_back(nearestBlob);
             continue;
         }
@@ -85,7 +85,6 @@ void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int type ){
         if(minVal >= MAX_KINECT_VALUE)
             break;
 
-        
         Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0]);
         
         if(nearestBlob.getLCells().size() < BLOB_MIN_SIZE)

@@ -21,6 +21,8 @@
 		722141A01D9FB94B00B697E8 /* visualization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7221419F1D9FB94B00B697E8 /* visualization.cpp */; };
 		722141A41D9FC2B400B697E8 /* blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 722141A21D9FC2B400B697E8 /* blob.cpp */; };
 		722141BF1DAA772400B697E8 /* blobsmask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 722141BD1DAA772400B697E8 /* blobsmask.cpp */; };
+		722141C81DBB5D5200B697E8 /* handsheadextractor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 722141C61DBB5D5200B697E8 /* handsheadextractor.cpp */; };
+		722141CE1DBB7DAD00B697E8 /* limb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 722141CC1DBB7DAD00B697E8 /* limb.cpp */; };
 		726227401D90737D00644016 /* libopencv_calib3d.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 726227321D90737D00644016 /* libopencv_calib3d.2.4.9.dylib */; };
 		726227411D90737D00644016 /* libopencv_core.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 726227331D90737D00644016 /* libopencv_core.2.4.9.dylib */; };
 		726227421D90737D00644016 /* libopencv_features2d.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 726227341D90737D00644016 /* libopencv_features2d.2.4.9.dylib */; };
@@ -84,6 +86,10 @@
 		722141C11DB015AE00B697E8 /* libfreenect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect.h; sourceTree = "<group>"; };
 		722141C21DB015AE00B697E8 /* libfreenect_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect_audio.h; sourceTree = "<group>"; };
 		722141C31DB015AE00B697E8 /* libfreenect_registration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect_registration.h; sourceTree = "<group>"; };
+		722141C61DBB5D5200B697E8 /* handsheadextractor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = handsheadextractor.cpp; sourceTree = "<group>"; };
+		722141C71DBB5D5200B697E8 /* handsheadextractor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = handsheadextractor.h; sourceTree = "<group>"; };
+		722141CC1DBB7DAD00B697E8 /* limb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = limb.cpp; sourceTree = "<group>"; };
+		722141CD1DBB7DAD00B697E8 /* limb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = limb.h; sourceTree = "<group>"; };
 		7262270F1D906ED600644016 /* libopencv_calib3d.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_calib3d.dylib; path = ../../../../../../../usr/local/lib/libopencv_calib3d.dylib; sourceTree = "<group>"; };
 		726227111D906EF300644016 /* libopencv_core.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_core.dylib; path = ../../../../../../../usr/local/lib/libopencv_core.dylib; sourceTree = "<group>"; };
 		726227131D906F0200644016 /* libopencv_features2d.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_features2d.dylib; path = ../../../../../../../usr/local/lib/libopencv_features2d.dylib; sourceTree = "<group>"; };
@@ -269,6 +275,18 @@
 			path = include;
 			sourceTree = SOURCE_ROOT;
 		};
+		722141C51DBB5D1600B697E8 /* handsHeadExtractor */ = {
+			isa = PBXGroup;
+			children = (
+				722141C61DBB5D5200B697E8 /* handsheadextractor.cpp */,
+				722141C71DBB5D5200B697E8 /* handsheadextractor.h */,
+				722141CC1DBB7DAD00B697E8 /* limb.cpp */,
+				722141CD1DBB7DAD00B697E8 /* limb.h */,
+			);
+			name = handsHeadExtractor;
+			path = analyze/handsHeadExtractor;
+			sourceTree = "<group>";
+		};
 		7298B7231D8D76CE0093134C /* analyze */ = {
 			isa = PBXGroup;
 			children = (
@@ -276,6 +294,7 @@
 				7298B7211D8D76AA0093134C /* analyze.h */,
 				7298B7201D8D76AA0093134C /* analyze.cpp */,
 				722141A51D9FC2BD00B697E8 /* blolbs */,
+				722141C51DBB5D1600B697E8 /* handsHeadExtractor */,
 				7221419E1D9FB91400B697E8 /* visualization */,
 			);
 			name = analyze;
@@ -340,12 +359,14 @@
 				720164BC1A6C058B00BC721A /* core.c in Sources */,
 				720164BA1A6C058B00BC721A /* audio.c in Sources */,
 				720164BF1A6C058B00BC721A /* registration.c in Sources */,
+				722141CE1DBB7DAD00B697E8 /* limb.cpp in Sources */,
 				720164BB1A6C058B00BC721A /* cameras.c in Sources */,
 				720164C01A6C058B00BC721A /* tilt.c in Sources */,
 				720164BE1A6C058B00BC721A /* loader.c in Sources */,
 				720164BD1A6C058B00BC721A /* flags.c in Sources */,
 				722141BF1DAA772400B697E8 /* blobsmask.cpp in Sources */,
 				72B332B21BAF1050003DA9DA /* opengl_.c in Sources */,
+				722141C81DBB5D5200B697E8 /* handsheadextractor.cpp in Sources */,
 				72B332AC1BAEFFEA003DA9DA /* csound_.c in Sources */,
 				722141A41D9FC2B400B697E8 /* blob.cpp in Sources */,
 			);

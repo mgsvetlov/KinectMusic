@@ -123,8 +123,8 @@ void *freenect_threadfunc(void *arg)
             break;
         case FREENECT_DEPTH_REGISTERED:
             MAX_KINECT_VALUE  = FREENECT_DEPTH_MM_MAX_VALUE;
-            MAX_NEIGHB_DIFF_COARSE  = 40;
-            MAX_NEIGHB_DIFF_FINE  = 10;
+            MAX_NEIGHB_DIFF_COARSE  = 80;
+            MAX_NEIGHB_DIFF_FINE  = 20;
             break;
             break;
             

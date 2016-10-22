@@ -29,6 +29,8 @@ bool Visualization::showImage() {
     if(p_vis == nullptr){
         Visualization();
     }
+    //cv::Mat matImageRes;
+    //cv::resize(matImage, matImageRes, cv::Size(matImage.cols << BLOBS_RESIZE_POW, matImage.rows << BLOBS_RESIZE_POW));
     cv::imshow( "Display window", matImage);
     if(cv::waitKey(1) == 27) {
         return false;
