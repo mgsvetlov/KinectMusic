@@ -19,7 +19,6 @@
 #include "blobs/blob.h"
 #include "blobs/blobsmask.h"
 #include "handsHeadExtractor/handsheadextractor.h"
-#include "handsHeadExtractor/limb.h"
 
 pthread_mutex_t depth_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t video_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -64,21 +63,20 @@ void *analyze_threadfunc(void *arg) {
         
         cv::Mat mat = Blob::blobs2mat(lBlobs, mat16_resized.size());
         
-        int filt_size1(5), filt_depth1(0), filt_size2(20), filt_depth2(60);
-        HandsHeadExtractor handsHeadExtractor(mat, filt_size1, filt_depth1, filt_size2, filt_depth2);
+        int filt_size(12), filt_depth(10), iterCount(3);
+        HandsHeadExtractor handsHeadExtractor(mat, filt_size, filt_depth, iterCount);
         cv::Mat matDst = handsHeadExtractor.extractHandsHead();
         
         std::list<Blob> lBlobs1;
         int mode (1);
         Blob::findBlobs(matDst, lBlobs1, mode);
         
-        //std::list<Limb> lLimbs;
-        //Limb::findLimbs(matDst,lBlobs1, lLimbs);
-        
-        /*std::list<Blob> lBlobsLimbs;
-        for(auto& limb : lLimbs)
-        lBlobsLimbs.push_back(static_cast<Blob>(limb));*/
-        cv::Mat imgResized = Visualization::blobs2img_mark(lBlobs1, matDst.size());
+        std::list<Blob> lBlobsClust;
+        int xyThresh(10), depthThresh(1000);
+        Blob::blobsClustering(lBlobs1, lBlobsClust, xyThresh, depthThresh);
+   
+        cv::Mat imgResized = Visualization::blobs2img_mark(lBlobsClust, matDst.size());
+        //cv::Mat imgResized = Visualization::mat2img(mat);
         
         pthread_mutex_lock(&visualisation_mutex);
         Visualization::setMatImage(imgResized);

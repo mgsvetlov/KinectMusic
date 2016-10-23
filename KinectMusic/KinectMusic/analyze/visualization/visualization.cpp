@@ -29,8 +29,8 @@ bool Visualization::showImage() {
     if(p_vis == nullptr){
         Visualization();
     }
-    //cv::Mat matImageRes;
-    //cv::resize(matImage, matImageRes, cv::Size(matImage.cols << BLOBS_RESIZE_POW, matImage.rows << BLOBS_RESIZE_POW));
+    /*cv::Mat matImageRes;
+    cv::resize(matImage, matImageRes, cv::Size(matImage.cols << BLOBS_RESIZE_POW, matImage.rows << BLOBS_RESIZE_POW));*/
     cv::imshow( "Display window", matImage);
     if(cv::waitKey(1) == 27) {
         return false;
@@ -56,7 +56,13 @@ cv::Mat Visualization::blobs2img_mark(const std::list<Blob>& lBlobs, const cv::S
     cv::Mat g  = cv::Mat_<unsigned char>::zeros(size);
     cv::Mat b  = cv::Mat_<unsigned char>::zeros(size);
     int blobCount(0);
+    //std::cout << "New frame:\n";
     for(auto& blob : lBlobs) {
+        //int ind1 = blob.getCentralCell().ind;
+        //int width1 = blob.getMatSize().width;
+        //std::cout << "x1 " <<ind1 % width1 <<"\n";
+        //if(ind1 % width1 > 80)
+            //continue;
         auto& lCells = blob.getLCellsConst();
         for(auto& cell : lCells) {
             int ind = cell.ind;
@@ -64,7 +70,7 @@ cv::Mat Visualization::blobs2img_mark(const std::list<Blob>& lBlobs, const cv::S
             unsigned char* p_r = (unsigned char*)(r.data) + ind;
             unsigned char* p_g = (unsigned char*)(g.data) + ind;
             unsigned char* p_b = (unsigned char*)(b.data) + ind;
-            int num = blobCount < 3 ? blobCount : (blobCount % 3) + 3;
+            int num = blobCount;
             switch(num){
                 case 0:
                     *p_r = col;

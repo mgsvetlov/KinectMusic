@@ -14,11 +14,11 @@
 
 class HandsHeadExtractor {
 public:
-    HandsHeadExtractor(cv::Mat mat, int filt_size1, int filt_depth1, int filt_size2, int filt_depth2);
+    HandsHeadExtractor(cv::Mat mat, int filt_size, int filt_depth, int iterCount);
     cv::Mat extractHandsHead();
 private:
     cv::Mat mat;
-    int filt_size1, filt_depth1, filt_size2, filt_depth2;
+    int filt_size, filt_depth, iterCount;
 };
 
 #endif /* handsheadextractor_hpp */

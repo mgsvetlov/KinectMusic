@@ -31,6 +31,13 @@ public:
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
     const std::list<Cell>& getLCellsConst() const {return lCells;}
     const Cell* getP_maxValCell() {return p_maxValCell;}
+    
+    static bool blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh);
+    void mergeBlob(const Blob& blob);
+    bool computeCentralCell();
+    bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
+    const Cell& getCentralCell() const {return centralCell;}
+    const cv::Size& getMatSize() const {return this->matSize;}
 private:
     void addCell(int ind, int val);
 private:
@@ -38,5 +45,7 @@ private:
     const Cell* p_minValCell = nullptr;
 protected:
     std::list<Cell> lCells;
+    Cell centralCell;
+    cv::Size matSize;
 };
 #endif /* nearestblob_hpp */

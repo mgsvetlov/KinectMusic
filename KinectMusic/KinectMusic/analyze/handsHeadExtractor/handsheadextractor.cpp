@@ -8,12 +8,11 @@
 
 #include "handsheadextractor.h"
 
-HandsHeadExtractor::HandsHeadExtractor(cv::Mat mat, int filt_size1, int filt_depth1, int filt_size2, int filt_depth2) :
+HandsHeadExtractor::HandsHeadExtractor(cv::Mat mat, int filt_size, int filt_depth, int iterCount) :
 mat (mat),
-filt_size1(filt_size1),
-filt_depth1(filt_depth1),
-filt_size2(filt_size2),
-filt_depth2(filt_depth2)
+filt_size(filt_size),
+filt_depth(filt_depth),
+iterCount(iterCount)
 {}
 
 cv::Mat HandsHeadExtractor::extractHandsHead()
@@ -28,27 +27,20 @@ cv::Mat HandsHeadExtractor::extractHandsHead()
             if(!val)
                 continue;
             bool isValue(true);
-            
-            for(int i = 1; i <= 2; i++){
-                int depth = i == 1 ? filt_depth1 :  filt_depth2;
-                int size = i == 1 ? filt_size1 : filt_size2;
-                for(int m = -1; m <= 1; m++){
-                    for(int n = -1; n <= 1; n++){
-                        if(!m && !n)
-                            continue;
-                        int y_ = y + m * size;
-                        int x_ = x + n * size;
-                        uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
-                        if(val_ && val_ - val <= depth){
-                            isValue = false;
-                            break;
-                        }
-                         if(!isValue)
-                             break;
+            for(int m = -iterCount; m <= iterCount; m++){
+                for(int n = -iterCount; n <= iterCount; n++){
+                    if(!m && !n)
+                        continue;
+                    int y_ = y + m * filt_size;
+                    int x_ = x + n * filt_size;
+                    uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
+                    if(val_ && val_ - val <= filt_depth * iterCount){
+                        isValue = false;
+                        break;
                     }
+                     if(!isValue)
+                         break;
                 }
-              if(!isValue)
-                  break;
             }
             if(isValue)
                 *p_matDst = val;
