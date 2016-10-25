@@ -61,10 +61,10 @@ void *analyze_threadfunc(void *arg) {
         std::list<Blob> lBlobs;
         Blob::findBlobs(mat16_resized, lBlobs);
         
-        cv::Mat mat = Blob::blobs2mat(lBlobs, mat16_resized.size());
+        cv::Mat matBlobs = Blob::blobs2mat(lBlobs, mat16_resized.size());
         
-        int filt_size(12), filt_depth(10), iterCount(3);
-        HandsHeadExtractor handsHeadExtractor(mat, filt_size, filt_depth, iterCount);
+        int filt_size(10), filt_depth(18), iterCount(2);
+        HandsHeadExtractor handsHeadExtractor(matBlobs, filt_size, filt_depth, iterCount);
         cv::Mat matDst = handsHeadExtractor.extractHandsHead();
         
         std::list<Blob> lBlobs1;
@@ -72,9 +72,11 @@ void *analyze_threadfunc(void *arg) {
         Blob::findBlobs(matDst, lBlobs1, mode);
         
         std::list<Blob> lBlobsClust;
-        int xyThresh(10), depthThresh(1000);
+        int xyThresh(20), depthThresh(1000);
         Blob::blobsClustering(lBlobs1, lBlobsClust, xyThresh, depthThresh);
    
+        Blob::extendBlobs(matBlobs, lBlobsClust);
+        
         cv::Mat imgResized = Visualization::blobs2img_mark(lBlobsClust, matDst.size());
         //cv::Mat imgResized = Visualization::mat2img(mat);
         

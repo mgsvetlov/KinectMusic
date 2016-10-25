@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/analyze/blobs/blob.cpp"
-            timestampString = "498920158.695261"
+            timestampString = "499031029.52921"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "90"
@@ -48,6 +48,22 @@
             startingLineNumber = "46"
             endingLineNumber = "46"
             landmarkName = "Visualization::showImage()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KinectMusic/analyze/blobs/blob.cpp"
+            timestampString = "499119957.9797"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "268"
+            endingLineNumber = "268"
+            landmarkName = "Blob::stretch(cv::Mat mat16, cv::Mat matMap)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

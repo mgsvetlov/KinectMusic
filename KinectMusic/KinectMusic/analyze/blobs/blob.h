@@ -33,17 +33,21 @@ public:
     const Cell* getP_maxValCell() {return p_maxValCell;}
     
     static bool blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh);
+    
+    const Cell& getCentralCell() const {return centralCell;}
+    const cv::Size& getMatSize() const {return this->matSize;}
+    
+    static void extendBlobs(cv::Mat mat16, std::list<Blob>& lBlobs);
+
+private:
+    void addCell(int ind, int val);
     void mergeBlob(const Blob& blob);
     bool computeCentralCell();
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
-    const Cell& getCentralCell() const {return centralCell;}
-    const cv::Size& getMatSize() const {return this->matSize;}
-private:
-    void addCell(int ind, int val);
+    void extend(cv::Mat mat16, cv::Mat matMap);
 private:
     const Cell* p_maxValCell = nullptr;
     const Cell* p_minValCell = nullptr;
-protected:
     std::list<Cell> lCells;
     Cell centralCell;
     cv::Size matSize;

@@ -81,7 +81,7 @@ void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
             if(minVal == MAX_KINECT_VALUE)
                 break;
             Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0]);
-            //if(nearestBlob.getLCells().size() > 10)
+            if(nearestBlob.getLCells().size() > 10)
                 lBlobs.push_back(nearestBlob);
             continue;
         }
@@ -205,18 +205,7 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
         }
         it++;
     }
-    std::vector<Blob> vBlobsClustered(lBlobsClustered.begin(), lBlobsClustered.end());
-    std::sort(vBlobsClustered.begin(), vBlobsClustered.end(), [] (const Blob& b1, const Blob& b2) -> bool {
-            int ind1 = b1.getCentralCell().ind;
-            int ind2 = b2.getCentralCell().ind;
-            int width1 = b1.getMatSize().width;
-            int width2 = b2.getMatSize().width;
-            int x1 = ind1 % width1;
-            int x2 = ind2 % width2;
-            return x1 < x2;
-        }
-     );
-    lBlobsClustered = std::list<Blob>(vBlobsClustered.begin(), vBlobsClustered.end());
+    
     return true;
 }
 cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
@@ -232,4 +221,57 @@ cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
     }
     
     return mat;
+}
+
+void Blob::extendBlobs(cv::Mat mat16, std::list<Blob>& lBlobs){
+    cv::Mat matMap = cv::Mat_<unsigned char>::zeros(mat16.size());
+    for(auto& blob : lBlobs)
+        blob.extend(mat16, matMap);
+    auto it = lBlobs.begin();
+    while(it != lBlobs.end()){
+        if(it->lCells.size() < 50){
+            it = lBlobs.erase(it);
+            continue;
+        }
+        it++;
+    }
+    
+    std::vector<Blob> vBlobs(lBlobs.begin(), lBlobs.end());
+    std::sort(vBlobs.begin(), vBlobs.end(), [] (const Blob& b1, const Blob& b2) -> bool {
+        int ind1 = b1.getCentralCell().ind;
+        int ind2 = b2.getCentralCell().ind;
+        int width1 = b1.getMatSize().width;
+        int width2 = b2.getMatSize().width;
+        int x1 = ind1 % width1;
+        int x2 = ind2 % width2;
+        return x1 < x2;
+    }
+              );
+    lBlobs = std::list<Blob>(vBlobs.begin(), vBlobs.end());
+}
+
+void Blob::extend(cv::Mat mat16, cv::Mat matMap){
+    uint16_t* p_mat16 = (uint16_t*)(mat16.data);
+    unsigned char* p_matMap = (unsigned char*)(matMap.data);
+    
+    auto it = lCells.begin();
+    while(it!= lCells.end()){
+        int ind = it->ind;
+        int x = ind % this->matSize.width;
+        int y = (ind-x) /this->matSize.width;
+        int y_ = y - 1;
+        for(int x_ = x-1; x_ <= x+1; x_++){
+            int ind_ = y_ * this->matSize.width + x_;
+            uint16_t val_ = *(p_mat16 + ind_);
+            if(val_ && val_ - centralCell.val < 30){
+                unsigned char* p_matMap_ = p_matMap + ind_;
+                if(!*p_matMap_){
+                    *p_matMap_ = 255;
+                    lCells.push_back(Cell(ind_, val_));
+                }
+            }
+        }
+        it++;
+    }
+    this->computeCentralCell();
 }
