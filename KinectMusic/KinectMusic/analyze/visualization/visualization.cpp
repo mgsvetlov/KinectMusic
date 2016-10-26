@@ -29,8 +29,8 @@ bool Visualization::showImage() {
     if(p_vis == nullptr){
         Visualization();
     }
-    //cv::Mat matImageRes;
-    //cv::resize(matImage, matImageRes, cv::Size(matImage.cols << BLOBS_RESIZE_POW, matImage.rows << BLOBS_RESIZE_POW));
+    /*cv::Mat matImageRes;
+    cv::resize(matImage, matImageRes, cv::Size(matImage.cols << BLOBS_RESIZE_POW, matImage.rows << BLOBS_RESIZE_POW));*/
     cv::imshow( "Display window", matImage);
     if(cv::waitKey(1) == 27) {
         return false;
@@ -64,13 +64,14 @@ cv::Mat Visualization::blobs2img_mark(const std::list<Blob>& lBlobs, const cv::S
             unsigned char* p_r = (unsigned char*)(r.data) + ind;
             unsigned char* p_g = (unsigned char*)(g.data) + ind;
             unsigned char* p_b = (unsigned char*)(b.data) + ind;
-            int num = blobCount;
+            
+            int num = blob.getIsHandOpened()? blobCount + 2 :  blobCount;
 
             switch(num){
                 case 0:
-                    *p_r = col;
+                    *p_r = 0;
                     *p_g = 0;
-                    *p_b = 0;
+                    *p_b = col;
                     break;
                 case 1:
                     *p_r = 0;
@@ -78,9 +79,9 @@ cv::Mat Visualization::blobs2img_mark(const std::list<Blob>& lBlobs, const cv::S
                     *p_b = 0;
                     break;
                 case 2:
-                    *p_r = 0;
+                    *p_r = col;
                     *p_g = 0;
-                    *p_b = col;
+                    *p_b = 0;
                     break;
                 case 3:
                     *p_r = col;

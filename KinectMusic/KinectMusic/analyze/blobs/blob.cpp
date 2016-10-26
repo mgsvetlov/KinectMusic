@@ -16,7 +16,8 @@ lCells(std::list<Cell>()),
 p_maxValCell(nullptr),
 p_minValCell(nullptr),
 centralCell(-1, -1),
-matSize(mat16.size())
+matSize(mat16.size()),
+isHandOpened(false)
 {
     int w = mat16.cols;
     int h = mat16.rows;
@@ -227,14 +228,14 @@ void Blob::extendBlobs(cv::Mat mat16, std::list<Blob>& lBlobs){
     cv::Mat matMap = cv::Mat_<unsigned char>::zeros(mat16.size());
     for(auto& blob : lBlobs)
         blob.extend(mat16, matMap);
-    auto it = lBlobs.begin();
+    /*auto it = lBlobs.begin();
     while(it != lBlobs.end()){
         if(it->lCells.size() < 50){
             it = lBlobs.erase(it);
             continue;
         }
         it++;
-    }
+    }*/
     
     std::vector<Blob> vBlobs(lBlobs.begin(), lBlobs.end());
     std::sort(vBlobs.begin(), vBlobs.end(), [] (const Blob& b1, const Blob& b2) -> bool {
@@ -274,4 +275,50 @@ void Blob::extend(cv::Mat mat16, cv::Mat matMap){
         it++;
     }
     this->computeCentralCell();
+    this->filterFar();
+    this->detectHandOpened();
+}
+
+void Blob::filterFar(){
+    std::vector<Cell> vCells(lCells.begin(), lCells.end());
+    std::sort(vCells.begin(), vCells.end(), [] (const Cell& c1, const Cell& c2) -> bool {
+        return c1.val < c2.val;
+    }
+              );
+    size_t size = vCells.size() * 0.5;
+    if(size > 100)
+        size = 100;
+    lCells = std::list<Cell>(vCells.begin(), vCells.begin() + size);
+    
+}
+
+void Blob::detectHandOpened(){
+    int xMin(matSize.width), xMax(0), yMin(matSize.height), yMax(0);
+    double valSum (0);
+    for(auto& cell : lCells){
+        valSum += cell.val;
+        int ind = cell.ind;
+        int x = ind % this->matSize.width;
+        int y = (ind-x) /this->matSize.width;
+        if(x < xMin)
+            xMin = x;
+        if(x > xMax)
+            xMax = x;
+        if(y < yMin)
+            yMin = y;
+        if(y > yMax)
+            yMax = y;
+    }
+    double valAvg = valSum /lCells.size();
+    double devSum(0.);
+    for(auto& cell : lCells){
+        devSum += std::abs(cell.val - valAvg);
+    }
+    double devAvg = devSum / lCells.size();
+
+    double dx = xMax - xMin;
+    double dy = yMax - yMin;
+    if(devAvg * dx * dy * pow(static_cast<double>(yMax)/matSize.height, 0.3) > 250)
+        isHandOpened = true;
+
 }

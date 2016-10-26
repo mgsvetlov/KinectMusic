@@ -10,6 +10,7 @@
 #define types_h
 
 extern int MAX_KINECT_VALUE;
+extern int MAX_KINECT_DEPTH;
 extern int BLOBS_RESIZE_POW;
 extern int BLOB_MIN_SIZE;
 extern int BLOB_MIN_SIZE_LAST;

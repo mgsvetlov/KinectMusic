@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/analyze/blobs/blob.cpp"
-            timestampString = "499031029.52921"
+            timestampString = "499194917.205555"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
+            startingLineNumber = "91"
+            endingLineNumber = "91"
             landmarkName = "Blob::findBlobs(cv::Mat mat16, std::list&lt;Blob&gt;&amp; lBlobs, int mode )"
             landmarkType = "5">
          </BreakpointContent>
@@ -58,12 +58,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/analyze/blobs/blob.cpp"
-            timestampString = "499119957.9797"
+            timestampString = "499194917.205555"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "268"
-            endingLineNumber = "268"
-            landmarkName = "Blob::stretch(cv::Mat mat16, cv::Mat matMap)"
+            startingLineNumber = "269"
+            endingLineNumber = "269"
+            landmarkName = "Blob::extend(cv::Mat mat16, cv::Mat matMap)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

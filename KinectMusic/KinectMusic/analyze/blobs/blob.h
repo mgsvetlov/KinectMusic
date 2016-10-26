@@ -38,6 +38,7 @@ public:
     const cv::Size& getMatSize() const {return this->matSize;}
     
     static void extendBlobs(cv::Mat mat16, std::list<Blob>& lBlobs);
+    bool getIsHandOpened() const {return isHandOpened;}
 
 private:
     void addCell(int ind, int val);
@@ -45,11 +46,14 @@ private:
     bool computeCentralCell();
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
     void extend(cv::Mat mat16, cv::Mat matMap);
+    void filterFar();
+    void detectHandOpened();
 private:
     const Cell* p_maxValCell = nullptr;
     const Cell* p_minValCell = nullptr;
     std::list<Cell> lCells;
     Cell centralCell;
+    bool isHandOpened;
     cv::Size matSize;
 };
 #endif /* nearestblob_hpp */
