@@ -9,7 +9,7 @@ ksmps = 128
 nchnls = 2
 0dbfs = 1.0
         instr 1
-a1      oscil   10, 660, 1
+a1      oscil   1, 660, 1
         out     a1
         endin
 
@@ -18,7 +18,7 @@ a1      oscil   10, 660, 1
 f1  0   4096    10 1  ; use GEN10 to compute a sine wave
 
 ;ins    strt    dur
-i1      0       10
+i1      0       1
 
 e                     ; indicates the end of the score
 </CsScore>

@@ -35,9 +35,10 @@
 		7262274B1D90737D00644016 /* libopencv_superres.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7262273D1D90737D00644016 /* libopencv_superres.2.4.9.dylib */; };
 		7262274C1D90737D00644016 /* libopencv_video.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7262273E1D90737D00644016 /* libopencv_video.2.4.9.dylib */; };
 		7262274D1D90737D00644016 /* libopencv_videostab.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7262273F1D90737D00644016 /* libopencv_videostab.2.4.9.dylib */; };
+		7298B1DE1DC48A860002D2F0 /* gesture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7298B1DC1DC48A860002D2F0 /* gesture.cpp */; };
 		7298B7221D8D76AA0093134C /* analyze.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7298B7201D8D76AA0093134C /* analyze.cpp */; };
 		7298B7271D8D85840093134C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7298B7261D8D85840093134C /* main.cpp */; };
-		72B332AC1BAEFFEA003DA9DA /* csound_.c in Sources */ = {isa = PBXBuildFile; fileRef = 72B332AB1BAEFFEA003DA9DA /* csound_.c */; };
+		72B332AC1BAEFFEA003DA9DA /* csound_.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72B332AB1BAEFFEA003DA9DA /* csound_.cpp */; };
 		72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72B332AD1BAF0733003DA9DA /* kinect.cpp */; };
 		72B332B21BAF1050003DA9DA /* opengl_.c in Sources */ = {isa = PBXBuildFile; fileRef = 72B332B01BAF1050003DA9DA /* opengl_.c */; };
 /* End PBXBuildFile section */
@@ -84,6 +85,7 @@
 		722141C31DB015AE00B697E8 /* libfreenect_registration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect_registration.h; sourceTree = "<group>"; };
 		722141C61DBB5D5200B697E8 /* handsheadextractor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = handsheadextractor.cpp; sourceTree = "<group>"; };
 		722141C71DBB5D5200B697E8 /* handsheadextractor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = handsheadextractor.h; sourceTree = "<group>"; };
+		722141D01DC3C88700B697E8 /* test.csd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = test.csd; path = drums2/test.csd; sourceTree = "<group>"; };
 		7262270F1D906ED600644016 /* libopencv_calib3d.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_calib3d.dylib; path = ../../../../../../../usr/local/lib/libopencv_calib3d.dylib; sourceTree = "<group>"; };
 		726227111D906EF300644016 /* libopencv_core.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_core.dylib; path = ../../../../../../../usr/local/lib/libopencv_core.dylib; sourceTree = "<group>"; };
 		726227131D906F0200644016 /* libopencv_features2d.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_features2d.dylib; path = ../../../../../../../usr/local/lib/libopencv_features2d.dylib; sourceTree = "<group>"; };
@@ -114,11 +116,13 @@
 		7262273D1D90737D00644016 /* libopencv_superres.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_superres.2.4.9.dylib; path = opencv/lib/libopencv_superres.2.4.9.dylib; sourceTree = "<group>"; };
 		7262273E1D90737D00644016 /* libopencv_video.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_video.2.4.9.dylib; path = opencv/lib/libopencv_video.2.4.9.dylib; sourceTree = "<group>"; };
 		7262273F1D90737D00644016 /* libopencv_videostab.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_videostab.2.4.9.dylib; path = opencv/lib/libopencv_videostab.2.4.9.dylib; sourceTree = "<group>"; };
+		7298B1DC1DC48A860002D2F0 /* gesture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gesture.cpp; path = analyze/gesture/gesture.cpp; sourceTree = "<group>"; };
+		7298B1DD1DC48A860002D2F0 /* gesture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gesture.h; path = analyze/gesture/gesture.h; sourceTree = "<group>"; };
 		7298B7201D8D76AA0093134C /* analyze.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = analyze.cpp; path = analyze/analyze.cpp; sourceTree = "<group>"; };
 		7298B7211D8D76AA0093134C /* analyze.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = analyze.h; path = analyze/analyze.h; sourceTree = "<group>"; };
 		7298B7261D8D85840093134C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		72B332AA1BAEFFC8003DA9DA /* csound_.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = csound_.h; sourceTree = "<group>"; };
-		72B332AB1BAEFFEA003DA9DA /* csound_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = csound_.c; sourceTree = "<group>"; };
+		72B332AB1BAEFFEA003DA9DA /* csound_.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = csound_.cpp; sourceTree = "<group>"; };
 		72B332AD1BAF0733003DA9DA /* kinect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = kinect.cpp; sourceTree = "<group>"; };
 		72B332AE1BAF0733003DA9DA /* kinect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kinect.h; sourceTree = "<group>"; };
 		72B332B01BAF1050003DA9DA /* opengl_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = opengl_.c; sourceTree = "<group>"; };
@@ -203,13 +207,14 @@
 		7201649E1A6C023800BC721A /* KinectMusic */ = {
 			isa = PBXGroup;
 			children = (
+				722141CF1DC3C87500B697E8 /* csd */,
 				722141C01DB015AE00B697E8 /* include */,
 				7298B7261D8D85840093134C /* main.cpp */,
 				7298B7231D8D76CE0093134C /* analyze */,
 				720164A81A6C058B00BC721A /* src */,
 				720164A11A6C023800BC721A /* KinectMusic.1 */,
 				72B332AA1BAEFFC8003DA9DA /* csound_.h */,
-				72B332AB1BAEFFEA003DA9DA /* csound_.c */,
+				72B332AB1BAEFFEA003DA9DA /* csound_.cpp */,
 				72B332AD1BAF0733003DA9DA /* kinect.cpp */,
 				72B332AE1BAF0733003DA9DA /* kinect.h */,
 				72B332B01BAF1050003DA9DA /* opengl_.c */,
@@ -277,6 +282,23 @@
 			path = analyze/handsHeadExtractor;
 			sourceTree = "<group>";
 		};
+		722141CF1DC3C87500B697E8 /* csd */ = {
+			isa = PBXGroup;
+			children = (
+				722141D01DC3C88700B697E8 /* test.csd */,
+			);
+			name = csd;
+			sourceTree = "<group>";
+		};
+		7298B1DF1DC48A8E0002D2F0 /* gesture */ = {
+			isa = PBXGroup;
+			children = (
+				7298B1DC1DC48A860002D2F0 /* gesture.cpp */,
+				7298B1DD1DC48A860002D2F0 /* gesture.h */,
+			);
+			name = gesture;
+			sourceTree = "<group>";
+		};
 		7298B7231D8D76CE0093134C /* analyze */ = {
 			isa = PBXGroup;
 			children = (
@@ -285,6 +307,7 @@
 				7298B7201D8D76AA0093134C /* analyze.cpp */,
 				722141A51D9FC2BD00B697E8 /* blolbs */,
 				722141C51DBB5D1600B697E8 /* handsHeadExtractor */,
+				7298B1DF1DC48A8E0002D2F0 /* gesture */,
 				7221419E1D9FB91400B697E8 /* visualization */,
 			);
 			name = analyze;
@@ -348,6 +371,7 @@
 				722141A01D9FB94B00B697E8 /* visualization.cpp in Sources */,
 				720164BC1A6C058B00BC721A /* core.c in Sources */,
 				720164BA1A6C058B00BC721A /* audio.c in Sources */,
+				7298B1DE1DC48A860002D2F0 /* gesture.cpp in Sources */,
 				720164BF1A6C058B00BC721A /* registration.c in Sources */,
 				720164BB1A6C058B00BC721A /* cameras.c in Sources */,
 				720164C01A6C058B00BC721A /* tilt.c in Sources */,
@@ -355,7 +379,7 @@
 				720164BD1A6C058B00BC721A /* flags.c in Sources */,
 				72B332B21BAF1050003DA9DA /* opengl_.c in Sources */,
 				722141C81DBB5D5200B697E8 /* handsheadextractor.cpp in Sources */,
-				72B332AC1BAEFFEA003DA9DA /* csound_.c in Sources */,
+				72B332AC1BAEFFEA003DA9DA /* csound_.cpp in Sources */,
 				722141A41D9FC2B400B697E8 /* blob.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

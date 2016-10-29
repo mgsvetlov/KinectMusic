@@ -17,6 +17,7 @@
 #include "visualization/visualization.h"
 #include "analyze.h"
 #include "blobs/blob.h"
+#include "gesture/gesture.h"
 #include "handsHeadExtractor/handsheadextractor.h"
 
 pthread_mutex_t depth_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -42,7 +43,7 @@ volatile int frameNum_analyze = 0;
 volatile int analyzeThreadId = 0;
 
 void *analyze_threadfunc(void *arg) {
-
+    
     int frameNum_analyze_local (0);
     while (!die){
         pthread_mutex_lock(&depth_mutex);
@@ -84,7 +85,12 @@ void *analyze_threadfunc(void *arg) {
    
         Blob::extendBlobs(matBlobs, lBlobsClust);
         
-        cv::Mat imgResized = Visualization::blobs2img_mark(lBlobsClust, matDst.size());
+        Gesture::analyzeFrame(lBlobsClust);
+        
+        cv::Mat imgResized = Visualization::gestures2img_mark(Gesture::getGesturesConst(), matDst.size());
+        
+        //cv::Mat imgResized = Visualization::centralCells2img_mark(lBlobsClust, matDst.size());
+        //cv::Mat imgResized = Visualization::blobs2img_mark(lBlobsClust, matDst.size());
         //cv::Mat imgResized = Visualization::mat2img(mat);
         
         pthread_mutex_lock(&visualisation_mutex);

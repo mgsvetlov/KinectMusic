@@ -154,6 +154,18 @@ bool Blob::isBlobNear(const Blob& blob, const int xyThresh, const int depthThres
     return true;
 }
 
+double Blob::dist2blob(const Blob& blob){
+    int ind = this->centralCell.ind;
+    int x = ind % this->matSize.width;
+    int y = (ind-x) /this->matSize.width;
+    int indBlob = blob.centralCell.ind;
+    int xBlob = indBlob % blob.matSize.width;
+    int yBlob = (indBlob-xBlob) /blob.matSize.width;
+    int dx = x - xBlob;
+    int dy = y - yBlob;
+    return sqrt(static_cast<double>(dx * dx + dy * dy));
+}
+
 void Blob::mergeBlob(const Blob& blob){
     this->lCells.insert(this->lCells.end(), blob.lCells.begin(), blob.lCells.end());
     
@@ -228,9 +240,11 @@ void Blob::extendBlobs(cv::Mat mat16, std::list<Blob>& lBlobs){
     cv::Mat matMap = cv::Mat_<unsigned char>::zeros(mat16.size());
     for(auto& blob : lBlobs)
         blob.extend(mat16, matMap);
+    
     /*auto it = lBlobs.begin();
     while(it != lBlobs.end()){
-        if(it->lCells.size() < 50){
+        //if(it->lCells.size() < 50){
+        if(!it->isHandOpened){
             it = lBlobs.erase(it);
             continue;
         }
@@ -274,9 +288,10 @@ void Blob::extend(cv::Mat mat16, cv::Mat matMap){
         }
         it++;
     }
-    this->computeCentralCell();
+   
     this->filterFar();
-    this->detectHandOpened();
+    this->computeCentralCell();
+    //this->detectHandOpened();
 }
 
 void Blob::filterFar(){
@@ -318,7 +333,7 @@ void Blob::detectHandOpened(){
 
     double dx = xMax - xMin;
     double dy = yMax - yMin;
-    if(devAvg * dx * dy * pow(static_cast<double>(yMax)/matSize.height, 0.3) > 250)
+    if(devAvg * dx * dy*  pow(static_cast<double>(yMax)/matSize.height, 0.3) > 250)
         isHandOpened = true;
 
 }

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "visualization.h"
 #include "../blobs/blob.h"
+#include "../gesture/gesture.h"
 #include "../analyze.h"
 
 Visualization* Visualization::p_vis = nullptr;
@@ -36,6 +37,9 @@ bool Visualization::showImage() {
         return false;
     }
     
+    if(!CSOUND_START)
+        CSOUND_START = true;
+    
     static int frameCount(0);
     static std::clock_t t = clock();
     if(frameNum % 30 == 0){
@@ -50,6 +54,96 @@ bool Visualization::showImage() {
     return true;
 }
 
+cv::Mat Visualization::gestures2img_mark(const std::vector<Gesture>& gestures, const cv::Size& size){
+    cv::Mat img  = cv::Mat::zeros(size, CV_8UC3);
+  
+    int gestureCount(0);
+    for(auto& gesture : gestures){
+        
+        const std::list<Blob>& blobs = gesture.getLGestureBlobsConst();
+        int blobCount(0);
+
+        for(auto& blob : blobs) {
+            
+            auto& centralCell = blob.getCentralCell();
+            int x = centralCell.ind % size.width;
+            int y = (centralCell.ind-x) /size.width;
+            double radius = size.width * 0.04;
+            if(blobCount !=  blobs.size() -1)
+                radius *= 0.5;
+            int num = blobCount == blobs.size() -1 ? gestureCount :  gestureCount  + 2;
+            cv::Scalar color( 255, 255, 255 );
+            unsigned char col = (MAX_KINECT_DEPTH -centralCell.val) * 255. / MAX_KINECT_DEPTH * 2;
+            switch(num){
+                case 0:
+                    color = cv::Scalar( 0, 0, col );
+                    break;
+                case 1:
+                    color = cv::Scalar( 0, col, 0);
+                    break;
+                case 2:
+                    color = cv::Scalar( col, col, 0 );
+                    break;
+                case 3:
+                    color = cv::Scalar(0, col, col );
+                    break;
+                case 4:
+                    color = cv::Scalar( col, 0, col );
+                    break;
+                case 5:
+                    color = cv::Scalar( 0, 0, col );
+                    break;
+            }
+            cv::circle( img, cv::Point( x, y), radius, color, -1, 8 );
+            blobCount++;
+        }
+        gestureCount++;
+    }
+    
+    cv::flip(img, img, 1);
+    
+    return img;
+}
+cv::Mat Visualization::centralCells2img_mark(const std::list<Blob>& lBlobs, const cv::Size& size){
+    cv::Mat img  = cv::Mat::zeros(size, CV_8UC3);
+
+    int blobCount(0);
+    for(auto& blob : lBlobs) {
+        auto& centralCell = blob.getCentralCell();
+        int x = centralCell.ind % size.width;
+        int y = (centralCell.ind-x) /size.width;
+        double radius = size.width * 0.04;
+        int num = blob.getIsHandOpened()? blobCount + 2 :  blobCount;
+        cv::Scalar color( 255, 255, 255 );
+        unsigned char col = (MAX_KINECT_DEPTH -centralCell.val) * 255. / MAX_KINECT_DEPTH * 2;
+        switch(num){
+            case 0:
+                color = cv::Scalar( 0, 0, col );
+                break;
+            case 1:
+                color = cv::Scalar( 0, col, 0);
+                break;
+            case 2:
+                color = cv::Scalar( col, 0, 0 );
+                break;
+            case 3:
+                color = cv::Scalar( col, col, 0 );
+                break;
+            case 4:
+                color = cv::Scalar( col, 0, col );
+                break;
+            case 5:
+                color = cv::Scalar( 0, col, col );
+                break;
+        }
+        cv::circle( img, cv::Point( x, y), radius, color, -1, 8 );
+        blobCount++;
+    }
+
+    cv::flip(img, img, 1);
+    
+    return img;
+}
 
 cv::Mat Visualization::blobs2img_mark(const std::list<Blob>& lBlobs, const cv::Size& size) {
     cv::Mat r  = cv::Mat_<unsigned char>::zeros(size);

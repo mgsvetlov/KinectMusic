@@ -39,7 +39,7 @@ public:
     
     static void extendBlobs(cv::Mat mat16, std::list<Blob>& lBlobs);
     bool getIsHandOpened() const {return isHandOpened;}
-
+    double dist2blob(const Blob& blob);
 private:
     void addCell(int ind, int val);
     void mergeBlob(const Blob& blob);
