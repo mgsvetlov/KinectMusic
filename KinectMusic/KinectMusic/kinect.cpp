@@ -7,8 +7,8 @@
 //
 #include <ctime>
 #include "kinect.h"
-#include  "analyze/analyze.h"
-#include  "analyze/types.h"
+#include  "gestureExtraction/analyze.h"
+#include  "gestureExtraction/types.h"
 
 
 uint8_t *rgb_back, *rgb_mid, *rgb_front;

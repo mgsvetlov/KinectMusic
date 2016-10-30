@@ -13,19 +13,27 @@
 #include "../types.h"
 #include "../blobs/blob.h"
 
+struct HandData{
+    float x, y, z;
+    Blob blob;
+    HandData(){}
+    HandData(float x, float y, float z, const Blob& blob) :
+    x(x), y(y), z(z), blob(blob){}
+};
+
 class Gesture {
 public:
     Gesture(){}
     Gesture(const Blob& blob);
     static void analyzeFrame(const std::list<Blob>& lBlobs);
     static const std::vector<Gesture>& getGesturesConst() {return Gesture::gestures;}
-    const std::list<Blob>& getLGestureBlobsConst() const {return this->lGestureBlobs;}
+    const std::list<HandData>& getLHandData() const { return lHandData;}
 private:
     double dist2blob(const Blob& blob);
-    void addBlob(const Blob& blob);
+    void addHandData(const Blob& blob);
 private:
     static std::vector<Gesture> gestures;
-    std::list<Blob> lGestureBlobs;
     bool isBlobFound = false;
+    std::list<HandData> lHandData;
 };
 #endif /* Gesture_h */

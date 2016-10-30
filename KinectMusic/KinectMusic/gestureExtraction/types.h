@@ -19,6 +19,8 @@ extern int MAX_NEIGHB_DIFF_FINE;
 
 extern volatile bool CSOUND_START;
 
+extern volatile int die;
+
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
 #include "opencv2/opencv.hpp"

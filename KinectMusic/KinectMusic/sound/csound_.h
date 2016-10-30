@@ -15,4 +15,6 @@ extern pthread_t csound_thread;
 
 void *csound_threadfunc(void *arg);
 
+extern CSOUND* csound;
+
 #endif

@@ -39,8 +39,7 @@ void Gesture::analyzeFrame(const std::list<Blob>& lBlobs){
             }
         }
         if(ind != -1){
-            gestures[i].lGestureBlobs.push_back(*itNearest);
-            gestures[i].isBlobFound = true;
+            gestures[i].addHandData(*itNearest);
             vBlobsMatched[ind] = true;
             //жадный алгоритм - для первого ближайшего
             for(int i1 = 0; i1 < gestures.size(); i1++){
@@ -56,29 +55,39 @@ void Gesture::analyzeFrame(const std::list<Blob>& lBlobs){
             continue;
         for(auto& gesture : gestures){
             if(!gesture.isBlobFound){
-                gesture.lGestureBlobs.push_back(blob);
-                gesture.isBlobFound = true;
+                gesture.addHandData(blob);
                 break;
             }
         }
         
     }
     for(auto& gesture : gestures){
-        if(!gesture.isBlobFound)
-            gesture.lGestureBlobs.clear();
+        if(!gesture.isBlobFound){
+            gesture.lHandData.clear();
+        }
     }
 }
 
 
 double Gesture::dist2blob(const Blob& blob){
-    if(lGestureBlobs.empty())
+    if(lHandData.empty())
         return DBL_MAX;
-    auto& blobFront = lGestureBlobs.back();
-    double dist = blobFront.dist2blob(blob);
+    auto& prevBlob = lHandData.back().blob;
+    double dist = prevBlob.dist2blob(blob);
     return dist < 10 ? dist : DBL_MAX;
 }
 
-void Gesture::addBlob(const Blob& blob){
-    
+void Gesture::addHandData(const Blob& blob){
+    int ind = blob.getCentralCell().ind;
+    cv::Size size = blob.getMatSize();
+    int x = ind % size.width;
+    int y = (ind-x) /size.width;
+    float z = 2. * (MAX_KINECT_DEPTH - blob.getCentralCell().val) / MAX_KINECT_DEPTH;
+    lHandData.push_back(HandData(
+                        static_cast<float>(x)/size.width,
+                        static_cast<float>(y)/size.height,
+                        z,
+                        blob));
+    isBlobFound = true;
 }
 

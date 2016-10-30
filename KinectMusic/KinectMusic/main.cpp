@@ -38,9 +38,9 @@
 #include "analyze.h"
 #include "visualization.h"
 
-//#define USE_CSOUND //csound should be switched to cpp version
+#define USE_CSOUND //csound should be switched to cpp version
 #ifdef USE_CSOUND
-#include "csound_.h"
+#include "sound/csound_.h"
 #endif //USE_CSOUND
 //#include "opengl_.h"
 
@@ -130,6 +130,7 @@ int main(int argc, char **argv)
         pthread_join(p_analyze_create[i], NULL);
     }
 #ifdef USE_CSOUND
+    csoundStop(csound);
     pthread_join(csound_thread, NULL);
 #endif //USE_CSOUND
     free(rgb_back);

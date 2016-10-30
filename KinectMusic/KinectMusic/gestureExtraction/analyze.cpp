@@ -19,6 +19,7 @@
 #include "blobs/blob.h"
 #include "gesture/gesture.h"
 #include "handsHeadExtractor/handsheadextractor.h"
+#include "../mapping/mapping.h"
 
 pthread_mutex_t depth_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t video_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -56,6 +57,7 @@ void *analyze_threadfunc(void *arg) {
         cv::Mat mat16(h, w, CV_16U, depthAnalyze);
         pthread_mutex_unlock(&depth_mutex);
         
+        //filter far area
         uint16_t* p_mat = (uint16_t*)(mat16.data);
         for(size_t i = 0; i < mat16.total(); i++, p_mat++)
         {
@@ -63,14 +65,17 @@ void *analyze_threadfunc(void *arg) {
                 *p_mat = 0;
         }
         
+        //resize
         cv::Mat mat16_resized;
         cv::resize(mat16, mat16_resized, cv::Size(w>>BLOBS_RESIZE_POW, h>>BLOBS_RESIZE_POW));
         
+        //extract person
         std::list<Blob> lBlobs;
         Blob::findBlobs(mat16_resized, lBlobs);
         
         cv::Mat matBlobs = Blob::blobs2mat(lBlobs, mat16_resized.size());
         
+        //extract hands
         int filt_size(10), filt_depth(15), iterCount(2);
         HandsHeadExtractor handsHeadExtractor(matBlobs, filt_size, filt_depth, iterCount);
         cv::Mat matDst = handsHeadExtractor.extractHandsHead();
@@ -85,7 +90,10 @@ void *analyze_threadfunc(void *arg) {
    
         Blob::extendBlobs(matBlobs, lBlobsClust);
         
+        //tracking gestures
         Gesture::analyzeFrame(lBlobsClust);
+        
+        Mapping::MapDirect(Gesture::getGesturesConst());
         
         cv::Mat imgResized = Visualization::gestures2img_mark(Gesture::getGesturesConst(), matDst.size());
         

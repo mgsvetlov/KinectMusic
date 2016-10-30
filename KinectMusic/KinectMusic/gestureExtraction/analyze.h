@@ -17,8 +17,6 @@ extern pthread_mutex_t depth_mutex;
 extern pthread_mutex_t video_mutex;
 extern pthread_mutex_t visualisation_mutex;
 
-extern volatile int die;
-
 extern uint16_t * const depthAnalyze;
 
 extern uint8_t *rgb_back, *rgb_mid, *rgb_front;

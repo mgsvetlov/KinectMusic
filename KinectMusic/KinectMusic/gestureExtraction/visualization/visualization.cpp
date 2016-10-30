@@ -59,21 +59,19 @@ cv::Mat Visualization::gestures2img_mark(const std::vector<Gesture>& gestures, c
   
     int gestureCount(0);
     for(auto& gesture : gestures){
-        
-        const std::list<Blob>& blobs = gesture.getLGestureBlobsConst();
-        int blobCount(0);
+        const std::list<HandData> lHandData = gesture.getLHandData();
+        int frameCount(0);
 
-        for(auto& blob : blobs) {
-            
-            auto& centralCell = blob.getCentralCell();
-            int x = centralCell.ind % size.width;
-            int y = (centralCell.ind-x) /size.width;
+        for(auto& handData : lHandData) {
+            //std::cout<< "Hand data" << handData.x << " " << handData.y << " " << handData.z << "\n";
+            int x = handData.x * size.width;
+            int y = handData.y * size.height;
             double radius = size.width * 0.04;
-            if(blobCount !=  blobs.size() -1)
+            if(frameCount !=  lHandData.size() -1)
                 radius *= 0.5;
-            int num = blobCount == blobs.size() -1 ? gestureCount :  gestureCount  + 2;
+            int num = frameCount == lHandData.size() -1 ? gestureCount :  gestureCount  + 2;
             cv::Scalar color( 255, 255, 255 );
-            unsigned char col = (MAX_KINECT_DEPTH -centralCell.val) * 255. / MAX_KINECT_DEPTH * 2;
+            unsigned char col = handData.z * 255;
             switch(num){
                 case 0:
                     color = cv::Scalar( 0, 0, col );
@@ -95,7 +93,7 @@ cv::Mat Visualization::gestures2img_mark(const std::vector<Gesture>& gestures, c
                     break;
             }
             cv::circle( img, cv::Point( x, y), radius, color, -1, 8 );
-            blobCount++;
+            frameCount++;
         }
         gestureCount++;
     }
