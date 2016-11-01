@@ -7,7 +7,7 @@
 <CsInstruments>
 
 sr = 44100
-ksmps = 128
+ksmps = 100
 nchnls = 2
 0dbfs = 2.0
 

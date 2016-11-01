@@ -29,16 +29,10 @@ bool Mapping::setPitchVol (const std::vector<std::vector<double>>& data) {
     if(csound == nullptr)
         return false;
     for(int i = 0; i < 2; i++){
-        std::stringstream ss;
-        ss << i;
-        std::string chns[] = { "pitch" + ss.str(), "vol" + ss.str()};
         for(int j = 0; j < 2; j++){
             if(j == 0 && data[i][j] == 0.)
                 continue;
-            MYFLT *p;
-            if(csoundGetChannelPtr(csound, &p, chns[j].c_str(), CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) == 0){
-                *p = data[i][j]; //(data[i][j] < 0.01? 0.01 : data[i][j]);
-            }
+            csound_dataDst[i][j] = data[i][j];
         }
     }
     return true;
