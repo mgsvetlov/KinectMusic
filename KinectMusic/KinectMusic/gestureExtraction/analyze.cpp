@@ -17,9 +17,13 @@
 #include "visualization/visualization.h"
 #include "analyze.h"
 #include "blobs/blob.h"
-#include "gesture/gesture.h"
 #include "handsHeadExtractor/handsheadextractor.h"
+#include "handsHeadExtractor/handsfrompoints.h"
+
+#ifdef USE_CSOUND
+#include "gesture/gesture.h"
 #include "../mapping/mapping.h"
+#endif //USE_CSOUND
 
 pthread_mutex_t depth_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t video_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -32,7 +36,7 @@ int w = 640, h = 480;
 uint16_t * const depthAnalyze = new uint16_t[w*h];
 
 int MAX_KINECT_VALUE;
-int MAX_KINECT_DEPTH = 2000;
+int MAX_KINECT_DEPTH = 1800;
 int BLOBS_RESIZE_POW  = 2;
 int BLOB_MIN_SIZE = 25;
 int BLOB_MIN_SIZE_LAST = 3000;
@@ -58,8 +62,9 @@ void *analyze_threadfunc(void *arg) {
         pthread_mutex_unlock(&depth_mutex);
         
         //filter far area
-        uint16_t* p_mat = (uint16_t*)(mat16.data);
-        for(size_t i = 0; i < mat16.total(); i++, p_mat++)
+        cv::Mat mat16_filt = mat16.clone();
+        uint16_t* p_mat = (uint16_t*)(mat16_filt.data);
+        for(size_t i = 0; i < mat16_filt.total(); i++, p_mat++)
         {
             if(*p_mat > MAX_KINECT_DEPTH)
                 *p_mat = 0;
@@ -67,7 +72,7 @@ void *analyze_threadfunc(void *arg) {
         
         //resize
         cv::Mat mat16_resized;
-        cv::resize(mat16, mat16_resized, cv::Size(w>>BLOBS_RESIZE_POW, h>>BLOBS_RESIZE_POW));
+        cv::resize(mat16_filt, mat16_resized, cv::Size(w>>BLOBS_RESIZE_POW, h>>BLOBS_RESIZE_POW));
         
         //extract person
         std::list<Blob> lBlobs;
@@ -87,19 +92,54 @@ void *analyze_threadfunc(void *arg) {
         std::list<Blob> lBlobsClust;
         int xyThresh(20), depthThresh(1000);
         Blob::blobsClustering(lBlobs1, lBlobsClust, xyThresh, depthThresh);
-   
-        Blob::extendBlobs(matBlobs, lBlobsClust);
+        
+        //extract hands frim points in full matrix
+        int bbXY (50), bbZ(200);
+        HandsFromPoints handsFromPoints(mat16, lBlobsClust, bbXY, bbZ);
+        std::list<Blob> lHandBlobs = handsFromPoints.extractHandBlobs();
+        
+        
+        cv::Mat imgResized = Visualization::matAndBlobs2img(mat16, lHandBlobs);
+        
+        //Blob::extendBlobs(matBlobs, lBlobsClust);
         
         //tracking gestures
-        Gesture::analyzeFrame(lBlobsClust);
+        //Gesture::analyzeFrame(lBlobsClust);
         
+#ifdef USE_CSOUND
         Mapping::MapDirect(Gesture::getGesturesConst());
+#endif //USE_CSOUND
         
-        cv::Mat imgResized = Visualization::gestures2img_mark(Gesture::getGesturesConst(), matDst.size());
+        //cv::Mat imgResized = Visualization::gestures2img_mark(Gesture::getGesturesConst(), matDst.size());
         
         //cv::Mat imgResized = Visualization::centralCells2img_mark(lBlobsClust, matDst.size());
         //cv::Mat imgResized = Visualization::blobs2img_mark(lBlobsClust, matDst.size());
-        //cv::Mat imgResized = Visualization::mat2img(mat);
+        //cv::Mat imgResized = Visualization::mat2img(mat16);
+        /*int count(0);
+        int bbXY (40), bbZ(200);
+        for(auto& blob : lBlobsClust) {
+            Cell centralCell = blob.getCentralCell();
+            int ind = centralCell.ind;
+            int x = ind % blob.getMatSize().width;
+            int y = (ind - x) /blob.getMatSize().width;
+            x <<= BLOBS_RESIZE_POW;
+            y <<= BLOBS_RESIZE_POW;
+            int z = centralCell.val;
+            cv::Scalar color = count++? cv::Scalar(0,255,0) : cv::Scalar(0,255,255);
+            uint16_t* p_mat = (uint16_t*)(mat16.data);
+            for(int i = 0; i < mat16.total(); i++, p_mat++)
+            {
+                int x_ = i % mat16.cols;
+                int y_ = (i - x_)/mat16.cols;
+                int z_ = *p_mat;
+                if(abs(x - x_)<= bbXY &&
+                   abs(y - y_)<= bbXY &&
+                   abs(z - z_)<= bbZ){
+                    cv::circle( imgResized, cv::Point( x_, y_), 1, color, -1, 8 );
+                }
+            }
+        }*/
+        
         
         pthread_mutex_lock(&visualisation_mutex);
         Visualization::setMatImage(imgResized);

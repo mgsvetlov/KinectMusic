@@ -5,6 +5,9 @@
 //  Created by Mikhail Svetlov on 20/09/15.
 //  Copyright (c) 2015 mgsvetlov. All rights reserved.
 //
+
+#ifdef USE_CSOUND
+
 #include <unistd.h>
 #include "csound_.h"
 #include "../gestureExtraction/types.h"
@@ -33,7 +36,7 @@ void *csound_threadfunc(void *arg){
     int result = csoundCompile(csound, argc_, argv_);
     
     if(result == 0){
-        std::vector<std::vector<double>> data = { {0, 0}, {0, 0}};
+        std::vector<std::vector<double>> data = { {440, 0.1}, {440, 0.1}};
         Mapping::setPitchVol(data);
         std::vector<std::vector<double>> csound_data = csound_dataDst;
         
@@ -53,7 +56,7 @@ void *csound_threadfunc(void *arg){
                 for(int j = 0; j < 2; j++){
                     MYFLT *p;
                     if(csoundGetChannelPtr(csound, &p, chns[j].c_str(), CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) == 0){
-                        ramp(csound_data[i][j], csound_dataDst[i][j], 2e-1);
+                        ramp(csound_data[i][j], csound_dataDst[i][j], 5e-1);
                         *p = csound_data[i][j];
                     }
                 }
@@ -78,3 +81,5 @@ void ramp(double& param, const double paramDst,  double rampCoeff){
     if(param < 0)
         param = 0;
 }
+
+#endif //USE_CSOUND

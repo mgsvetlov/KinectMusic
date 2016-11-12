@@ -210,14 +210,15 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
         }
     }
     
-    auto it = lBlobsClustered.begin();
+    /*auto it = lBlobsClustered.begin();
     while(it != lBlobsClustered.end()){
         if(it->lCells.size() < 50){
             it = lBlobsClustered.erase(it);
             continue;
         }
+        it->computeCentralCell();
         it++;
-    }
+    }*/
     
     return true;
 }

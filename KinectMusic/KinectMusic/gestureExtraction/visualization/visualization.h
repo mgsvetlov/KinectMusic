@@ -20,11 +20,14 @@ private:
 public:
     static bool showImage();
     
+#ifdef USE_CSOUND
     static cv::Mat gestures2img_mark(const std::vector<Gesture>& gestures, const cv::Size& size);
+#endif //USE_CSOUND
+    
     static cv::Mat blobs2img_mark(const std::list<Blob>& lBlobs, const cv::Size& size);
     static cv::Mat centralCells2img_mark(const std::list<Blob>& lBlobs, const cv::Size& size);
     static cv::Mat mat2img(cv::Mat mat);
-    
+    static cv::Mat matAndBlobs2img(cv::Mat mat, const std::list<Blob>& lBlobs);
     static void setMatImage(cv::Mat mat){matImage = mat.clone();}
     
     static void setIsNeedRedraw(bool val) {isNeedRedraw = val;}

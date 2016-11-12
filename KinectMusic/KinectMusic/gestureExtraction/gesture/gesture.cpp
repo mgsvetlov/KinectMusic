@@ -7,6 +7,9 @@
 //
 
 #include "gesture.h"
+
+#ifdef USE_CSOUND
+
 #include <cfloat>
 #include <limits>
 
@@ -91,3 +94,4 @@ void Gesture::addHandData(const Blob& blob){
     isBlobFound = true;
 }
 
+#endif //USE_CSOUND

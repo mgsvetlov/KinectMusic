@@ -6,6 +6,8 @@
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
 
+#ifdef USE_CSOUND
+
 #include "mapping.h"
 #include "../sound/csound_.h"
 #include "../gestureExtraction/gesture/gesture.h"
@@ -16,13 +18,26 @@ void Mapping::MapDirect(const std::vector<Gesture>& gestures){
         const std::list<HandData> lHandData = gestures[i].getLHandData();
         if(lHandData.empty()){
             data[i][0] = data[i][1] = 0;
+            /*csound_dataDst[i][0] =*/ csound_dataDst[i][1] = 0;
             continue;
         }
         const HandData& handData = lHandData.back();
-        data[i][0] = 110 + 440 * (1.0 - handData.y);
-        data[i][1] = handData.z;
+        if(lHandData.size() > 2 ){
+            auto it = lHandData.rend();
+            for(int j = 0; j < 2; j++)
+                ++it;
+            const HandData& handDataPrev = *it;
+            if(handData.z - handDataPrev.z < 4e-2  ) {
+                /*csound_dataDst[i][0] = */csound_dataDst[i][1] = 0;
+                continue;
+            }
+            csound_dataDst[i][0] = 110 + 440 * (1.0 - handData.y);
+            csound_dataDst[i][1] = 0.5;//handData.z;
+        }
+        
+       
     }
-    setPitchVol(data);
+    
 }
 
 bool Mapping::setPitchVol (const std::vector<std::vector<double>>& data) {
@@ -37,3 +52,5 @@ bool Mapping::setPitchVol (const std::vector<std::vector<double>>& data) {
     }
     return true;
 }
+
+#endif //USE_CSOUND

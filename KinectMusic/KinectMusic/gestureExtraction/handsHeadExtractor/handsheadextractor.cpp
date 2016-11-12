@@ -26,13 +26,14 @@ cv::Mat HandsHeadExtractor::extractHandsHead()
             uint16_t val = *p_mat;
             if(!val)
                 continue;
+            int filt_size_ = sqrt(static_cast<double>(MAX_KINECT_DEPTH) /val) * filt_size;
             bool isValue(true);
             for(int m = -iterCount; m <= iterCount; m++){
                 for(int n = -iterCount; n <= iterCount; n++){
                     if(!m && !n)
                         continue;
-                    int y_ = y + m * filt_size;
-                    int x_ = x + n * filt_size;
+                    int y_ = y + m * filt_size_;
+                    int x_ = x + n * filt_size_;
                     uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
                     if(val_ && val_ - val <= filt_depth * iterCount){
                         isValue = false;

@@ -37,8 +37,8 @@
 #include "kinect.h"
 #include "analyze.h"
 #include "visualization.h"
+#include "gestureExtraction/types.h"
 
-#define USE_CSOUND //csound should be switched to cpp version
 #ifdef USE_CSOUND
 #include "sound/csound_.h"
 #endif //USE_CSOUND

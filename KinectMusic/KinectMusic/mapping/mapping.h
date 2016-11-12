@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include "../gestureExtraction/types.h"
 
+#ifdef USE_CSOUND
+
 class Gesture;
 
 class Mapping {
@@ -19,5 +21,7 @@ public:
     static void MapDirect(const std::vector<Gesture>& gestures);
     static bool setPitchVol (const std::vector<std::vector<double>>& data);
 };
+
+#endif //USE_CSOUND
 
 #endif /* mapping_h */

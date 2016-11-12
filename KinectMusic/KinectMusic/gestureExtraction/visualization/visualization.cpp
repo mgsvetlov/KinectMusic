@@ -30,15 +30,17 @@ bool Visualization::showImage() {
     if(p_vis == nullptr){
         Visualization();
     }
-    /*cv::Mat matImageRes;
-    cv::resize(matImage, matImageRes, cv::Size(matImage.cols << BLOBS_RESIZE_POW, matImage.rows << BLOBS_RESIZE_POW));*/
+    //cv::Mat matImageRes;
+    //cv::resize(matImage, matImageRes, cv::Size(matImage.cols << BLOBS_RESIZE_POW, matImage.rows << BLOBS_RESIZE_POW));
     cv::imshow( "Display window", matImage);
     if(cv::waitKey(1) == 27) {
         return false;
     }
-    
+
+#ifdef USE_CSOUND
     if(!CSOUND_START)
         CSOUND_START = true;
+#endif //USE_CSOUND
     
     static int frameCount(0);
     static std::clock_t t = clock();
@@ -54,6 +56,7 @@ bool Visualization::showImage() {
     return true;
 }
 
+#ifdef USE_CSOUND
 cv::Mat Visualization::gestures2img_mark(const std::vector<Gesture>& gestures, const cv::Size& size){
     cv::Mat img  = cv::Mat::zeros(size, CV_8UC3);
   
@@ -102,6 +105,8 @@ cv::Mat Visualization::gestures2img_mark(const std::vector<Gesture>& gestures, c
     
     return img;
 }
+#endif //USE_CSOUND
+
 cv::Mat Visualization::centralCells2img_mark(const std::list<Blob>& lBlobs, const cv::Size& size){
     cv::Mat img  = cv::Mat::zeros(size, CV_8UC3);
 
@@ -192,6 +197,7 @@ cv::Mat Visualization::blobs2img_mark(const std::list<Blob>& lBlobs, const cv::S
                     break;
             }
         }
+        
         blobCount++;
     }
     
@@ -202,6 +208,16 @@ cv::Mat Visualization::blobs2img_mark(const std::list<Blob>& lBlobs, const cv::S
     
     cv::Mat img;
     cv::merge(channels, img);
+    
+    for(auto& blob : lBlobs) {
+        Cell centralCell = blob.getCentralCell();
+        int ind = centralCell.ind;
+        int x = ind % size.width;
+        int y = (ind - x) /size.width;
+        double radius = size.width * 0.02;
+        cv::circle( img, cv::Point( x, y), radius, cv::Scalar(0,0,255), -1, 8 );
+    }
+    
     cv::flip(img, img, 1);
     
     return img;
@@ -240,9 +256,70 @@ cv::Mat Visualization::mat2img(cv::Mat mat) {
     cv::Mat img;
     cv::merge(channels, img);
     cv::flip(img, img, 1);
+    
     return img;
 }
 
+cv::Mat Visualization::matAndBlobs2img(cv::Mat mat, const std::list<Blob>& lBlobs){
+    
+    int w = mat.cols;
+    int h = mat.rows;
+    cv::Mat r  = cv::Mat_<unsigned char>::zeros(cv::Size(w, h));
+    cv::Mat g  = cv::Mat_<unsigned char>::zeros(cv::Size(w, h));
+    cv::Mat b  = cv::Mat_<unsigned char>::zeros(cv::Size(w, h));
+    uint16_t* p_mat16 = (uint16_t*)(mat.data);
+    unsigned char* p_r = (unsigned char*)(r.data);
+    unsigned char* p_g = (unsigned char*)(g.data);
+    unsigned char* p_b = (unsigned char*)(b.data);
+    for(int i = 0; i < w*h; i++) {
+        uint16_t d16 = *p_mat16;
+        
+        if(d16 && d16 < MAX_KINECT_VALUE) {
+            *p_r = 255 - d16 * 255. / MAX_KINECT_VALUE;
+            *p_b = 0;
+        }
+        else {
+            *p_r = 0;
+            *p_b = 255;
+        }
+        p_r++, p_g++, p_b++, p_mat16++;
+    }
+    
+    p_r = (unsigned char*)(r.data);
+    p_g = (unsigned char*)(g.data);
+    p_b = (unsigned char*)(b.data);
+    int count(0);
+    for(auto& blob : lBlobs) {
+        auto lCells = blob.getLCellsConst();
+        
+        for(auto& cell : lCells){
+            int ind = cell.ind;
+            unsigned int color = 255 - cell.val * 255. / MAX_KINECT_VALUE;
+            if(count == 0){
+                *(p_r + ind) = 0;
+                *(p_g + ind) = color;
+                *(p_b + ind) = 0;
+            }
+            else {
+                *(p_r + ind) = 0;
+                *(p_g + ind) = color;
+                *(p_b + ind) = color;
+            }
+        }
+        count++;
+    }
+    
+    std::vector<cv::Mat> channels;
+    channels.push_back(b);
+    channels.push_back(g);
+    channels.push_back(r);
+    
+    cv::Mat img;
+    cv::merge(channels, img);
+    cv::flip(img, img, 1);
+    
+    return img;
+}
 
 
 

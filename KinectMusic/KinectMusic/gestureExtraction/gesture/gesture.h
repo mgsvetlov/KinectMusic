@@ -11,6 +11,9 @@
 
 #include <stdio.h>
 #include "../types.h"
+
+#ifdef USE_CSOUND
+
 #include "../blobs/blob.h"
 
 struct HandData{
@@ -36,4 +39,7 @@ private:
     bool isBlobFound = false;
     std::list<HandData> lHandData;
 };
+
+#endif // USE_CSOUND
+
 #endif /* Gesture_h */
