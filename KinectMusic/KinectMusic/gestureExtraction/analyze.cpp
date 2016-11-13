@@ -94,7 +94,7 @@ void *analyze_threadfunc(void *arg) {
         Blob::blobsClustering(lBlobs1, lBlobsClust, xyThresh, depthThresh);
         
         //extract hands frim points in full matrix
-        int bbXY (50), bbZ(200);
+        int bbXY (60), bbZ(200);
         HandsFromPoints handsFromPoints(mat16, lBlobsClust, bbXY, bbZ);
         std::list<Blob> lHandBlobs = handsFromPoints.extractHandBlobs();
         

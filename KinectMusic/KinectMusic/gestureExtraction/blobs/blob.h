@@ -17,6 +17,7 @@ struct Cell {
     Cell(int ind, int val): ind(ind), val(val){}
     int ind;
     int val = -1;
+    unsigned char border = 0;
 };
 
 class Blob {
@@ -33,6 +34,8 @@ public:
     const Cell* getP_maxValCell() {return p_maxValCell;}
     
     static bool blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh);
+    
+    std::list<Blob> segmentation() const;
     
     const Cell& getCentralCell() const {return centralCell;}
     const cv::Size& getMatSize() const {return this->matSize;}
@@ -54,6 +57,7 @@ private:
     const Cell* p_minValCell = nullptr;
     std::list<Cell> lCells;
     Cell centralCell;
+    Cell nearestCell;
     bool isHandOpened;
     cv::Size matSize;
     

@@ -295,7 +295,12 @@ cv::Mat Visualization::matAndBlobs2img(cv::Mat mat, const std::list<Blob>& lBlob
         for(auto& cell : lCells){
             int ind = cell.ind;
             unsigned int color = 255 - cell.val * 255. / MAX_KINECT_VALUE;
-            if(count == 0){
+            if(cell.border){
+                *(p_r + ind) = 255;
+                *(p_g + ind) = 255;
+                *(p_b + ind) = 0;
+            }
+            else if(count == 0){
                 *(p_r + ind) = 0;
                 *(p_g + ind) = color;
                 *(p_b + ind) = 0;

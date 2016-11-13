@@ -210,15 +210,20 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
         }
     }
     
-    /*auto it = lBlobsClustered.begin();
+    auto it = lBlobsClustered.begin();
     while(it != lBlobsClustered.end()){
-        if(it->lCells.size() < 50){
+        if(it->lCells.size() < 5){
             it = lBlobsClustered.erase(it);
             continue;
         }
         it->computeCentralCell();
+        it->nearestCell = Cell(-1, MAX_KINECT_VALUE);
+        for(auto& cell: it->lCells){
+            if(cell.val < it->nearestCell.val)
+                it->nearestCell = cell;
+        }
         it++;
-    }*/
+    }
     
     return true;
 }
@@ -337,4 +342,54 @@ void Blob::detectHandOpened(){
     if(devAvg * dx * dy*  pow(static_cast<double>(yMax)/matSize.height, 0.3) > 250)
         isHandOpened = true;
 
+}
+
+std::list<Blob> Blob::segmentation() const{
+    std::list<Blob> lBlobs;
+    int w = matSize.width;
+    int h = matSize.height;
+    cv::Mat matBlob = cv::Mat_<uint16_t>::zeros(matSize);
+    uint16_t* const p_matBlob = (uint16_t*)(matBlob.data);
+    for(auto& cell : lCells)
+        *(p_matBlob + cell.ind) = cell.val;
+    
+    uint16_t* p_matBlob1 = (uint16_t*)(matBlob.data);
+    for(int i = 0; i< matBlob.total(); i++, p_matBlob1++) {
+        if(*p_matBlob1 == 0)
+            continue;
+        Blob blob;
+        blob.addCell(i, *p_matBlob1);
+        *p_matBlob1 = 0;
+        std::queue<int> q;
+        q.push(i);
+        while(!q.empty()){
+            const int ind = q.front();
+            q.pop();
+            int x = ind % w;
+            int y = (ind - x)/ w;
+            for(int yNeighb = y - 1; yNeighb <= y + 1; yNeighb++){
+                if(yNeighb < 0 || yNeighb >= h)
+                    continue;
+                for(int xNeighb = x - 1; xNeighb <= x + 1; xNeighb++){
+                    if(xNeighb < 0 || xNeighb >= w)
+                        continue;
+                    int indNeighb = yNeighb * w + xNeighb;
+                    uint16_t valNeighb =  *(p_matBlob + indNeighb);
+                    if(valNeighb == 0)
+                        continue;
+                    blob.addCell(indNeighb, valNeighb);
+                    q.push(indNeighb);
+                    *(p_matBlob + indNeighb) = 0;
+                }
+            }
+            
+        }
+        if(!blob.lCells.empty()){
+            blob.setMatSize(matSize);
+            lBlobs.push_back(blob);
+        }
+    }
+    
+    return lBlobs;
+    
 }

@@ -67,5 +67,133 @@
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KinectMusic/gestureExtraction/handsHeadExtractor/handsfrompoints.cpp"
+            timestampString = "500747617.034511"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "63"
+            endingLineNumber = "63"
+            landmarkName = "HandsFromPoints::checkIsHand(Blob&amp; blob, Cell keyCell)"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "HandsFromPoints::checkIsHand(Blob&amp;)"
+                  moduleName = "KinectMusic"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/handsHeadExtractor/handsfrompoints.cpp"
+                  timestampString = "500745014.097822"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "69"
+                  endingLineNumber = "69"
+                  offsetFromSymbolStart = "542">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "HandsFromPoints::checkIsHand(Blob&amp;)"
+                  moduleName = "KinectMusic"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/handsHeadExtractor/handsfrompoints.cpp"
+                  timestampString = "500745014.098113"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "69"
+                  endingLineNumber = "69"
+                  offsetFromSymbolStart = "890">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KinectMusic/gestureExtraction/blobs/blob.cpp"
+            timestampString = "500745872.221869"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "366"
+            endingLineNumber = "366"
+            landmarkName = "Blob::segmentation()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KinectMusic/gestureExtraction/handsHeadExtractor/handsfrompoints.cpp"
+            timestampString = "500747162.480281"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
+            landmarkName = "HandsFromPoints::checkIsHand(Blob&amp; blob, Cell keyCell)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KinectMusic/gestureExtraction/blobs/blob.cpp"
+            timestampString = "500745027.305694"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "360"
+            endingLineNumber = "360"
+            landmarkName = "Blob::segmentation()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KinectMusic/gestureExtraction/blobs/blob.cpp"
+            timestampString = "500746821.386832"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "387"
+            endingLineNumber = "387"
+            landmarkName = "Blob::segmentation()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KinectMusic/gestureExtraction/blobs/blob.cpp"
+            timestampString = "500746821.386832"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "393"
+            endingLineNumber = "393"
+            landmarkName = "Blob::segmentation()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>
