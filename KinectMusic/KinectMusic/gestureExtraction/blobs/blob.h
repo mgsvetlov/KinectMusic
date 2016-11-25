@@ -22,7 +22,7 @@ struct Cell {
 
 class Blob {
 public:
-    Blob(){}
+    Blob();
 private:
     Blob(cv::Mat mat16, int x, int y);
 public:
@@ -41,15 +41,15 @@ public:
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
     
-    static void extendBlobs(cv::Mat mat16, std::list<Blob>& lBlobs);
     bool getIsHandOpened() const {return isHandOpened;}
     double dist2blob(const Blob& blob);
+    void fiterBorder();
+    bool findNearestBorderCell();
 private:
     void addCell(int ind, int val);
     void mergeBlob(const Blob& blob);
     bool computeCentralCell();
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
-    void extend(cv::Mat mat16, cv::Mat matMap);
     void filterFar();
     void detectHandOpened();
 private:
@@ -58,9 +58,11 @@ private:
     std::list<Cell> lCells;
     Cell centralCell;
     Cell nearestCell;
+    Cell nearestBorderCell;
     bool isHandOpened;
     cv::Size matSize;
     
     friend class HandsFromPoints;
+    friend class Visualization;
 };
 #endif /* nearestblob_hpp */

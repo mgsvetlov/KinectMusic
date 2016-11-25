@@ -68,7 +68,7 @@ FN_INTERNAL int fnusb_is_pid_k4w_audio(int pid)
 
 FN_INTERNAL libusb_device * fnusb_find_connected_audio_device(libusb_device * camera, libusb_device ** deviceList, int cnt)
 {
-	if (cnt <= 0) return NULL;
+	/*if (cnt <= 0) return NULL;
 
 	int cameraBusNo = libusb_get_bus_number(camera);
 	if (cameraBusNo < 0) return NULL;
@@ -102,7 +102,7 @@ FN_INTERNAL libusb_device * fnusb_find_connected_audio_device(libusb_device * ca
 				}
 			}
 		}
-	}
+	}*/
 
 	return NULL;
 }

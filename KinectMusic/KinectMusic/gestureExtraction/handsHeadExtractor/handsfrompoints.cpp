@@ -47,45 +47,44 @@ std::list<Blob> HandsFromPoints::extractHandBlobs()
         }
         int keyCellInd = y*mat.cols + x;
         p_mat = (uint16_t*)(matClone.data);
-        if(checkIsHand(handBlob, Cell(keyCellInd, *(p_mat+keyCellInd)))&& !handBlob.lCells.empty())
+        if(checkIsHand(handBlob, Cell(keyCellInd, *(p_mat+keyCellInd)))&& !handBlob.lCells.empty()){
+            handBlob.fiterBorder();
+            handBlob.findNearestBorderCell();
             lHandBlobs.push_back(handBlob);
+        }
     }
-
+    
     return lHandBlobs;
 }
 
 bool HandsFromPoints::checkIsHand(Blob& blob, Cell keyCell){
     std::list<Blob> lBlobsSegm = blob.segmentation();
-    
-    Blob blobUnited;
+    if(lBlobsSegm.empty())
+        return false;
+
     for(auto& blobSegm : lBlobsSegm){
-        findBorderPoints(blobSegm, keyCell);
-        int counts[] = {0,0,0,0};
+        bool keyCellInside(false);
         for(auto& cell : blobSegm.lCells){
-            if(cell.border)
-                counts[cell.border-1]++;
+            if(cell.ind == keyCell.ind) {
+                keyCellInside = true;
+                break;
+            }
         }
-        int sum(0);
-        for(int i = 0; i < 4; i++){
-            sum += counts[i];
-        }
-        if(blobSegm.centralCell.ind == -1){
-            if(sum)
-                continue;
-        }
-        else if (sum > bbXY * 2){
+        if(!keyCellInside)
+            continue;
+        int sum = findBorderPoints(blobSegm, keyCell);
+ 
+        if (sum > bbXY * 2){
             return false;
         }
-        
-        for(auto& cell : blobSegm.lCells)
-            blobUnited.lCells.push_back(cell);
+        blob = blobSegm;
+        return true;
     }
-    blob = blobUnited;
-    return true;
-
+    return false;
 }
 
-void HandsFromPoints::findBorderPoints(Blob& blob, Cell keyCell){
+int HandsFromPoints::findBorderPoints(Blob& blob, Cell keyCell){
+    int count(0);
     blob.centralCell = Cell(-1, -1);
     int x = keyCell.ind % mat.cols;
     int y = (keyCell.ind - x)/mat.cols;
@@ -101,7 +100,7 @@ void HandsFromPoints::findBorderPoints(Blob& blob, Cell keyCell){
             cell.border = 3;
         else if(-y + y_ == bbXY)
             cell.border = 4;
-        if(ind == keyCell.ind)
-            blob.centralCell = keyCell;
+        count += (cell.border != 0);
     }
+    return count;
 }

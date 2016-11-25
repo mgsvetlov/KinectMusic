@@ -98,10 +98,7 @@ void *analyze_threadfunc(void *arg) {
         HandsFromPoints handsFromPoints(mat16, lBlobsClust, bbXY, bbZ);
         std::list<Blob> lHandBlobs = handsFromPoints.extractHandBlobs();
         
-        
         cv::Mat imgResized = Visualization::matAndBlobs2img(mat16, lHandBlobs);
-        
-        //Blob::extendBlobs(matBlobs, lBlobsClust);
         
         //tracking gestures
         //Gesture::analyzeFrame(lBlobsClust);
@@ -109,37 +106,6 @@ void *analyze_threadfunc(void *arg) {
 #ifdef USE_CSOUND
         Mapping::MapDirect(Gesture::getGesturesConst());
 #endif //USE_CSOUND
-        
-        //cv::Mat imgResized = Visualization::gestures2img_mark(Gesture::getGesturesConst(), matDst.size());
-        
-        //cv::Mat imgResized = Visualization::centralCells2img_mark(lBlobsClust, matDst.size());
-        //cv::Mat imgResized = Visualization::blobs2img_mark(lBlobsClust, matDst.size());
-        //cv::Mat imgResized = Visualization::mat2img(mat16);
-        /*int count(0);
-        int bbXY (40), bbZ(200);
-        for(auto& blob : lBlobsClust) {
-            Cell centralCell = blob.getCentralCell();
-            int ind = centralCell.ind;
-            int x = ind % blob.getMatSize().width;
-            int y = (ind - x) /blob.getMatSize().width;
-            x <<= BLOBS_RESIZE_POW;
-            y <<= BLOBS_RESIZE_POW;
-            int z = centralCell.val;
-            cv::Scalar color = count++? cv::Scalar(0,255,0) : cv::Scalar(0,255,255);
-            uint16_t* p_mat = (uint16_t*)(mat16.data);
-            for(int i = 0; i < mat16.total(); i++, p_mat++)
-            {
-                int x_ = i % mat16.cols;
-                int y_ = (i - x_)/mat16.cols;
-                int z_ = *p_mat;
-                if(abs(x - x_)<= bbXY &&
-                   abs(y - y_)<= bbXY &&
-                   abs(z - z_)<= bbZ){
-                    cv::circle( imgResized, cv::Point( x_, y_), 1, color, -1, 8 );
-                }
-            }
-        }*/
-        
         
         pthread_mutex_lock(&visualisation_mutex);
         Visualization::setMatImage(imgResized);

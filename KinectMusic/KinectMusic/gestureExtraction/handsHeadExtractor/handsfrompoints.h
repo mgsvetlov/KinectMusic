@@ -13,14 +13,13 @@
 #include "../types.h"
 #include "../blobs/blob.h"
 
-
 class HandsFromPoints{
 public:
     HandsFromPoints(cv::Mat mat, const std::list<Blob>& lBlobs, int bbXY, int bbZ);
     std::list<Blob> extractHandBlobs();
 private:
     bool checkIsHand(Blob& blob, Cell keyCell);
-    void findBorderPoints(Blob& blob, Cell keyCell);
+    int findBorderPoints(Blob& blob, Cell keyCell);
 private:
     cv::Mat mat;
     const std::list<Blob>& lBlobs;
