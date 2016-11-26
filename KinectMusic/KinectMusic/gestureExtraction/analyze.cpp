@@ -19,6 +19,7 @@
 #include "blobs/blob.h"
 #include "handsHeadExtractor/handsheadextractor.h"
 #include "handsHeadExtractor/handsfrompoints.h"
+#include "hand/hand.h"
 
 #ifdef USE_CSOUND
 #include "gesture/gesture.h"
@@ -96,9 +97,9 @@ void *analyze_threadfunc(void *arg) {
         //extract hands frim points in full matrix
         int bbXY (60), bbZ(200);
         HandsFromPoints handsFromPoints(mat16, lBlobsClust, bbXY, bbZ);
-        std::list<Blob> lHandBlobs = handsFromPoints.extractHandBlobs();
+        std::list<Hand> lHand = handsFromPoints.extractHandBlobs();
         
-        cv::Mat imgResized = Visualization::matAndBlobs2img(mat16, lHandBlobs);
+        cv::Mat imgResized = Visualization::matAndHands2img(mat16, lHand);
         
         //tracking gestures
         //Gesture::analyzeFrame(lBlobsClust);

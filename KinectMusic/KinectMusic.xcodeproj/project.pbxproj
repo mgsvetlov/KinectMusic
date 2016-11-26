@@ -17,6 +17,7 @@
 		720164C01A6C058B00BC721A /* tilt.c in Sources */ = {isa = PBXBuildFile; fileRef = 720164B71A6C058B00BC721A /* tilt.c */; };
 		720164C11A6C058B00BC721A /* usb_libusb10.c in Sources */ = {isa = PBXBuildFile; fileRef = 720164B81A6C058B00BC721A /* usb_libusb10.c */; };
 		72039B321DD72BC10023E0D4 /* handsfrompoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72039B301DD72BC10023E0D4 /* handsfrompoints.cpp */; };
+		720C228E1DE990F90066104B /* hand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720C228D1DE990F90066104B /* hand.cpp */; };
 		721F32361BA8B7FF00EC1B59 /* CsoundLib64.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 721F32351BA8B7FF00EC1B59 /* CsoundLib64.framework */; };
 		726227401D90737D00644016 /* libopencv_calib3d.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 726227321D90737D00644016 /* libopencv_calib3d.2.4.9.dylib */; };
 		726227411D90737D00644016 /* libopencv_core.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 726227331D90737D00644016 /* libopencv_core.2.4.9.dylib */; };
@@ -77,6 +78,8 @@
 		720164B91A6C058B00BC721A /* usb_libusb10.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = usb_libusb10.h; sourceTree = "<group>"; };
 		72039B301DD72BC10023E0D4 /* handsfrompoints.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = handsfrompoints.cpp; path = KinectMusic/gestureExtraction/handsHeadExtractor/handsfrompoints.cpp; sourceTree = SOURCE_ROOT; };
 		72039B311DD72BC10023E0D4 /* handsfrompoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = handsfrompoints.h; path = KinectMusic/gestureExtraction/handsHeadExtractor/handsfrompoints.h; sourceTree = SOURCE_ROOT; };
+		720C228B1DE990A30066104B /* hand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = hand.h; path = gestureExtraction/hand/hand.h; sourceTree = "<group>"; };
+		720C228D1DE990F90066104B /* hand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = hand.cpp; path = gestureExtraction/hand/hand.cpp; sourceTree = "<group>"; };
 		721F32351BA8B7FF00EC1B59 /* CsoundLib64.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CsoundLib64.framework; path = ../../../Library/Frameworks/CsoundLib64.framework; sourceTree = "<group>"; };
 		722141C11DB015AE00B697E8 /* libfreenect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect.h; sourceTree = "<group>"; };
 		722141C21DB015AE00B697E8 /* libfreenect_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect_audio.h; sourceTree = "<group>"; };
@@ -249,6 +252,15 @@
 			path = src;
 			sourceTree = SOURCE_ROOT;
 		};
+		720C228C1DE990C10066104B /* hand */ = {
+			isa = PBXGroup;
+			children = (
+				720C228B1DE990A30066104B /* hand.h */,
+				720C228D1DE990F90066104B /* hand.cpp */,
+			);
+			name = hand;
+			sourceTree = "<group>";
+		};
 		7221419E1D9FB91400B697E8 /* visualization */ = {
 			isa = PBXGroup;
 			children = (
@@ -325,6 +337,7 @@
 				72799BA61DC61E5800BAC3DC /* types.h */,
 				722141A51D9FC2BD00B697E8 /* blolbs */,
 				722141C51DBB5D1600B697E8 /* handsHeadExtractor */,
+				720C228C1DE990C10066104B /* hand */,
 				7298B1DF1DC48A8E0002D2F0 /* gesture */,
 				7221419E1D9FB91400B697E8 /* visualization */,
 			);
@@ -390,6 +403,7 @@
 				720164BC1A6C058B00BC721A /* core.c in Sources */,
 				72799B9E1DC6128100BAC3DC /* mapping.cpp in Sources */,
 				72799BB01DC61E9A00BAC3DC /* gesture.cpp in Sources */,
+				720C228E1DE990F90066104B /* hand.cpp in Sources */,
 				72799BAD1DC61E8700BAC3DC /* handsheadextractor.cpp in Sources */,
 				720164BA1A6C058B00BC721A /* audio.c in Sources */,
 				72039B321DD72BC10023E0D4 /* handsfrompoints.cpp in Sources */,

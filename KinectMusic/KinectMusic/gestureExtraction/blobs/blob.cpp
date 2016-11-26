@@ -15,9 +15,7 @@ Blob::Blob() :
 lCells(std::list<Cell>()),
 p_maxValCell(nullptr),
 p_minValCell(nullptr),
-centralCell(-1, -1),
-isHandOpened(false),
-nearestBorderCell(-1, MAX_KINECT_VALUE)
+centralCell(-1, -1)
 {}
 
 Blob::Blob(cv::Mat mat16, int x, int y) :
@@ -25,9 +23,7 @@ lCells(std::list<Cell>()),
 p_maxValCell(nullptr),
 p_minValCell(nullptr),
 centralCell(-1, -1),
-matSize(mat16.size()),
-isHandOpened(false),
-nearestBorderCell(-1, MAX_KINECT_VALUE)
+matSize(mat16.size())
 {
     int w = mat16.cols;
     int h = mat16.rows;
@@ -105,14 +101,13 @@ void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
         if(nearestBlob.getLCells().size() < BLOB_MIN_SIZE)
             continue;
         
-        if(largeBlobMaxVal != -1 && nearestBlob.getP_minValCell()->val > largeBlobMaxVal){
+        if(largeBlobMaxVal != -1 && nearestBlob.p_minValCell && nearestBlob.p_minValCell->val > largeBlobMaxVal){
             break;
         }
         
-        if(nearestBlob.getLCells().size() > BLOB_MIN_SIZE_LAST){
-            largeBlobMaxVal = nearestBlob.getP_maxValCell()->val;
+        if(nearestBlob.getLCells().size() > BLOB_MIN_SIZE_LAST && nearestBlob.p_maxValCell){
+            largeBlobMaxVal = nearestBlob.p_maxValCell->val;
             lBlobs.push_front(nearestBlob);
-            //std::cout << "largest size  " << nearestBlob.getLCells().size() << std::endl;
         }
         else {
             lBlobs.push_back(nearestBlob);
@@ -162,18 +157,6 @@ bool Blob::isBlobNear(const Blob& blob, const int xyThresh, const int depthThres
     if(dx * dx + dy * dy > xyThresh * xyThresh)
         return false;
     return true;
-}
-
-double Blob::dist2blob(const Blob& blob){
-    int ind = this->centralCell.ind;
-    int x = ind % this->matSize.width;
-    int y = (ind-x) /this->matSize.width;
-    int indBlob = blob.centralCell.ind;
-    int xBlob = indBlob % blob.matSize.width;
-    int yBlob = (indBlob-xBlob) /blob.matSize.width;
-    int dx = x - xBlob;
-    int dy = y - yBlob;
-    return sqrt(static_cast<double>(dx * dx + dy * dy));
 }
 
 void Blob::mergeBlob(const Blob& blob){
@@ -227,11 +210,6 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
             continue;
         }
         it->computeCentralCell();
-        it->nearestCell = Cell(-1, MAX_KINECT_VALUE);
-        for(auto& cell: it->lCells){
-            if(cell.val < it->nearestCell.val)
-                it->nearestCell = cell;
-        }
         it++;
     }
     
@@ -250,149 +228,4 @@ cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
     }
     
     return mat;
-}
-
-void Blob::filterFar(){
-    std::vector<Cell> vCells(lCells.begin(), lCells.end());
-    std::sort(vCells.begin(), vCells.end(), [] (const Cell& c1, const Cell& c2) -> bool {
-        return c1.val < c2.val;
-    }
-              );
-    size_t size = vCells.size() * 0.5;
-    if(size > 100)
-        size = 100;
-    lCells = std::list<Cell>(vCells.begin(), vCells.begin() + size);
-    
-}
-
-void Blob::detectHandOpened(){
-    int xMin(matSize.width), xMax(0), yMin(matSize.height), yMax(0);
-    double valSum (0);
-    for(auto& cell : lCells){
-        valSum += cell.val;
-        int ind = cell.ind;
-        int x = ind % this->matSize.width;
-        int y = (ind-x) /this->matSize.width;
-        if(x < xMin)
-            xMin = x;
-        if(x > xMax)
-            xMax = x;
-        if(y < yMin)
-            yMin = y;
-        if(y > yMax)
-            yMax = y;
-    }
-    double valAvg = valSum /lCells.size();
-    double devSum(0.);
-    for(auto& cell : lCells){
-        devSum += std::abs(cell.val - valAvg);
-    }
-    double devAvg = devSum / lCells.size();
-
-    double dx = xMax - xMin;
-    double dy = yMax - yMin;
-    if(devAvg * dx * dy*  pow(static_cast<double>(yMax)/matSize.height, 0.3) > 250)
-        isHandOpened = true;
-
-}
-
-std::list<Blob> Blob::segmentation() const{
-    std::list<Blob> lBlobs;
-    int w = matSize.width;
-    int h = matSize.height;
-    cv::Mat matBlob = cv::Mat_<uint16_t>::zeros(matSize);
-    cv::Mat matBlobOrig = cv::Mat_<uint16_t>::zeros(matSize);
-    cv::Mat matBlobBorder = cv::Mat_<unsigned char>::zeros(matSize);
-    uint16_t* const p_matBlob = (uint16_t*)(matBlob.data);
-    uint16_t* const p_matBlobOrig = (uint16_t*)(matBlobOrig.data);
-    unsigned char* const p_matBlobBorder = (unsigned char*)(matBlobBorder.data);
-    for(auto& cell : lCells) {
-        *(p_matBlobOrig + cell.ind) = *(p_matBlob + cell.ind) = cell.val;
-        *(p_matBlobBorder + cell.ind) = cell.border;
-    }
-    
-    uint16_t* p_matBlob1 = (uint16_t*)(matBlob.data);
-    for(int i = 0; i< matBlob.total(); i++, p_matBlob1++) {
-        if(*p_matBlob1 == 0)
-            continue;
-        Blob blob;
-        blob.addCell(i, *p_matBlob1);
-        *p_matBlob1 = 0;
-        std::queue<int> q;
-        q.push(i);
-        while(!q.empty()){
-            const int ind = q.front();
-            q.pop();
-            int x = ind % w;
-            int y = (ind - x)/ w;
-            for(int yNeighb = y - 1; yNeighb <= y + 1; yNeighb++){
-                if(yNeighb < 0 || yNeighb >= h)
-                    continue;
-                for(int xNeighb = x - 1; xNeighb <= x + 1; xNeighb++){
-                    if(xNeighb < 0 || xNeighb >= w)
-                        continue;
-                    int indNeighb = yNeighb * w + xNeighb;
-                    uint16_t valNeighb =  *(p_matBlob + indNeighb);
-                    if(valNeighb == 0)
-                        continue;
-                    uint16_t val = *(p_matBlobOrig + ind);
-                    if(std::abs(val - valNeighb) > 10)
-                        continue;
-                    blob.addCell(indNeighb, valNeighb);
-                    blob.lCells.back().border = *(p_matBlobBorder + indNeighb);
-                    q.push(indNeighb);
-                    *(p_matBlob + indNeighb) = 0;
-                }
-            }
-            
-        }
-        if(!blob.lCells.empty()){
-            blob.setMatSize(matSize);
-            lBlobs.push_back(blob);
-        }
-    }
-    
-    return lBlobs;
-    
-}
-
-void Blob::fiterBorder(){
-    Blob borderBlob;
-    borderBlob.setMatSize(matSize);
-    for(auto& cell : lCells){
-        if(cell.border){
-            borderBlob.lCells.push_back(cell);
-        }
-    }
-    std::list<Blob> lBlobsSegm = borderBlob.segmentation();
-    if(lBlobsSegm.size() < 2)
-        return;
-    Blob& largestBlob = lBlobsSegm.front();
-    for(auto& blob : lBlobsSegm){
-        if(blob.lCells.size() > largestBlob.lCells.size()) {
-            largestBlob = blob;
-        }
-    }
-    for(auto& cell : lCells){
-        if(cell.border){
-            cell.border = 0;
-        }
-    }
-    for(auto& cell1 : largestBlob.lCells){
-        for(auto& cell : lCells){
-            if(cell.ind == cell1.ind){
-                cell.border = cell1.border;
-                break;
-            }
-        }
-    }
-}
-
-bool Blob::findNearestBorderCell(){
-    for(auto& cell : lCells){
-        if(cell.border != 0 && cell.val < nearestBorderCell.val){
-            nearestBorderCell = cell;
-        }
-    }
-    return nearestBorderCell.ind != -1;
 }

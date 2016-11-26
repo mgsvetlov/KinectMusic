@@ -11,6 +11,7 @@
 #include "../blobs/blob.h"
 #include "../gesture/gesture.h"
 #include "../analyze.h"
+#include "../hand/hand.h"
 
 Visualization* Visualization::p_vis = nullptr;
 cv::Mat Visualization::matImage;
@@ -30,9 +31,9 @@ bool Visualization::showImage() {
     if(p_vis == nullptr){
         Visualization();
     }
-    //cv::Mat matImageRes;
-    //cv::resize(matImage, matImageRes, cv::Size(matImage.cols >> BLOBS_RESIZE_POW, matImage.rows >> BLOBS_RESIZE_POW));
-    cv::imshow( "Display window", matImage);
+    cv::Mat matImageRes;
+    cv::resize(matImage, matImageRes, cv::Size(matImage.cols >> BLOBS_RESIZE_POW, matImage.rows >> BLOBS_RESIZE_POW));
+    cv::imshow( "Display window", matImageRes);
     if(cv::waitKey(1) == 27) {
         return false;
     }
@@ -116,7 +117,7 @@ cv::Mat Visualization::centralCells2img_mark(const std::list<Blob>& lBlobs, cons
         int x = centralCell.ind % size.width;
         int y = (centralCell.ind-x) /size.width;
         double radius = size.width * 0.04;
-        int num = blob.getIsHandOpened()? blobCount + 2 :  blobCount;
+        int num = blobCount;
         cv::Scalar color( 255, 255, 255 );
         unsigned char col = (MAX_KINECT_DEPTH -centralCell.val) * 255. / MAX_KINECT_DEPTH * 2;
         switch(num){
@@ -162,7 +163,7 @@ cv::Mat Visualization::blobs2img_mark(const std::list<Blob>& lBlobs, const cv::S
             unsigned char* p_g = (unsigned char*)(g.data) + ind;
             unsigned char* p_b = (unsigned char*)(b.data) + ind;
             
-            int num = blob.getIsHandOpened()? blobCount + 2 :  blobCount;
+            int num =   blobCount;
 
             switch(num){
                 case 0:
@@ -260,7 +261,7 @@ cv::Mat Visualization::mat2img(cv::Mat mat) {
     return img;
 }
 
-cv::Mat Visualization::matAndBlobs2img(cv::Mat mat, const std::list<Blob>& lBlobs){
+cv::Mat Visualization::matAndHands2img(cv::Mat mat, const std::list<Hand>& lHands){
     
     int w = mat.cols;
     int h = mat.rows;
@@ -289,18 +290,18 @@ cv::Mat Visualization::matAndBlobs2img(cv::Mat mat, const std::list<Blob>& lBlob
     p_g = (unsigned char*)(g.data);
     p_b = (unsigned char*)(b.data);
     int count(0);
-    for(auto& blob : lBlobs) {
-        auto lCells = blob.getLCellsConst();
-        
-        for(auto& cell : lCells){
-            int ind = cell.ind;
-            unsigned int color = 255 - cell.val * 255. / MAX_KINECT_VALUE;
-            if(cell.border){
+    for(auto& hand : lHands) {
+        for(auto& point : hand.lPoints){
+            int x = point.x + hand.refPoint.x;
+            int y = point.y + hand.refPoint.y;
+            int ind = y * mat.cols + x;
+            unsigned int color = 255 - point.z * 255. / MAX_KINECT_VALUE;
+            /*if(cell.border){
                 *(p_r + ind) = 255;
                 *(p_g + ind) = 255;
                 *(p_b + ind) = 0;
             }
-            else if(count == 0){
+            else */if(count == 0){
                 *(p_r + ind) = 0;
                 *(p_g + ind) = color;
                 *(p_b + ind) = 0;
@@ -321,14 +322,14 @@ cv::Mat Visualization::matAndBlobs2img(cv::Mat mat, const std::list<Blob>& lBlob
     
     cv::Mat img;
     cv::merge(channels, img);
-    for(auto& blob : lBlobs) {
+    /*for(auto& blob : lBlobs) {
         int ind = blob.nearestBorderCell.ind;
         if(ind != -1){
             int x = ind % blob.getMatSize().width;
             int y = (ind - x) /blob.getMatSize().width;
             circle(img, cv::Point(x, y), 5,  cv::Scalar(0,255,255), -1);
         }
-    }
+    }*/
     cv::flip(img, img, 1);
     
     return img;
