@@ -12,6 +12,8 @@
 #include <vector>
 
 Hand::Hand(cv::Mat mat, int bbXY, const cv::Point3i& keyPoint) :
+    keyPoint(keyPoint),
+    mat(mat),
     refPoint(keyPoint.x - bbXY, keyPoint.y - bbXY),
     size (bbXY * 2, bbXY * 2)
 {
@@ -37,24 +39,24 @@ Hand Hand::extractHand() const{
     cv::Point2i center (size.width >> 1, size.height >>1);
     int w = size.width;
     int h = size.height;
-    cv::Mat matBlob = cv::Mat_<uint16_t>::zeros(size);
-    cv::Mat matBlobOrig = cv::Mat_<uint16_t>::zeros(size);
-    uint16_t* const p_matBlob = (uint16_t*)(matBlob.data);
-    uint16_t* const p_matBlobOrig = (uint16_t*)(matBlobOrig.data);
+    cv::Mat matHand = cv::Mat_<uint16_t>::zeros(size);
+    cv::Mat matHandOrig = cv::Mat_<uint16_t>::zeros(size);
+    uint16_t* const p_matHand = (uint16_t*)(matHand.data);
+    uint16_t* const p_matHandOrig = (uint16_t*)(matHandOrig.data);
     for(auto& point : lPoints) {
         int ind = point.y * w + point.x;
-        *(p_matBlobOrig + ind) = *(p_matBlob + ind) = point.z;
+        *(p_matHandOrig + ind) = *(p_matHand + ind) = point.z;
     }
-    uint16_t* p_matBlob1 = (uint16_t*)(matBlob.data);
-    for(int i = 0; i< matBlob.total(); i++, p_matBlob1++) {
-        if(*p_matBlob1 == 0)
+    uint16_t* p_matHand1 = (uint16_t*)(matHand.data);
+    for(int i = 0; i< matHand.total(); i++, p_matHand1++) {
+        if(*p_matHand1 == 0)
             continue;
         bool centerInside(false);
         Hand hand;
         int x_ = i % w;
         int y_ = (i-x_) / w;
-        hand.lPoints.push_back(cv::Point3i(x_, y_,*p_matBlob1));
-        *p_matBlob1 = 0;
+        hand.lPoints.push_back(cv::Point3i(x_, y_,*p_matHand1));
+        *p_matHand1 = 0;
         std::queue<int> q;
         q.push(i);
         while(!q.empty()){
@@ -71,17 +73,17 @@ Hand Hand::extractHand() const{
                     if(xNeighb < 0 || xNeighb >= w)
                         continue;
                     int indNeighb = yNeighb * w + xNeighb;
-                    uint16_t valNeighb =  *(p_matBlob + indNeighb);
+                    uint16_t valNeighb =  *(p_matHand + indNeighb);
                     if(valNeighb == 0)
                         continue;
-                    uint16_t val = *(p_matBlobOrig + ind);
+                    uint16_t val = *(p_matHandOrig + ind);
                     if(std::abs(val - valNeighb) > 10)
                         continue;
                     int x1 = indNeighb % w;
                     int y1 = (indNeighb-x_) / w;
                     hand.lPoints.push_back(cv::Point3i(x1, y1,valNeighb));
                     q.push(indNeighb);
-                    *(p_matBlob + indNeighb) = 0;
+                    *(p_matHand + indNeighb) = 0;
                 }
             }
             
@@ -89,11 +91,15 @@ Hand Hand::extractHand() const{
         if(!hand.lPoints.empty() && centerInside){
             hand.size = this->size;
             hand.refPoint = this->refPoint;
+            hand.mat = this->mat;
             hand.findBorderPoints();
-            if(hand.checkIsHand())
+            if(hand.checkIsHand()){
+                hand.keyPoint = this->keyPoint;
                 return hand;
-            else
+            }
+            else {
                 return Hand();
+            }
         }
     }
     return Hand();
@@ -117,9 +123,27 @@ void Hand::findBorderPoints(){
 
 bool Hand::checkIsHand(){
     int sum(0);
+    int w = size.width;
+    int h = size.height;
     for(auto& v : vvPointsBorder)
         sum += v.size();
-    if(sum > (size.width >> 1))
+    if(sum > (w >> 1))
         return false;
-    return true;
+    if(lPoints.size() < ((w * h ) >> 2))
+        return true;
+    int minx(w), maxx(0), miny(h), maxy(0);
+    for(auto& point : lPoints){
+        if(point.x < minx)
+            minx = point.x;
+        if(point.x > maxx)
+            maxx = point.x;
+        if(point.y < miny)
+            miny = point.y;
+        if(point.y > maxy)
+            maxy = point.y;
+    }
+    int s = (maxx -minx) * (maxy - miny);
+    if(s > (lPoints.size() << 1))
+        return true;
+    return false;
 }

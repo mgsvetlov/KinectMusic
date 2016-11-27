@@ -19,6 +19,8 @@ private:
     void findBorderPoints();
     bool checkIsHand();
 private:
+    cv::Point3i keyPoint;
+    cv::Mat mat;
     cv::Point2i refPoint;
     cv::Size size;
     std::list<cv::Point3i> lPoints;

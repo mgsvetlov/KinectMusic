@@ -322,14 +322,11 @@ cv::Mat Visualization::matAndHands2img(cv::Mat mat, const std::list<Hand>& lHand
     
     cv::Mat img;
     cv::merge(channels, img);
-    /*for(auto& blob : lBlobs) {
-        int ind = blob.nearestBorderCell.ind;
-        if(ind != -1){
-            int x = ind % blob.getMatSize().width;
-            int y = (ind - x) /blob.getMatSize().width;
-            circle(img, cv::Point(x, y), 5,  cv::Scalar(0,255,255), -1);
-        }
-    }*/
+    for(auto& hand : lHands) {
+        int x = hand.keyPoint.x;
+        int y = hand.keyPoint.y;
+        circle(img, cv::Point(x, y), 5,  cv::Scalar(0,255,255), -1);
+    }
     cv::flip(img, img, 1);
     
     return img;
