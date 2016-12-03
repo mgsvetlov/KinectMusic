@@ -147,3 +147,9 @@ bool Hand::checkIsHand(){
         return true;
     return false;
 }
+
+double Hand::dist2hand(const Hand& hand) const{
+    int dx = keyPoint.x - hand.keyPoint.x;
+    int dy = keyPoint.y - hand.keyPoint.y;
+    return sqrt(dx*dx+dy*dy);
+}

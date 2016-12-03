@@ -12,28 +12,26 @@
 #include "../types.h"
 
 class Blob;
-class Gesture;
 class Hand;
+class Tracking;
 
 class Visualization {
 private:
     Visualization();
 public:
     static bool showImage();
-    
-#ifdef USE_CSOUND
-    static cv::Mat gestures2img_mark(const std::vector<Gesture>& gestures, const cv::Size& size);
-#endif //USE_CSOUND
-    
-    static cv::Mat blobs2img_mark(const std::list<Blob>& lBlobs, const cv::Size& size);
-    static cv::Mat centralCells2img_mark(const std::list<Blob>& lBlobs, const cv::Size& size);
-    static cv::Mat mat2img(cv::Mat mat);
-    static cv::Mat matAndHands2img(cv::Mat mat, const std::list<Hand>& lBlobs);
     static void setMatImage(cv::Mat mat){matImage = mat.clone();}
     
     static void setIsNeedRedraw(bool val) {isNeedRedraw = val;}
     static bool getIsNeedRedraw() {return isNeedRedraw;}
-
+    
+    static void mat2img(cv::Mat mat, cv::Mat& matImg);
+    static void hands2img(const std::list<Hand>& lHands, cv::Mat& matImg, bool drawKeyPoints = true);
+    static void tracks2img(const std::vector<Tracking>& tracks, cv::Mat& matImg);
+    
+private:
+    static void hand2img(const Hand& hand, cv::Mat& matImg, const cv::Scalar& color);
+    static void keyPoint2img(const cv::Point3i& keyPoint, cv::Mat& matImg, const cv::Scalar& color, int size);
     
 private:
     static Visualization* p_vis;

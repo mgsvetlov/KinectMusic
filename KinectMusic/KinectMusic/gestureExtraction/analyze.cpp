@@ -20,9 +20,9 @@
 #include "handsHeadExtractor/handsheadextractor.h"
 #include "handsHeadExtractor/handsfrompoints.h"
 #include "hand/hand.h"
+#include "tracking/tracking.h"
 
 #ifdef USE_CSOUND
-#include "gesture/gesture.h"
 #include "../mapping/mapping.h"
 #endif //USE_CSOUND
 
@@ -97,19 +97,25 @@ void *analyze_threadfunc(void *arg) {
         //extract hands frim points in full matrix
         int bbXY (60), bbZ(200);
         HandsFromPoints handsFromPoints(mat16, lBlobsClust, bbXY, bbZ);
-        std::list<Hand> lHand = handsFromPoints.extractHandBlobs();
-        
-        cv::Mat imgResized = Visualization::matAndHands2img(mat16, lHand);
+        std::list<Hand> lHands = handsFromPoints.extractHandBlobs();
         
         //tracking gestures
-        //Gesture::analyzeFrame(lBlobsClust);
+        Tracking::analyzeFrame(lHands);
+        std::vector<Tracking> vTracks = Tracking::getTracksConst();
+        
+        
+        cv::Mat img;
+        Visualization::mat2img(mat16, img);
+        //Visualization::hands2img( lHands, img);
+        Visualization::tracks2img( vTracks, img);
+        
         
 #ifdef USE_CSOUND
         Mapping::MapDirect(Gesture::getGesturesConst());
 #endif //USE_CSOUND
         
         pthread_mutex_lock(&visualisation_mutex);
-        Visualization::setMatImage(imgResized);
+        Visualization::setMatImage(img);
         Visualization::setIsNeedRedraw(true);
         pthread_mutex_unlock(&visualisation_mutex);
         

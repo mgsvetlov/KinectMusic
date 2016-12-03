@@ -18,6 +18,7 @@ public:
 private:
     void findBorderPoints();
     bool checkIsHand();
+    double dist2hand(const Hand& hand) const;
 private:
     cv::Point3i keyPoint;
     cv::Mat mat;
@@ -28,6 +29,7 @@ private:
     
     friend class Visualization;
     friend class HandsFromPoints;
+    friend class Tracking;
 };
 
 #endif /* hand_h */
