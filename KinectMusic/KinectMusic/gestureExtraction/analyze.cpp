@@ -21,6 +21,7 @@
 #include "handsHeadExtractor/handsfrompoints.h"
 #include "hand/hand.h"
 #include "tracking/tracking.h"
+#include "gesture/gesture.h"
 
 #ifdef USE_CSOUND
 #include "../mapping/mapping.h"
@@ -99,16 +100,18 @@ void *analyze_threadfunc(void *arg) {
         HandsFromPoints handsFromPoints(mat16, lBlobsClust, bbXY, bbZ);
         std::list<Hand> lHands = handsFromPoints.extractHandBlobs();
         
-        //tracking gestures
+        //tracking hands
         Tracking::analyzeFrame(lHands);
         std::vector<Tracking> vTracks = Tracking::getTracksConst();
         
+        //create and analyze hands tracked stream data
+        Gesture::addDataToStream(vTracks);
+        Gesture::analyzeGestures();
         
         cv::Mat img;
         Visualization::mat2img(mat16, img);
-        //Visualization::hands2img( lHands, img);
-        Visualization::tracks2img( vTracks, img);
-        
+        Visualization::tracks2img( vTracks, img, false);
+        Visualization::handsTrackedStreams2img(Gesture::getHandsTrackedStreams(), img, 60);
         
 #ifdef USE_CSOUND
         Mapping::MapDirect(Gesture::getGesturesConst());

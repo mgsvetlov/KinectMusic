@@ -15,6 +15,7 @@ public:
     Hand(){}
     Hand(cv::Mat mat, int bbXY, const cv::Point3i& keyPoint);
     Hand extractHand() const;
+    const cv::Point3i& getKeyPoint() const {return keyPoint;}
 private:
     void findBorderPoints();
     bool checkIsHand();

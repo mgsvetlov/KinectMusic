@@ -15,10 +15,10 @@ std::vector<Tracking> Tracking::tracks(2);
 
 /*static*/
 void Tracking::analyzeFrame(const std::list<Hand>& lHands){
-    for(auto& gesture : tracks){
-        if(gesture.lHandData.size()  > 2)
-            gesture.lHandData.pop_front();
-        gesture.isHandFound = false;
+    for(auto& track : tracks){
+        if(track.lHands.size()  > 2)
+            track.lHands.pop_front();
+        track.isHandFound = false;
     }
     std::vector<bool> vHandsMatched(lHands.size(), false);
     std::vector<std::vector<double>> vvDists(tracks.size(), std::vector<double>(lHands.size()));
@@ -28,7 +28,7 @@ void Tracking::analyzeFrame(const std::list<Hand>& lHands){
             vvDists[i][j] = tracks[i].dist2hand(*it);
         }
     }
-    
+    //поиск ближайшего соседа и добавление к нему
     for(int i = 0; i < vvDists.size(); i++){
         double minDist (DBL_MAX);
         int ind (-1);
@@ -52,43 +52,37 @@ void Tracking::analyzeFrame(const std::list<Hand>& lHands){
             }
         }
     }
+    //добавляются те, для которых не найдено ближайшего
     int i (-1);
     for(auto& hand : lHands){
         if(vHandsMatched[++i])
             continue;
-        for(auto& gesture : tracks){
-            if(!gesture.isHandFound){
-                gesture.addHandData(hand);
+        for(auto& track : tracks){
+            if(!track.isHandFound){
+                track.addHandData(hand);
                 break;
             }
         }
         
     }
-    for(auto& gesture : tracks){
-        if(!gesture.isHandFound){
-            gesture.lHandData.clear();
+    //очистка данных, которым не найдено продолжения
+    for(auto& track : tracks){
+        if(!track.isHandFound){
+            track.lHands.clear();
         }
     }
 }
 
 double Tracking::dist2hand(const Hand& hand){
-    if(lHandData.empty())
+    if(lHands.empty())
         return DBL_MAX;
-    auto& prevHand = lHandData.back().hand;
+    auto& prevHand = lHands.back();
     double dist = prevHand.dist2hand(hand);
     return dist < 80 ? dist : DBL_MAX;
 }
 
 void Tracking::addHandData(const Hand& hand){
-    int x = hand.keyPoint.x;
-    int y = hand.keyPoint.y;
-    cv::Size size = hand.mat.size();
-    float z = 2. * (MAX_KINECT_DEPTH - hand.keyPoint.z) / MAX_KINECT_DEPTH;
-    lHandData.push_back(HandData(
-                        static_cast<float>(x)/size.width,
-                        static_cast<float>(y)/size.height,
-                        z,
-                        hand));
+    lHands.push_back(hand);
     isHandFound = true;
 }
 

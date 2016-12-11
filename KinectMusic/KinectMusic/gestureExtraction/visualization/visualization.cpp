@@ -12,6 +12,7 @@
 #include "../tracking/tracking.h"
 #include "../analyze.h"
 #include "../hand/hand.h"
+#include "../gesture/gesture.h"
 
 Visualization* Visualization::p_vis = nullptr;
 cv::Mat Visualization::matImage;
@@ -77,10 +78,10 @@ void Visualization::mat2img(cv::Mat mat, cv::Mat& matImg) {
             *p_r = 255 - d16 * 255. / MAX_KINECT_VALUE;
             *p_b = 0;
         }
-        else {
+        /*else {
             *p_r = 0;
             *p_b = 255;
-        }
+        }*/
         p_r++, p_g++, p_b++, p_mat16++;
     }
     
@@ -102,23 +103,47 @@ void Visualization::hands2img(const std::list<Hand>& lHands, cv::Mat& matImg, bo
     }
 }
 
-void Visualization::tracks2img(const std::vector<Tracking>& vTracks, cv::Mat& matImg){
+void Visualization::tracks2img(const std::vector<Tracking>& vTracks, cv::Mat& matImg, bool drawKeyPoints){
     int count(0);
     for(auto& track : vTracks) {
-        std::list<HandData> lHandData = track.getLHandData();
-        if(lHandData.empty()) {
+        std::list<Hand> lHands = track.getLHands();
+        if(lHands.empty()) {
             count++;
             continue;
         }
-        HandData& handData = lHandData.back();
-        Hand& hand = handData.hand;
+        Hand& hand = lHands.back();
         cv::Scalar color = count == 0? cv::Scalar(0,1,0) : cv::Scalar(0,1,1);
         hand2img(hand, matImg, color);
-        keyPoint2img(hand.keyPoint, matImg, cv::Scalar(127, 127, 127), 10);
+        if(drawKeyPoints)
+            keyPoint2img(hand.keyPoint, matImg, cv::Scalar(127, 127, 127), 10);
         count++;
     }
 }
 
+void Visualization::handsTrackedStreams2img(const std::vector<std::vector<HandData>>& handsTrackedStreams, cv::Mat& matImg, size_t length){
+    int pointSize(10);
+    int count(0);
+    for(auto& handsTrackedStream : handsTrackedStreams) {
+        cv::Scalar color = count == 1? cv::Scalar(127,255,127) : cv::Scalar(127,255,255);
+        size_t length1 = length;
+        if(handsTrackedStream.size() < length1)
+            length1 = handsTrackedStream.size();
+        auto rit = handsTrackedStream.rbegin();
+        for(int i = 0; i <= length1; i++, rit++){
+            const auto& type = rit->type;
+            if(type< 0)
+                continue;
+            const auto& keyPoint =rit->keyPoint;
+            cv::Scalar color1 = type == 1 ? cv::Scalar(255, 0, 0) : color;
+            int pointSize1 = type == 0 ? pointSize : pointSize * 2;
+            keyPoint2img(keyPoint, matImg, color1, pointSize1);
+            if(type == 1)
+                break;
+        }
+        count++;
+    }
+    
+}
 
 void Visualization::hand2img(const Hand& hand, cv::Mat& matImg, const cv::Scalar& color){
     for(auto& point : hand.lPoints){
@@ -135,6 +160,8 @@ void Visualization::hand2img(const Hand& hand, cv::Mat& matImg, const cv::Scalar
 void Visualization::keyPoint2img(const cv::Point3i& keyPoint, cv::Mat& matImg, const cv::Scalar& color, int size) {
     int x = keyPoint.x;
     int y = keyPoint.y;
+    if(x < 0 || y < 0)
+        return;
     circle(matImg, cv::Point(x, y), size,  color, -1);
 }
 

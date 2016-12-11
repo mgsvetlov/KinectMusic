@@ -14,13 +14,6 @@
 
 #include "../hand/hand.h"
 
-struct HandData{
-    float x, y, z;
-    Hand hand;
-    HandData(){}
-    HandData(float x, float y, float z, const Hand& hand) :
-    x(x), y(y), z(z), hand(hand){}
-};
 
 class Tracking {
 public:
@@ -28,14 +21,14 @@ public:
     Tracking(const Hand& hand);
     static void analyzeFrame(const std::list<Hand>& lBlobs);
     static const std::vector<Tracking>& getTracksConst() {return tracks;}
-    const std::list<HandData>& getLHandData() const { return lHandData;}
+    const std::list<Hand>& getLHands() const { return lHands;}
 private:
     double dist2hand(const Hand& hand);
     void addHandData(const Hand& hand);
 private:
     static std::vector<Tracking> tracks;
     bool isHandFound = false;
-    std::list<HandData> lHandData;
+    std::list<Hand> lHands;
 };
 
 #endif /* Gesture_h */
