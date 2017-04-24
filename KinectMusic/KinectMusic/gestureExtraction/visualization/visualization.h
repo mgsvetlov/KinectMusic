@@ -13,7 +13,7 @@
 
 class Blob;
 class Hand;
-class Tracking;
+class Track;
 struct HandData;
 
 class Visualization {
@@ -28,12 +28,12 @@ public:
     
     static void mat2img(cv::Mat mat, cv::Mat& matImg);
     static void hands2img(const std::list<Hand>& lHands, cv::Mat& matImg, bool drawKeyPoints = true);
-    static void tracks2img(const std::vector<Tracking>& tracks, cv::Mat& matImg, bool drawKeyPoints = true);
+    static void tracks2img(const std::vector<Track>& tracks, cv::Mat& matImg, bool drawKeyPoints = true);
     static void handsTrackedStreams2img(const std::vector<std::vector<HandData>>& handsTrackedStreams, cv::Mat& matImg, size_t length);
 private:
     static void hand2img(const Hand& hand, cv::Mat& matImg, const cv::Scalar& color);
     static void keyPoint2img(const cv::Point3i& keyPoint, cv::Mat& matImg, const cv::Scalar& color, int size);
-    
+    static void drawText(cv::Mat& mat, std::string text, double fontScale, int thickness, cv::Scalar color, cv::Point2f textCenter);
 private:
     static Visualization* p_vis;
     static cv::Mat matImage;

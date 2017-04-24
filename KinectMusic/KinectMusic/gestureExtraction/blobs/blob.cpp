@@ -117,6 +117,42 @@ void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
     
 }
 
+bool Blob::computeCentralNearCell(double med){
+    if(lCells.empty())
+        return false;
+    
+    std::vector<Cell> vCells(lCells.begin(), lCells.end());
+    std::sort(vCells.begin(), vCells.end(),
+         [](const Cell& c1, const Cell& c2) -> bool
+         {
+             return c1.val < c2.val;
+         }
+         );
+    
+    int indLim = vCells.size() * med;
+    
+    double  ySum(0), xSum(0), valSum(0);
+    int count(0);
+    for( auto& cell: vCells){
+        int ind = cell.ind;
+        int x = ind % this->matSize.width;
+        int y = (ind-x) /this->matSize.width;
+        xSum += x;
+        ySum += y;
+        valSum += cell.val;
+        count ++;
+        if(count == indLim)
+            break;
+    }
+    int x = xSum / indLim;
+    int y = ySum /indLim;
+    int val = valSum / indLim;
+    int ind = this->matSize.width * y + x;
+    this->centralCell.ind = ind;
+    this->centralCell.val = val;
+    return true;
+}
+
 bool Blob::computeCentralCell(){
     if(lCells.empty())
         return false;
@@ -209,7 +245,7 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
             it = lBlobsClustered.erase(it);
             continue;
         }
-        it->computeCentralCell();
+        it->computeCentralNearCell(0.25);
         it++;
     }
     

@@ -142,7 +142,7 @@ bool Hand::checkIsHand(){
         if(point.y > maxy)
             maxy = point.y;
     }
-    int s = (maxx -minx) * (maxy - miny);
+    int s = (maxx - minx) * (maxy - miny);
     if(s > (lPoints.size() << 1))
         return true;
     return false;

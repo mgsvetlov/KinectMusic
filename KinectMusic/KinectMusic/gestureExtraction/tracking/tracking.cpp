@@ -11,10 +11,10 @@
 #include <cfloat>
 #include <limits>
 
-std::vector<Tracking> Tracking::tracks(2);
+std::vector<Track> Track::tracks(2);
 
 /*static*/
-void Tracking::analyzeFrame(const std::list<Hand>& lHands){
+void Track::analyzeFrame(const std::list<Hand>& lHands){
     for(auto& track : tracks){
         if(track.lHands.size()  > 2)
             track.lHands.pop_front();
@@ -28,7 +28,7 @@ void Tracking::analyzeFrame(const std::list<Hand>& lHands){
             vvDists[i][j] = tracks[i].dist2hand(*it);
         }
     }
-    //поиск ближайшего соседа и добавление к нему
+    //nearest neighbour search
     for(int i = 0; i < vvDists.size(); i++){
         double minDist (DBL_MAX);
         int ind (-1);
@@ -44,7 +44,7 @@ void Tracking::analyzeFrame(const std::list<Hand>& lHands){
         if(ind != -1){
             tracks[i].addHandData(*itNearest);
             vHandsMatched[ind] = true;
-            //жадный алгоритм - для первого ближайшего
+            //greedy algorithm - for the first nearest neighbour
             for(int i1 = 0; i1 < tracks.size(); i1++){
                 if(i1 == i)
                     continue;
@@ -52,7 +52,7 @@ void Tracking::analyzeFrame(const std::list<Hand>& lHands){
             }
         }
     }
-    //добавляются те, для которых не найдено ближайшего
+    //if neighbour isn't found
     int i (-1);
     for(auto& hand : lHands){
         if(vHandsMatched[++i])
@@ -65,7 +65,7 @@ void Tracking::analyzeFrame(const std::list<Hand>& lHands){
         }
         
     }
-    //очистка данных, которым не найдено продолжения
+    //data cleaning 
     for(auto& track : tracks){
         if(!track.isHandFound){
             track.lHands.clear();
@@ -73,7 +73,7 @@ void Tracking::analyzeFrame(const std::list<Hand>& lHands){
     }
 }
 
-double Tracking::dist2hand(const Hand& hand){
+double Track::dist2hand(const Hand& hand){
     if(lHands.empty())
         return DBL_MAX;
     auto& prevHand = lHands.back();
@@ -81,7 +81,7 @@ double Tracking::dist2hand(const Hand& hand){
     return dist < 80 ? dist : DBL_MAX;
 }
 
-void Tracking::addHandData(const Hand& hand){
+void Track::addHandData(const Hand& hand){
     lHands.push_back(hand);
     isHandFound = true;
 }

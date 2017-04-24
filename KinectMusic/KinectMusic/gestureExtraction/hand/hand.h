@@ -30,7 +30,7 @@ private:
     
     friend class Visualization;
     friend class HandsFromPoints;
-    friend class Tracking;
+    friend class Track;
 };
 
 #endif /* hand_h */

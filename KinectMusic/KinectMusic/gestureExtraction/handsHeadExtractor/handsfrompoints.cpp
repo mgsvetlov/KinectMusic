@@ -10,16 +10,7 @@
 #include <queue>
 #include "../hand/hand.h"
 
-HandsFromPoints::HandsFromPoints(cv::Mat mat, const std::list<Blob>& lBlobs, int bbXY, int bbZ) :
-mat(mat),
-lBlobs(lBlobs),
-bbXY(bbXY),
-bbZ(bbZ)
-{
-    
-}
-
-std::list<Hand> HandsFromPoints::extractHandBlobs()
+std::list<Hand> HandsFromPoints::extractHandBlobs(cv::Mat mat, const std::list<Blob>& lBlobs, int bbXY, int bbZ)
 {
     std::list<Hand> lHands;
     for(auto& blob : lBlobs) {

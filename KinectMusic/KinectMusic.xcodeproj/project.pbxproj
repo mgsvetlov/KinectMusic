@@ -41,8 +41,8 @@
 		72799BAA1DC61E6D00BAC3DC /* blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72799BA81DC61E6D00BAC3DC /* blob.cpp */; };
 		72799BAD1DC61E8700BAC3DC /* handsheadextractor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72799BAB1DC61E8700BAC3DC /* handsheadextractor.cpp */; };
 		72799BB31DC61EAE00BAC3DC /* visualization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72799BB11DC61EAE00BAC3DC /* visualization.cpp */; };
-		728B443A1DE4E34B0049B807 /* libusb-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 728B44391DE4E34B0049B807 /* libusb-1.0.a */; };
 		7298B7271D8D85840093134C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7298B7261D8D85840093134C /* main.cpp */; };
+		72AFE5E41E7B583000143CA7 /* libusb-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 72AFE5E31E7B583000143CA7 /* libusb-1.0.a */; };
 		72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72B332AD1BAF0733003DA9DA /* kinect.cpp */; };
 		72B332B21BAF1050003DA9DA /* opengl_.c in Sources */ = {isa = PBXBuildFile; fileRef = 72B332B01BAF1050003DA9DA /* opengl_.c */; };
 /* End PBXBuildFile section */
@@ -133,8 +133,8 @@
 		72799BAC1DC61E8700BAC3DC /* handsheadextractor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = handsheadextractor.h; path = KinectMusic/gestureExtraction/handsHeadExtractor/handsheadextractor.h; sourceTree = SOURCE_ROOT; };
 		72799BB11DC61EAE00BAC3DC /* visualization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = visualization.cpp; path = gestureExtraction/visualization/visualization.cpp; sourceTree = "<group>"; };
 		72799BB21DC61EAE00BAC3DC /* visualization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = visualization.h; path = gestureExtraction/visualization/visualization.h; sourceTree = "<group>"; };
-		728B44391DE4E34B0049B807 /* libusb-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libusb-1.0.a"; path = "../../../../../../../usr/local/lib/libusb-1.0.a"; sourceTree = "<group>"; };
 		7298B7261D8D85840093134C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		72AFE5E31E7B583000143CA7 /* libusb-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libusb-1.0.a"; path = "lib/libusb-1.0.a"; sourceTree = "<group>"; };
 		72B332AD1BAF0733003DA9DA /* kinect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = kinect.cpp; sourceTree = "<group>"; };
 		72B332AE1BAF0733003DA9DA /* kinect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kinect.h; sourceTree = "<group>"; };
 		72B332B01BAF1050003DA9DA /* opengl_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = opengl_.c; sourceTree = "<group>"; };
@@ -146,6 +146,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72AFE5E41E7B583000143CA7 /* libusb-1.0.a in Frameworks */,
 				726227401D90737D00644016 /* libopencv_calib3d.2.4.9.dylib in Frameworks */,
 				726227411D90737D00644016 /* libopencv_core.2.4.9.dylib in Frameworks */,
 				726227421D90737D00644016 /* libopencv_features2d.2.4.9.dylib in Frameworks */,
@@ -161,7 +162,6 @@
 				7262274C1D90737D00644016 /* libopencv_video.2.4.9.dylib in Frameworks */,
 				7262274D1D90737D00644016 /* libopencv_videostab.2.4.9.dylib in Frameworks */,
 				721F32361BA8B7FF00EC1B59 /* CsoundLib64.framework in Frameworks */,
-				728B443A1DE4E34B0049B807 /* libusb-1.0.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -171,7 +171,7 @@
 		720164931A6C023800BC721A = {
 			isa = PBXGroup;
 			children = (
-				728B44391DE4E34B0049B807 /* libusb-1.0.a */,
+				72AFE5E31E7B583000143CA7 /* libusb-1.0.a */,
 				726227321D90737D00644016 /* libopencv_calib3d.2.4.9.dylib */,
 				726227331D90737D00644016 /* libopencv_core.2.4.9.dylib */,
 				726227341D90737D00644016 /* libopencv_features2d.2.4.9.dylib */,
@@ -526,6 +526,7 @@
 					/opt/local/lib,
 					"$(LOCAL_LIBRARY_DIR)/Frameworks/CsoundLib64.framework/Versions/6.0",
 					"$(PROJECT_DIR)/opencv/lib",
+					"$(PROJECT_DIR)/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "${SRCROOT}/opencv/include/**";
@@ -552,6 +553,7 @@
 					/opt/local/lib,
 					"$(LOCAL_LIBRARY_DIR)/Frameworks/CsoundLib64.framework/Versions/6.0",
 					"$(PROJECT_DIR)/opencv/lib",
+					"$(PROJECT_DIR)/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "${SRCROOT}/opencv/include/**";

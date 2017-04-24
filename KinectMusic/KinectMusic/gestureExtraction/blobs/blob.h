@@ -6,8 +6,8 @@
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
 
-#ifndef nearestblob_h
-#define nearestblob_h
+#ifndef blob_h
+#define blob_h
 
 #include <stdio.h>
 #include "../types.h"
@@ -40,6 +40,7 @@ private:
     void addCell(int ind, int val);
     void mergeBlob(const Blob& blob);
     bool computeCentralCell();
+    bool computeCentralNearCell(double med);
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
 
 private:
@@ -52,4 +53,4 @@ private:
     friend class HandsFromPoints;
     friend class Visualization;
 };
-#endif /* nearestblob_hpp */
+#endif /* blob_h */

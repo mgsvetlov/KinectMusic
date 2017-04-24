@@ -17,13 +17,8 @@ class Hand;
 
 class HandsFromPoints{
 public:
-    HandsFromPoints(cv::Mat mat, const std::list<Blob>& lBlobs, int bbXY, int bbZ);
-    std::list<Hand> extractHandBlobs();
+    static std::list<Hand> extractHandBlobs(cv::Mat mat, const std::list<Blob>& lBlobs, int bbXY, int bbZ);
 
-private:
-    cv::Mat mat;
-    const std::list<Blob>& lBlobs;
-    int bbXY, bbZ;
 };
 
 #endif /* handsfrompoints_h */

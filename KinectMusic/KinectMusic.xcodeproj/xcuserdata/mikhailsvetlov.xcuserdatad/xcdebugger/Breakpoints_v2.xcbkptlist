@@ -74,60 +74,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/handsHeadExtractor/handsfrompoints.cpp"
-            timestampString = "501876775.940939"
+            timestampString = "505481659.108208"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "27"
-            endingLineNumber = "27"
-            landmarkName = "HandsFromPoints::extractHandBlobs()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KinectMusic/gestureExtraction/gesture/gesture.cpp"
-            timestampString = "503155999.118486"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "61"
-            endingLineNumber = "61"
-            landmarkName = "Gesture::analyzeGesture(std::vector&lt;HandData&gt;&amp; handsTrackedStream)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KinectMusic/gestureExtraction/gesture/gesture.cpp"
-            timestampString = "503155999.118486"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "66"
-            endingLineNumber = "66"
-            landmarkName = "Gesture::analyzeGesture(std::vector&lt;HandData&gt;&amp; handsTrackedStream)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KinectMusic/gestureExtraction/gesture/gesture.cpp"
-            timestampString = "503154276.204666"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "55"
-            endingLineNumber = "55"
-            landmarkName = "Gesture::analyzeGesture(std::vector&lt;HandData&gt;&amp; handsTrackedStream)"
+            startingLineNumber = "18"
+            endingLineNumber = "18"
+            landmarkName = "HandsFromPoints::extractHandBlobs(cv::Mat mat, const std::list&lt;Blob&gt;&amp; lBlobs, int bbXY, int bbZ)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

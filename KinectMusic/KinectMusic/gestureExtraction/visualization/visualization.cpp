@@ -21,21 +21,22 @@ bool Visualization::isNeedRedraw = false;
 Visualization::Visualization() {
     cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );
     cv::moveWindow("Display window", 320, 10);
+    //cv::resizeWindow("Display window", 640, 480);
     p_vis = this;
 }
 
 bool Visualization::showImage() {
     pthread_mutex_lock(&visualisation_mutex);
     isNeedRedraw = false;
-    pthread_mutex_unlock(&visualisation_mutex);
-    
     if(p_vis == nullptr){
         Visualization();
     }
     cv::flip(matImage, matImage, 1);
-    cv::Mat matImageRes;
-    cv::resize(matImage, matImageRes, cv::Size(matImage.cols >> BLOBS_RESIZE_POW, matImage.rows >> BLOBS_RESIZE_POW));
-    cv::imshow( "Display window", matImageRes);
+    //cv::Mat matImageRes;
+    //cv::resize(matImage, matImageRes, cv::Size(matImage.cols >> BLOBS_RESIZE_POW, matImage.rows >> BLOBS_RESIZE_POW));
+    cv::imshow( "Display window", matImage);
+    pthread_mutex_unlock(&visualisation_mutex);
+    
     if(cv::waitKey(1) == 27) {
         return false;
     }
@@ -45,7 +46,7 @@ bool Visualization::showImage() {
         CSOUND_START = true;
 #endif //USE_CSOUND
     
-    static int frameCount(0);
+    /*static int frameCount(0);
     static std::clock_t t = clock();
     if(frameNum % 30 == 0){
         std::clock_t next_t = clock();
@@ -55,7 +56,7 @@ bool Visualization::showImage() {
         }
         t = next_t;
     }
-    ++frameCount;
+    ++frameCount;*/
     return true;
 }
 
@@ -75,8 +76,8 @@ void Visualization::mat2img(cv::Mat mat, cv::Mat& matImg) {
         uint16_t d16 = *p_mat16;
         
         if(d16 && d16 < MAX_KINECT_VALUE) {
-            *p_r = 255 - d16 * 255. / MAX_KINECT_VALUE;
-            *p_b = 0;
+            *p_b = *p_g =*p_r = 255 - d16 * 255. / MAX_KINECT_VALUE;
+            //*p_b = 0;
         }
         /*else {
             *p_r = 0;
@@ -103,7 +104,7 @@ void Visualization::hands2img(const std::list<Hand>& lHands, cv::Mat& matImg, bo
     }
 }
 
-void Visualization::tracks2img(const std::vector<Tracking>& vTracks, cv::Mat& matImg, bool drawKeyPoints){
+void Visualization::tracks2img(const std::vector<Track>& vTracks, cv::Mat& matImg, bool drawKeyPoints){
     int count(0);
     for(auto& track : vTracks) {
         std::list<Hand> lHands = track.getLHands();
@@ -112,7 +113,7 @@ void Visualization::tracks2img(const std::vector<Tracking>& vTracks, cv::Mat& ma
             continue;
         }
         Hand& hand = lHands.back();
-        cv::Scalar color = count == 0? cv::Scalar(0,1,0) : cv::Scalar(0,1,1);
+        cv::Scalar color = count == 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
         hand2img(hand, matImg, color);
         if(drawKeyPoints)
             keyPoint2img(hand.keyPoint, matImg, cv::Scalar(127, 127, 127), 10);
@@ -121,28 +122,82 @@ void Visualization::tracks2img(const std::vector<Tracking>& vTracks, cv::Mat& ma
 }
 
 void Visualization::handsTrackedStreams2img(const std::vector<std::vector<HandData>>& handsTrackedStreams, cv::Mat& matImg, size_t length){
-    int pointSize(10);
-    int count(0);
+    int pointSize(5);
+    int count(-1);
+    std::vector<cv::Point3i> keyPoints;
+    std::vector<int> directions;
+    std::vector<cv::Scalar> colors;
     for(auto& handsTrackedStream : handsTrackedStreams) {
-        cv::Scalar color = count == 1? cv::Scalar(127,255,127) : cv::Scalar(127,255,255);
+        count++;
+        if(handsTrackedStream.empty())
+            continue;
         size_t length1 = length;
         if(handsTrackedStream.size() < length1)
             length1 = handsTrackedStream.size();
         auto rit = handsTrackedStream.rbegin();
+        
+        std::list<int> speeds;
+        int totalCount(0);
         for(int i = 0; i <= length1; i++, rit++){
-            const auto& type = rit->type;
-            if(type< 0)
-                continue;
-            const auto& keyPoint =rit->keyPoint;
-            cv::Scalar color1 = type == 1 ? cv::Scalar(255, 0, 0) : color;
-            int pointSize1 = type == 0 ? pointSize : pointSize * 2;
-            keyPoint2img(keyPoint, matImg, color1, pointSize1);
-            if(type == 1)
+            const auto& phase = rit->phase;
+            const auto& speed = rit->speed;
+            if(phase < 0 || speed < 0)
+                break;
+            totalCount++;
+            speeds.push_front(speed);
+        }
+        if(totalCount < 3){
+            continue;
+        }
+        
+        int fastCount(0);
+        int count_speeds(0);
+        for(auto& speed : speeds){
+            fastCount+= speed;
+            count_speeds++;
+            if(count_speeds == 4)
                 break;
         }
-        count++;
+        
+        cv::Scalar color1 = fastCount >= 2 ? cv::Scalar(0,0,255) : cv::Scalar(204,204,0);
+        rit = handsTrackedStream.rbegin();
+        cv::Point3i startKeyPoint(-1,-1,-1);
+        int direction(-1);
+        for(int i = 0; i <= length1; i++, rit++){
+            const auto& phase = rit->phase;
+            const auto& speed = rit->speed;
+            if(phase < 0 || speed < 0)
+                break;
+            const auto& keyPoint = rit->keyPoint;
+            startKeyPoint = keyPoint;
+            direction = rit->direction;
+            int pointSize1 = phase == 1 ?  pointSize * 2 : pointSize;
+            keyPoint2img(keyPoint, matImg, color1, pointSize1);
+            if(phase == 1)
+                break;
+        }
+        if(startKeyPoint.x != -1) {
+            keyPoints.push_back(startKeyPoint);
+            cv::Scalar color = count == 0? cv::Scalar(0,127,0) : cv::Scalar(127,0,0);
+            colors.push_back(color);
+            directions.push_back(direction);
+        };
     }
     
+    if(keyPoints.empty())
+        return;
+    
+    cv::flip(matImg, matImg, 1);
+    for(int i = 0; i < keyPoints.size(); i++){
+        double x = 1.0 - static_cast<double>(keyPoints[i].x) / matImg.cols;
+        auto& direction = directions[i];
+        std::string text = direction == 0 ? "Right" :
+        direction == 1 ? "Left" :
+        direction == 2 ? "Up" :
+        direction == 3 ? "Down" : "Forward";
+        drawText(matImg, text, 1.5, 3, colors[i], cv::Point2f(x, 0.3));
+    }
+    cv::flip(matImg, matImg, 1);
 }
 
 void Visualization::hand2img(const Hand& hand, cv::Mat& matImg, const cv::Scalar& color){
@@ -153,7 +208,7 @@ void Visualization::hand2img(const Hand& hand, cv::Mat& matImg, const cv::Scalar
             colorPoint[i] *= col;
         int x = point.x + hand.refPoint.x;
         int y = point.y + hand.refPoint.y;
-        circle(matImg, cv::Point(x, y), 1,  colorPoint, -1);
+        cv::circle(matImg, cv::Point(x, y), 1,  colorPoint, -1);
     }
 }
 
@@ -162,7 +217,22 @@ void Visualization::keyPoint2img(const cv::Point3i& keyPoint, cv::Mat& matImg, c
     int y = keyPoint.y;
     if(x < 0 || y < 0)
         return;
-    circle(matImg, cv::Point(x, y), size,  color, -1);
+    cv::circle(matImg, cv::Point(x, y), size,  color, -1);
 }
 
-
+void Visualization::drawText(cv::Mat& mat, std::string text, double fontScale, int thickness, cv::Scalar color, cv::Point2f textCenter)
+{
+    int fontFace = cv::FONT_HERSHEY_SIMPLEX;
+    
+    int baseline = 0;
+    cv::Size textSize = cv::getTextSize(text, fontFace,
+                                fontScale, thickness, &baseline);
+    baseline += thickness;
+    
+    // center the text
+    cv::Point textOrg((mat.cols - textSize.width) * textCenter.x,
+                  (mat.rows + textSize.height) * textCenter.y);
+    
+    cv::putText(mat, text, textOrg, fontFace, fontScale,
+            color, thickness, 8);
+}

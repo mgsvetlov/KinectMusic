@@ -10,65 +10,105 @@
 #include "../tracking/tracking.h"
 
 std::vector<std::vector<HandData>> Gesture::handsTrackedStreams (2);
+double Gesture::spaceCoeff(9./6400);
+double Gesture::speedThreshSlow (12e3 * Gesture::spaceCoeff), Gesture::speedThreshFast(16e3 * Gesture::spaceCoeff), Gesture::speedThreshEnd(4e3 * Gesture::spaceCoeff);
 
-void Gesture::addDataToStream(const std::vector<Tracking>& tracks){
+void Gesture::analyzeGestures(const std::vector<Track>& tracks){
+    Gesture::addDataToStream(tracks);
+    for(auto& handsTrackedStream : handsTrackedStreams) {
+        analyzeGesture(handsTrackedStream);
+    }
+}
+
+void Gesture::addDataToStream(const std::vector<Track>& tracks){
     for(int i = 0; i < 2; i++){
         auto& track = tracks[i];
         auto& handsTrackedStream = handsTrackedStreams[i];
         const std::list<Hand>& lHands = track.getLHands();
         if(lHands.empty()){
-            handsTrackedStream.push_back(HandData(cv::Point3i(-1,-1,-1), -2));
+            handsTrackedStream.push_back(HandData(cv::Point3i(-1,-1,-1),cv::Point3d(-1,-1,-1), -2));
         }
         else {
             const cv::Point3i& keyPoint = lHands.back().getKeyPoint();
-            handsTrackedStream.push_back(HandData(keyPoint, -1));
+            double z = keyPoint.z;
+            double x = keyPoint.x * z * Gesture::spaceCoeff;
+            double y = keyPoint.y * z * Gesture::spaceCoeff;
+            handsTrackedStream.push_back(HandData(keyPoint, cv::Point3d(x,y,z), -1));
         }
         if(handsTrackedStream.size() > 300)
             handsTrackedStream.erase(handsTrackedStream.begin());
     }
 }
 
-void Gesture::analyzeGestures(){
-    for(auto& handsTrackedStream : handsTrackedStreams) {
-        analyzeGesture(handsTrackedStream);
-    }
-}
-
 void Gesture::analyzeGesture(std::vector<HandData>& handsTrackedStream){
-    if(handsTrackedStream.empty())
-        return;
-    HandData& handDataBack = handsTrackedStream.back();
-    int& type = handDataBack.type;
-    size_t N = 4;
     size_t size = handsTrackedStream.size();
+    if(size < 2)
+        return;
+    
+    auto rit = handsTrackedStream.rbegin();
+    HandData& handDataBack = *rit;
+    int& phase = handDataBack.phase;
+    int& speed = handDataBack.speed;
+    int& direction = handDataBack.direction;
+    cv::Point3d& keyPointCalc = handDataBack.keyPointCalc;
+    size_t N = 4;
     if(N >= size - 1)
         N = size - 1;
-    if(type == -2) {
-        int& type1 = handsTrackedStream[size - 1 - N].type;
-        if( type1 == 0 && type1 == 1 )
-            type1 = 2; //конец
+    
+    rit++;
+    int phasePrev = rit->phase;
+    if( phasePrev == 0 || phasePrev == 1){
+        cv::Vec3d dist = keyPointCalc - rit->keyPointCalc;
+        double length = sqrt(static_cast<double>(dist[0]*dist[0] + dist[1]*dist[1] + dist[2]*dist[2]));
+        if(length < speedThreshEnd) {
+            phase = 2; //конец
+            speed = length >  Gesture::speedThreshFast ? 1 : 0;
+        }
+        else {
+            phase = 0; //середина
+            speed = length > Gesture::speedThreshFast ? 1 : 0;
+        }
         return;
     }
-    auto rit = handsTrackedStream.rbegin();
+    
+    rit = handsTrackedStream.rbegin();
     rit++;
+    double lengthMax (0);
+    cv::Vec3d distMax (0,0,0);
     for(size_t i = 0; i < N; i++, rit++){
-        int type1 = rit->type;
-        if(type1 == -2)
+        int phase1 = rit->phase;
+        if(phase1 >= 0)
+            break;
+        if(phase1 == -2)
             continue;
-        cv::Vec3i dist = handDataBack.keyPoint - rit->keyPoint;
-        double length = static_cast<double>(dist[0]*dist[0] + dist[1]*dist[1]) / (i+1);
-        if((type1 == -1 || type1 == 2) && length > 400){
-            type = 1; //начало
-            break;
-        }
-        else if( type1 == 0 || type1 == 1){
-            if(length < 10) {
-                type = 2; //конец
-            }
-            else {
-                type = 0; //середина
-            }
-            break;
+        cv::Vec3d dist = keyPointCalc - rit->keyPointCalc;
+        double length = sqrt(static_cast<double>(dist[0]*dist[0] + dist[1]*dist[1] + dist[2]*dist[2])) / (i+1);
+        if(length > lengthMax){
+            lengthMax = length;
+            distMax = dist;
         }
     }
+    
+    if(lengthMax > Gesture::speedThreshSlow) {
+        double dx = std::abs(distMax[0]);
+        double dy = std::abs(distMax[1]);
+        double dz = std::abs(distMax[2]);
+        int ind = (dx > dy && dx > dz)? 0 : dy > dz ? 1 : 2;
+        if(ind == 2 && distMax[2] > 0)
+            return;
+        switch(ind){
+            case 0:
+                direction = distMax[0] < 0 ? 0 : 1;
+                break;
+            case 1:
+                direction = distMax[1] < 0 ? 2 : 3;
+                break;
+            default:
+                direction = 4;
+        }
+        phase = 1; //начало
+        speed = lengthMax > Gesture::speedThreshFast ? 1 : 0;
+       
+    }
+    
 }

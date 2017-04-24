@@ -8,15 +8,7 @@
 
 #include "handsheadextractor.h"
 
-HandsHeadExtractor::HandsHeadExtractor(cv::Mat mat, int filt_size, int filt_depth, int iterCount) :
-mat (mat),
-filt_size(filt_size),
-filt_depth(filt_depth),
-iterCount(iterCount)
-{    
-}
-
-cv::Mat HandsHeadExtractor::extractHandsHead()
+cv::Mat HandsHeadExtractor::extractHandsHead(cv::Mat mat, int filt_size, int filt_depth, int core_half_size)
 {
     cv::Mat matDst = cv::Mat_<uint16_t>::zeros(mat.size());
     uint16_t* p_mat = (uint16_t*)(mat.data);
@@ -29,13 +21,13 @@ cv::Mat HandsHeadExtractor::extractHandsHead()
                 continue;
             int filt_size_ = sqrt(static_cast<double>(MAX_KINECT_DEPTH) /val) * filt_size;
             bool isValue(true);
-            for(int m = -iterCount; m <= iterCount; m++){
+            for(int m = -core_half_size; m <= core_half_size; m++){
                 int y_ = y + m * filt_size_;
                 if(y_ < 0)
                     continue;
                 if(y_ >= mat.rows)
                     break;
-                for(int n = -iterCount; n <= iterCount; n++){
+                for(int n = -core_half_size; n <= core_half_size; n++){
                     if(!m && !n)
                         continue;
                     int x_ = x + n * filt_size_;
@@ -44,7 +36,7 @@ cv::Mat HandsHeadExtractor::extractHandsHead()
                     if(x_ >= mat.cols)
                         break;
                     uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
-                    if(val_ && val_ - val <= filt_depth * iterCount){
+                    if(val_ && val_ - val <= filt_depth * (m+n) * 0.5){
                         isValue = false;
                         break;
                     }

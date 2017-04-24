@@ -6,8 +6,8 @@
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
 
-#ifndef Gesture_h
-#define Gesture_h
+#ifndef tracking_h
+#define tracking_h
 
 #include <stdio.h>
 #include "../types.h"
@@ -15,20 +15,20 @@
 #include "../hand/hand.h"
 
 
-class Tracking {
+class Track {
 public:
-    Tracking(){}
-    Tracking(const Hand& hand);
+    Track(){}
+    Track(const Hand& hand);
     static void analyzeFrame(const std::list<Hand>& lBlobs);
-    static const std::vector<Tracking>& getTracksConst() {return tracks;}
+    static const std::vector<Track>& getTracksConst() {return tracks;}
     const std::list<Hand>& getLHands() const { return lHands;}
 private:
     double dist2hand(const Hand& hand);
     void addHandData(const Hand& hand);
 private:
-    static std::vector<Tracking> tracks;
+    static std::vector<Track> tracks;
     bool isHandFound = false;
     std::list<Hand> lHands;
 };
 
-#endif /* Gesture_h */
+#endif /* tracking_h */
