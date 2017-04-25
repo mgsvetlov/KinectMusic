@@ -17,9 +17,9 @@ class Track;
 struct HandData {
     cv::Point3i keyPoint;
     cv::Point3d keyPointCalc;
-    int phase = -1; //-2 no data, -1 not in gest, 0 gest, 1 start, 2 end
+    cv::Vec3d moveFromStartVec= cv::Point3d(0,0,0);
+    int phase = -1; //-2 no data, -1 not in gest, 0 gest, 1 start, -100 end
     int speed = -1;
-    int direction = -1;
     HandData() {}
     HandData(const cv::Point3i& keyPoint, const cv::Point3d& keyPointCalc, int phase) :
     keyPoint(keyPoint),
@@ -36,8 +36,9 @@ private:
     static void addDataToStream(const std::vector<Track>& tracks);
     static void analyzeGesture(std::vector<HandData>& handsTrackedStream);
 
-private:
+public:
     static double speedThreshSlow, speedThreshFast, speedThreshEnd;
+private:
     static std::vector<std::vector<HandData>> handsTrackedStreams;
     static double spaceCoeff;
 };

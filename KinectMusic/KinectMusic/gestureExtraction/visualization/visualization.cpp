@@ -136,44 +136,48 @@ void Visualization::handsTrackedStreams2img(const std::vector<std::vector<HandDa
             length1 = handsTrackedStream.size();
         auto rit = handsTrackedStream.rbegin();
         
-        std::list<int> speeds;
-        int totalCount(0);
-        for(int i = 0; i <= length1; i++, rit++){
-            const auto& phase = rit->phase;
-            const auto& speed = rit->speed;
-            if(phase < 0 || speed < 0)
-                break;
-            totalCount++;
-            speeds.push_front(speed);
-        }
-        if(totalCount < 3){
-            continue;
-        }
-        
-        int fastCount(0);
-        int count_speeds(0);
-        for(auto& speed : speeds){
-            fastCount+= speed;
-            count_speeds++;
-            if(count_speeds == 4)
-                break;
-        }
-        
-        cv::Scalar color1 = fastCount >= 2 ? cv::Scalar(0,0,255) : cv::Scalar(204,204,0);
-        rit = handsTrackedStream.rbegin();
         cv::Point3i startKeyPoint(-1,-1,-1);
         int direction(-1);
+        cv::Vec3d moveFromStartVec = rit->moveFromStartVec;
+        double dx = std::abs(moveFromStartVec[0]);
+        double dy = std::abs(moveFromStartVec[1]);
+        double dz = std::abs(moveFromStartVec[2]);
+        int ind = (dx > dy && dx > dz)? 0 : dy > dz ? 1 : 2;
+        if(ind == 2 && moveFromStartVec[2] > 0)
+            return;
+        switch(ind){
+            case 0:
+                direction = moveFromStartVec[0] < 0 ? 0 : 1;
+                break;
+            case 1:
+                direction = moveFromStartVec[1] < 0 ? 2 : 3;
+                break;
+            default:
+                direction = 4;
+        }
+        
+        cv::Scalar color1 = cv::Scalar(0,0,255);
+        if(rit->phase >= 0 || rit->phase == -100){
+            if(rit->phase >= 0)
+                moveFromStartVec /= rit->phase + 1;
+            else {
+                auto ritPrev = rit + 1 ;
+                moveFromStartVec /= ritPrev->phase + 2;
+            }
+            double length = sqrt(static_cast<double>(moveFromStartVec[0] * moveFromStartVec[0] + moveFromStartVec[1] * moveFromStartVec[1] + moveFromStartVec[2] * moveFromStartVec[2]));
+            color1 = length >  Gesture::speedThreshFast ? cv::Scalar(0,0,255) : cv::Scalar(204,204,0);
+        }
+        
         for(int i = 0; i <= length1; i++, rit++){
             const auto& phase = rit->phase;
             const auto& speed = rit->speed;
-            if(phase < 0 || speed < 0)
+            if((phase < 0 && phase != -100) || speed < 0)
                 break;
             const auto& keyPoint = rit->keyPoint;
             startKeyPoint = keyPoint;
-            direction = rit->direction;
-            int pointSize1 = phase == 1 ?  pointSize * 2 : pointSize;
+            int pointSize1 = phase == 0 ?  pointSize * 2 : pointSize;
             keyPoint2img(keyPoint, matImg, color1, pointSize1);
-            if(phase == 1)
+            if(phase == 0)
                 break;
         }
         if(startKeyPoint.x != -1) {
