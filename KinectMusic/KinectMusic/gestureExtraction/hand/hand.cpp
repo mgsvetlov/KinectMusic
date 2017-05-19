@@ -11,12 +11,18 @@
 #include <queue>
 #include <vector>
 
+cv::Mat Hand::matHand, Hand::matHandOrig;
+
 Hand::Hand(cv::Mat mat, int bbXY, const cv::Point3i& keyPoint) :
     keyPoint(keyPoint),
     mat(mat),
     refPoint(keyPoint.x - bbXY, keyPoint.y - bbXY),
     size (bbXY * 2, bbXY * 2)
 {
+    if(matHand.empty())
+        matHand = cv::Mat_<uint16_t>::zeros(size);
+    if(matHandOrig.empty())
+        matHandOrig = cv::Mat_<uint16_t>::zeros(size);
     int x = keyPoint.x;
     int y = keyPoint.y;
     int z = keyPoint.z;
@@ -35,18 +41,27 @@ Hand::Hand(cv::Mat mat, int bbXY, const cv::Point3i& keyPoint) :
 }
 
 Hand Hand::extractHand() const{
+/*****************/
     std::list<Hand> lHands;
     cv::Point2i center (size.width >> 1, size.height >>1);
     int w = size.width;
     int h = size.height;
-    cv::Mat matHand = cv::Mat_<uint16_t>::zeros(size);
-    cv::Mat matHandOrig = cv::Mat_<uint16_t>::zeros(size);
-    uint16_t* const p_matHand = (uint16_t*)(matHand.data);
-    uint16_t* const p_matHandOrig = (uint16_t*)(matHandOrig.data);
+    //cv::Mat matHand = cv::Mat_<uint16_t>::zeros(size);
+    //cv::Mat matHandOrig = cv::Mat_<uint16_t>::zeros(size);
+    
+    //uint16_t* const p_matHand = (uint16_t*)(matHand.data);
+    //uint16_t* const p_matHandOrig = (uint16_t*)(matHandOrig.data);
+    matHand.setTo(cv::Scalar(0));
+    matHandOrig.setTo(cv::Scalar(0));
     for(auto& point : lPoints) {
-        int ind = point.y * w + point.x;
-        *(p_matHandOrig + ind) = *(p_matHand + ind) = point.z;
+        matHand.at<uint16_t> (point.y, point.x )=
+        matHandOrig.at<uint16_t> (point.y, point.x ) = point.z;
+        /*int ind = point.y * w + point.x;
+        *(p_matHandOrig + ind) = static_cast<uint16_t>(point.z);
+        *(p_matHand + ind) = static_cast<uint16_t>(point.z);*/
     }
+    //return Hand();
+/*****************/
     uint16_t* p_matHand1 = (uint16_t*)(matHand.data);
     for(int i = 0; i< matHand.total(); i++, p_matHand1++) {
         if(*p_matHand1 == 0)
@@ -73,17 +88,17 @@ Hand Hand::extractHand() const{
                     if(xNeighb < 0 || xNeighb >= w)
                         continue;
                     int indNeighb = yNeighb * w + xNeighb;
-                    uint16_t valNeighb =  *(p_matHand + indNeighb);
+                    uint16_t valNeighb =  matHand.at<uint16_t> (yNeighb, xNeighb );
                     if(valNeighb == 0)
                         continue;
-                    uint16_t val = *(p_matHandOrig + ind);
+                    uint16_t val = matHandOrig.at<uint16_t> (yNeighb, xNeighb );
                     if(std::abs(val - valNeighb) > 10)
                         continue;
-                    int x1 = indNeighb % w;
-                    int y1 = (indNeighb-x_) / w;
-                    hand.lPoints.push_back(cv::Point3i(x1, y1,valNeighb));
+                    int x1 = indNeighb % w;//????
+                    int y1 = (indNeighb-x_) / w;//????
+                    hand.lPoints.push_back(cv::Point3i(xNeighb, yNeighb,valNeighb));
                     q.push(indNeighb);
-                    *(p_matHand + indNeighb) = 0;
+                    matHand.at<uint16_t> (yNeighb, xNeighb ) = 0;
                 }
             }
             

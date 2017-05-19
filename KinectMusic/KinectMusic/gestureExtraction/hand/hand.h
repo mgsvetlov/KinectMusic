@@ -28,6 +28,8 @@ private:
     std::list<cv::Point3i> lPoints;
     std::vector<std::vector<cv::Point3i>> vvPointsBorder;
     
+    static cv::Mat matHand, matHandOrig;
+    
     friend class Visualization;
     friend class HandsFromPoints;
     friend class Track;

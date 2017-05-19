@@ -134,7 +134,7 @@ void Visualization::handsTrackedStreams2img(const std::vector<std::vector<HandDa
         size_t length1 = length;
         if(handsTrackedStream.size() < length1)
             length1 = handsTrackedStream.size();
-        auto rit = handsTrackedStream.rbegin();
+        auto rit = handsTrackedStream.crbegin();
         
         cv::Point3i startKeyPoint(-1,-1,-1);
         int direction(-1);

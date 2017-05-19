@@ -85,7 +85,7 @@ void *analyze_threadfunc(void *arg) {
         //extract hands
         static int filt_size(8), filt_depth(15), core_half_size(2);
         cv::Mat matDst = HandsHeadExtractor::extractHandsHead(matBlobs, filt_size, filt_depth, core_half_size);
-        
+       
         std::list<Blob> lBlobs1;
         int mode (1);
         Blob::findBlobs(matDst, lBlobs1, mode);
@@ -93,20 +93,20 @@ void *analyze_threadfunc(void *arg) {
         std::list<Blob> lBlobsClust;
         int xyThresh(20), depthThresh(1000);
         Blob::blobsClustering(lBlobs1, lBlobsClust, xyThresh, depthThresh);
-        
-        //extract hands from points in full matrix
+                //extract hands from points in full matrix
         int bbXY (60), bbZ(200);
         std::list<Hand> lHands = HandsFromPoints::extractHandBlobs(mat16, lBlobsClust, bbXY, bbZ);
         
         //tracking hands
         Track::analyzeFrame(lHands);
         std::vector<Track> vTracks = Track::getTracksConst();
-        
+       
         //create and analyze hands tracked stream data
         Gesture::analyzeGestures(vTracks);
         
         cv::Mat img;
         Visualization::mat2img(mat16, img);
+        
         Visualization::tracks2img( vTracks, img, false);
         Visualization::handsTrackedStreams2img(Gesture::getHandsTrackedStreams(), img, 60);
         
