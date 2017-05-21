@@ -14,7 +14,7 @@
 
 class GestureFabrique {
 public:
-    static void analyzeGestures(const std::vector<Track>& tracks);
+    static void extractGestures(const std::vector<Track>& tracks);
     static const std::vector<Gesture>& getGestures() {return gestureFabriquePtr->gestures;}
     static cv::Point3d convertToRealSpace(const cv::Point3i& p);
     static cv::Point3i convertToCameraSpace(const cv::Point3d& p);
@@ -22,7 +22,7 @@ public:
 private:
     GestureFabrique(size_t gestureCount);
     void addDataToGestures(const std::vector<Track>& tracks);
-    void analyzeGestures();
+    void extractGestures();
     std::string getCurrentTime();
 public:
     static const double spaceCoeff;

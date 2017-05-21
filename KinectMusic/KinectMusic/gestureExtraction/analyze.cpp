@@ -51,7 +51,6 @@ volatile int analyzeThreadId = 0;
 
 void *analyze_threadfunc(void *arg) {
     
-    int frameNum_analyze_local (0);
     while (!die){
         pthread_mutex_lock(&depth_mutex);
         if(frameNum_analyze == frameNum) {
@@ -59,7 +58,7 @@ void *analyze_threadfunc(void *arg) {
             usleep(100);
             continue;
         }
-        frameNum_analyze_local = frameNum_analyze = frameNum;
+        frameNum_analyze = frameNum;
         cv::Mat mat16(h, w, CV_16U, depthAnalyze);
         pthread_mutex_unlock(&depth_mutex);
         
@@ -102,7 +101,7 @@ void *analyze_threadfunc(void *arg) {
         std::vector<Track> vTracks = Track::getTracksConst();
        
         //create and analyze hands tracked stream data
-        GestureFabrique::analyzeGestures(vTracks);
+        GestureFabrique::extractGestures(vTracks);
         
         cv::Mat img;
         Visualization::mat2img(mat16, img);

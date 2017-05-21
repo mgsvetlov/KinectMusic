@@ -19,14 +19,14 @@ const double GestureFabrique::spaceCoeff(9./6400);
 const double GestureFabrique::speedThreshSlow (8e3 * GestureFabrique::spaceCoeff), GestureFabrique::speedThreshFast(16e3 * GestureFabrique::spaceCoeff), GestureFabrique::speedThreshEnd(2e3 * GestureFabrique::spaceCoeff);
 std::ofstream GestureFabrique::gesturesLog;
 
-void GestureFabrique::analyzeGestures(const std::vector<Track>& tracks){
+void GestureFabrique::extractGestures(const std::vector<Track>& tracks){
     if(!gestureFabriquePtr)
         gestureFabriquePtr = new GestureFabrique(Track::trackCount);
     gestureFabriquePtr->addDataToGestures(tracks);
-    gestureFabriquePtr->analyzeGestures();
+    gestureFabriquePtr->extractGestures();
 }
 
-GestureFabrique::GestureFabrique(size_t gestureCount) : gestures(gestureCount) {
+GestureFabrique::GestureFabrique(size_t gestureCount) {
     for(size_t ind = 0; ind < gestureCount; ind++)
         gestures.push_back(Gesture(ind));
     gesturesLog.open("gestures" + getCurrentTime() + ".log");
@@ -43,9 +43,9 @@ void GestureFabrique::addDataToGestures(const std::vector<Track>& tracks){
         gestures[i].addData(tracks[i]);
 }
 
-void GestureFabrique::analyzeGestures(){
+void GestureFabrique::extractGestures(){
     for(auto& gesture : gestures)
-        gesture.analyze();
+        gesture.extract();
 }
 
 std::string GestureFabrique::getCurrentTime(){

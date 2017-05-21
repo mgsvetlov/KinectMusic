@@ -9,11 +9,12 @@
 #include "gesture.h"
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
+#include "../analyze.h"
 
 void Gesture::addData(const Track& track){
     const std::list<Hand>& lHands = track.getLHands();
     if(lHands.empty()){
-        handsData.push_back(HandData(cv::Point3i(-1,-1,-1), -2));
+        handsData.push_back(HandData(cv::Point3i(-1,-1,-1), -1));
     }
     else {
         const cv::Point3i& point = lHands.back().getKeyPoint();
@@ -21,7 +22,7 @@ void Gesture::addData(const Track& track){
     }
 }
 
-void Gesture::analyze(){
+void Gesture::extract(){
     size_t size = handsData.size();
     if(size < 2)
         return;
@@ -32,11 +33,12 @@ void Gesture::analyze(){
     
     auto ritPrev = handsData.rbegin();
     ritPrev++;
-    int phasePrev = ritPrev->phase;
+    int& phasePrev = ritPrev->phase;
+    const cv::Point3d& pointPrev = ritPrev->point;
     
-    if(point.x == -1){
+    if(point.x == -1 || pointPrev.x == -1){
         if( phasePrev >= 0 ){
-            phase = -100; //конец
+            phase = -1; //конец
             log();
             eraseHandsData(1); //erased all but last
         }
@@ -51,46 +53,29 @@ void Gesture::analyze(){
     double length = sqrt(static_cast<double>(moveVec[0] * moveVec[0] + moveVec[1] * moveVec[1] + moveVec[2] * moveVec[2]));
     
     if( phasePrev >= 0 ){
-        if(length < GestureFabrique::speedThreshEnd) {
-            phase = -100; //конец
-            log();
-            eraseHandsData(1); //erased all but last
+        if(handsData.size() > 2 && length < GestureFabrique::speedThreshEnd) {
+            rit++, ritPrev++;
+            cv::Vec3d moveVec = rit->point - ritPrev->point;
+            double length = sqrt(static_cast<double>(moveVec[0] * moveVec[0] + moveVec[1] * moveVec[1] + moveVec[2] * moveVec[2]));
+            if(length < GestureFabrique::speedThreshEnd){
+                phase = -1; //конец
+                log();
+                eraseHandsData(1); //erased all but last
+            }
+            else {
+               phase = frameNum; //середина 
+            }
         }
         else {
-            phase = phasePrev + 1; //середина
-        }
-        return;
-    }
-    
-    rit++;
-    double lengthMax (0);
-    cv::Vec3d distMax (0,0,0);
-    size_t N = 4;
-    if(N >= size - 1)
-        N = size - 1;
-    int iMax (-1);
-    for(size_t i = 0; i < N; i++, rit++){
-        int phase1 = rit->phase;
-        if(phase1 == -2)
-            continue;
-        cv::Vec3d dist = point - rit->point;
-        double length1 = sqrt(static_cast<double>(dist[0]*dist[0] + dist[1]*dist[1] + dist[2]*dist[2])) / (i+1);
-        if(length1 > lengthMax){
-            lengthMax = length1;
-            distMax = dist;
-            iMax = static_cast<int>(i);
+            phase = frameNum; //середина
         }
     }
-    if(iMax == -1){
-        eraseHandsData(1); //erased all but last
-        return;
-    }
-        
-    if(lengthMax > GestureFabrique::speedThreshSlow ) {
-        phase = 0; //начало
+    else if(length > GestureFabrique::speedThreshSlow ) {
+        phasePrev = frameNum - 1;
+        phase = frameNum; //начало
         eraseHandsData(2); //erased all but 2 lasts
     }
-    
+    return;
 }
 
 void Gesture::eraseHandsData(int nonErasedAtEndCount){
@@ -103,25 +88,12 @@ void Gesture::eraseHandsData(int nonErasedAtEndCount){
 }
 
 void Gesture::log(){
-    bool isGesture(false);
-    for( auto& handData : handsData){
-        if(handData.phase >= 0){
-            isGesture = true;
-            break;
-        }
-    }
-    if(!isGesture)
-        return;
-    
     std::ofstream& logFile = GestureFabrique::gesturesLog;
     logFile << "hand\t" << handInd << "\n";
-    bool startFound(false);
-    for( auto& handData : handsData){
-        if(handData.phase == 0)
-            startFound = true;
-        else if(handData.phase == -100 && !startFound)
-            continue;
-        logFile << handData.phase << "\t" << handData.point << "\n";
+    for( int i = 0; i < handsData.size(); ++i){
+        if(handsData[i].phase >=0)
+        logFile << handsData[i].phase
+        << "\t" << handsData[i].point << "\n";
     }
         
     logFile << std::endl;
