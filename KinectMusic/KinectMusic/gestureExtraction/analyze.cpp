@@ -21,7 +21,7 @@
 #include "handsHeadExtractor/handsfrompoints.h"
 #include "hand/hand.h"
 #include "tracking/tracking.h"
-#include "gesture/gesture.h"
+#include "gesture/gesturefabrique.h"
 
 #ifdef USE_CSOUND
 #include "../mapping/mapping.h"
@@ -102,16 +102,16 @@ void *analyze_threadfunc(void *arg) {
         std::vector<Track> vTracks = Track::getTracksConst();
        
         //create and analyze hands tracked stream data
-        Gesture::analyzeGestures(vTracks);
+        GestureFabrique::analyzeGestures(vTracks);
         
         cv::Mat img;
         Visualization::mat2img(mat16, img);
         
-        Visualization::tracks2img( vTracks, img, false);
-        Visualization::handsTrackedStreams2img(Gesture::getHandsTrackedStreams(), img, 60);
+        Visualization::hands2img( vTracks, img, false);
+        Visualization::gestures2img(GestureFabrique::getGestures(), img, 60);
         
 #ifdef USE_CSOUND
-        Mapping::MapDirect(Gesture::getGesturesConst());
+        //Mapping::MapDirect(Gesture::getGesturesConst());
 #endif //USE_CSOUND
         
         pthread_mutex_lock(&visualisation_mutex);
@@ -120,5 +120,8 @@ void *analyze_threadfunc(void *arg) {
         pthread_mutex_unlock(&visualisation_mutex);
         
     }
+    
+    GestureFabrique::destroy();
+    
     return NULL;
 }

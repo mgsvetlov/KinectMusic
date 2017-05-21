@@ -17,7 +17,7 @@ extern int BLOB_MIN_SIZE_LAST;
 extern int MAX_NEIGHB_DIFF_COARSE;
 extern int MAX_NEIGHB_DIFF_FINE;
 
-//#define USE_CSOUND
+#define USE_CSOUND
 
 #ifdef USE_CSOUND
 extern volatile bool CSOUND_START;

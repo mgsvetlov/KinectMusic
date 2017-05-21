@@ -15,31 +15,31 @@
 class Track;
 
 struct HandData {
-    cv::Point3i keyPoint;
-    cv::Point3d keyPointCalc;
-    cv::Vec3d moveFromStartVec= cv::Point3d(0,0,0);
+    cv::Point3d point;
     int phase = -1; //-2 no data, -1 not in gest, 0 gest, 1 start, -100 end
-    int speed = -1;
-    HandData() {}
-    HandData(const cv::Point3i& keyPoint, const cv::Point3d& keyPointCalc, int phase) :
-    keyPoint(keyPoint),
-    keyPointCalc(keyPointCalc),
+    HandData() : point (-1,-1,-1), phase(-2) {}
+    HandData(const cv::Point3d& point, int phase) :
+    point(point),
     phase(phase)
     {}
 };
 
-class Gesture {
+class Gesture{
 public:
-    static void analyzeGestures(const std::vector<Track>& tracks);
-    static const std::vector<std::vector<HandData>>& getHandsTrackedStreams() {return handsTrackedStreams;}
+    Gesture() : handInd(0), handsData(){}
+    Gesture(size_t ind) : handInd(ind), handsData() {}
+    void addData(const Track& track);
+    void analyze();
+    const std::vector<HandData>& getHandsData() const { return handsData;}
 private:
-    static void addDataToStream(const std::vector<Track>& tracks);
-    static void analyzeGesture(std::vector<HandData>& handsTrackedStream);
-
-public:
-    static double speedThreshSlow, speedThreshFast, speedThreshEnd;
+    void eraseHandsData(int nonErasedAtEndCount);
+    void log();
 private:
-    static std::vector<std::vector<HandData>> handsTrackedStreams;
-    static double spaceCoeff;
+    size_t handInd;
+    std::vector<HandData> handsData;
+    
+friend class Visualization;
 };
+
+
 #endif /* gesture_h */

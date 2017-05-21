@@ -12,7 +12,7 @@
 #include "../tracking/tracking.h"
 #include "../analyze.h"
 #include "../hand/hand.h"
-#include "../gesture/gesture.h"
+#include "../gesture/gesturefabrique.h"
 
 Visualization* Visualization::p_vis = nullptr;
 cv::Mat Visualization::matImage;
@@ -94,17 +94,7 @@ void Visualization::mat2img(cv::Mat mat, cv::Mat& matImg) {
     cv::merge(channels, matImg);
 }
 
-void Visualization::hands2img(const std::list<Hand>& lHands, cv::Mat& matImg, bool drawKeyPoints){
-    int count(0);
-    for(auto& hand : lHands) {
-        cv::Scalar color = count == 0? cv::Scalar(0,1,0) : cv::Scalar(0,1,1);
-        hand2img(hand, matImg, color);
-        keyPoint2img(hand.keyPoint, matImg, cv::Scalar(127, 127, 127), 10);
-        count++;
-    }
-}
-
-void Visualization::tracks2img(const std::vector<Track>& vTracks, cv::Mat& matImg, bool drawKeyPoints){
+void Visualization::hands2img(const std::vector<Track>& vTracks, cv::Mat& matImg, bool drawKeyPoints){
     int count(0);
     for(auto& track : vTracks) {
         std::list<Hand> lHands = track.getLHands();
@@ -121,87 +111,22 @@ void Visualization::tracks2img(const std::vector<Track>& vTracks, cv::Mat& matIm
     }
 }
 
-void Visualization::handsTrackedStreams2img(const std::vector<std::vector<HandData>>& handsTrackedStreams, cv::Mat& matImg, size_t length){
+void Visualization::gesture2img(const Gesture& gesture, cv::Mat& matImg){
     int pointSize(5);
-    int count(-1);
-    std::vector<cv::Point3i> keyPoints;
-    std::vector<int> directions;
-    std::vector<cv::Scalar> colors;
-    for(auto& handsTrackedStream : handsTrackedStreams) {
-        count++;
-        if(handsTrackedStream.empty())
-            continue;
-        size_t length1 = length;
-        if(handsTrackedStream.size() < length1)
-            length1 = handsTrackedStream.size();
-        auto rit = handsTrackedStream.crbegin();
-        
-        cv::Point3i startKeyPoint(-1,-1,-1);
-        int direction(-1);
-        cv::Vec3d moveFromStartVec = rit->moveFromStartVec;
-        double dx = std::abs(moveFromStartVec[0]);
-        double dy = std::abs(moveFromStartVec[1]);
-        double dz = std::abs(moveFromStartVec[2]);
-        int ind = (dx > dy && dx > dz)? 0 : dy > dz ? 1 : 2;
-        if(ind == 2 && moveFromStartVec[2] > 0)
-            return;
-        switch(ind){
-            case 0:
-                direction = moveFromStartVec[0] < 0 ? 0 : 1;
-                break;
-            case 1:
-                direction = moveFromStartVec[1] < 0 ? 2 : 3;
-                break;
-            default:
-                direction = 4;
+    cv::Scalar color = gesture.handInd == 0 ? cv::Scalar(0,0,255) : cv::Scalar(255,255, 0);
+    for(auto& handData : gesture.handsData) {
+        auto& point = handData.point;
+        if(point.x != -1){
+            cv::Point3i pointCamera = GestureFabrique::convertToCameraSpace(point);
+            keyPoint2img(pointCamera, matImg, color, pointSize);
         }
-        
-        cv::Scalar color1 = cv::Scalar(0,0,255);
-        if(rit->phase >= 0 || rit->phase == -100){
-            if(rit->phase >= 0)
-                moveFromStartVec /= rit->phase + 1;
-            else {
-                auto ritPrev = rit + 1 ;
-                moveFromStartVec /= ritPrev->phase + 2;
-            }
-            double length = sqrt(static_cast<double>(moveFromStartVec[0] * moveFromStartVec[0] + moveFromStartVec[1] * moveFromStartVec[1] + moveFromStartVec[2] * moveFromStartVec[2]));
-            color1 = length >  Gesture::speedThreshFast ? cv::Scalar(0,0,255) : cv::Scalar(204,204,0);
-        }
-        
-        for(int i = 0; i <= length1; i++, rit++){
-            const auto& phase = rit->phase;
-            const auto& speed = rit->speed;
-            if((phase < 0 && phase != -100) || speed < 0)
-                break;
-            const auto& keyPoint = rit->keyPoint;
-            startKeyPoint = keyPoint;
-            int pointSize1 = phase == 0 ?  pointSize * 2 : pointSize;
-            keyPoint2img(keyPoint, matImg, color1, pointSize1);
-            if(phase == 0)
-                break;
-        }
-        if(startKeyPoint.x != -1) {
-            keyPoints.push_back(startKeyPoint);
-            cv::Scalar color = count == 0? cv::Scalar(0,127,0) : cv::Scalar(127,0,0);
-            colors.push_back(color);
-            directions.push_back(direction);
-        };
     }
-    
-    if(keyPoints.empty())
-        return;
-    
-    cv::flip(matImg, matImg, 1);
-    for(int i = 0; i < keyPoints.size(); i++){
-        double x = 1.0 - static_cast<double>(keyPoints[i].x) / matImg.cols;
-        auto& direction = directions[i];
-        std::string text = direction == 0 ? "Right" :
-        direction == 1 ? "Left" :
-        direction == 2 ? "Up" :
-        direction == 3 ? "Down" : "Forward";
-        drawText(matImg, text, 1.5, 3, colors[i], cv::Point2f(x, 0.3));
+}
+
+void Visualization::gestures2img(const std::vector<Gesture>& gestures, cv::Mat& matImg, size_t length){
+    for(auto& gesture : gestures) {
+        gesture2img(gesture, matImg);
     }
-    cv::flip(matImg, matImg, 1);
 }
 
 void Visualization::hand2img(const Hand& hand, cv::Mat& matImg, const cv::Scalar& color){
@@ -224,6 +149,7 @@ void Visualization::keyPoint2img(const cv::Point3i& keyPoint, cv::Mat& matImg, c
     cv::circle(matImg, cv::Point(x, y), size,  color, -1);
 }
 
+//drawText(matImg, text, 1.5, 3, colors[i], cv::Point2f(0.5, 0.3)) on flipped img!
 void Visualization::drawText(cv::Mat& mat, std::string text, double fontScale, int thickness, cv::Scalar color, cv::Point2f textCenter)
 {
     int fontFace = cv::FONT_HERSHEY_SIMPLEX;

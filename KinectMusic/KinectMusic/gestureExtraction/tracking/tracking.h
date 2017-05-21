@@ -29,6 +29,8 @@ private:
     static std::vector<Track> tracks;
     bool isHandFound = false;
     std::list<Hand> lHands;
+public:
+    static const size_t trackCount = 2;
 };
 
 #endif /* tracking_h */

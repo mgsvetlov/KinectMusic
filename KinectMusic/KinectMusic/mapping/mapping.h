@@ -14,13 +14,13 @@
 
 #ifdef USE_CSOUND
 
-class Gesture;
+class GestureFabrique;
 
-class Mapping {
+/*class Mapping {
 public:
     static void MapDirect(const std::vector<Gesture>& gestures);
     static bool setPitchVol (const std::vector<std::vector<double>>& data);
-};
+};*/
 
 #endif //USE_CSOUND
 

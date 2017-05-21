@@ -11,7 +11,7 @@
 #include <cfloat>
 #include <limits>
 
-std::vector<Track> Track::tracks(2);
+std::vector<Track> Track::tracks(trackCount);
 
 /*static*/
 void Track::analyzeFrame(const std::list<Hand>& lHands){
