@@ -10,12 +10,15 @@
 #define gesturefabrique_h
 
 #include "gesture.h"
+#include "gestureStop.h"
+#include "gestureReturn.h"
 #include <fstream>
+#include <memory>
 
 class GestureFabrique {
 public:
     static void extractGestures(const std::vector<Track>& tracks);
-    static const std::vector<Gesture>& getGestures() {return gestureFabriquePtr->gestures;}
+    static const std::vector<std::shared_ptr<Gesture>>& getGestures() {return gestureFabriquePtr->gestures;}
     static cv::Point3d convertToRealSpace(const cv::Point3i& p);
     static cv::Point3i convertToCameraSpace(const cv::Point3d& p);
     static void destroy();
@@ -29,7 +32,7 @@ public:
     static const double speedThreshSlow, speedThreshFast, speedThreshEnd;
     static std::ofstream gesturesLog;
 private:
-    std::vector<Gesture> gestures;
+    std::vector<std::shared_ptr<Gesture>> gestures;
     static GestureFabrique* gestureFabriquePtr;
 };
 

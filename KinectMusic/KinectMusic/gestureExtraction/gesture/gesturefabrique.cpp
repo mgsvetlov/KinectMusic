@@ -27,8 +27,10 @@ void GestureFabrique::extractGestures(const std::vector<Track>& tracks){
 }
 
 GestureFabrique::GestureFabrique(size_t gestureCount) {
-    for(size_t ind = 0; ind < gestureCount; ind++)
-        gestures.push_back(Gesture(ind));
+    for(size_t ind = 0; ind < gestureCount; ind++){
+        std::shared_ptr<Gesture> pGesture { new GestureReturn(ind) };
+        gestures.push_back(pGesture);
+    }
     gesturesLog.open("gestures" + getCurrentTime() + ".log");
 }
 
@@ -40,12 +42,12 @@ void GestureFabrique::destroy(){
 
 void GestureFabrique::addDataToGestures(const std::vector<Track>& tracks){
     for(int i = 0; i < Track::trackCount; i++)
-        gestures[i].addData(tracks[i]);
+        gestures[i]->addData(tracks[i]);
 }
 
 void GestureFabrique::extractGestures(){
     for(auto& gesture : gestures)
-        gesture.extract();
+        gesture->extract();
 }
 
 std::string GestureFabrique::getCurrentTime(){
@@ -59,15 +61,15 @@ std::string GestureFabrique::getCurrentTime(){
 
 cv::Point3d GestureFabrique::convertToRealSpace(const cv::Point3i& p){
     double z = p.z;
-    double x = p.x * z * spaceCoeff;
-    double y = p.y * z * spaceCoeff;
+    double x = p.x;// * z * spaceCoeff;
+    double y = p.y;// * z * spaceCoeff;
     return cv::Point3d (x,y,z);
 }
 
 cv::Point3i GestureFabrique::convertToCameraSpace(const cv::Point3d& p){
     int z = p.z;
-    int x = p.x /( z * spaceCoeff);
-    int y = p.y /( z * spaceCoeff);
+    int x = p.x;// /( z * spaceCoeff);
+    int y = p.y;// /( z * spaceCoeff);
     return cv::Point3d (x,y,z);
 }
 

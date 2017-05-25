@@ -111,12 +111,12 @@ void Visualization::hands2img(const std::vector<Track>& vTracks, cv::Mat& matImg
     }
 }
 
-void Visualization::gesture2img(const Gesture& gesture, cv::Mat& matImg){
-    if(gesture.handsData.front().phase < 0)
+void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg){
+    if(gesture->handsData.front().phase < 0)
         return;
     int pointSize(5);
-    cv::Scalar color = gesture.handInd == 0 ? cv::Scalar(0,0,255) : cv::Scalar(255,255, 0);
-    for(auto& handData : gesture.handsData) {
+    cv::Scalar color = gesture->handInd == 0 ? cv::Scalar(0,0,255) : cv::Scalar(255,255, 0);
+    for(auto& handData : gesture->handsData) {
         auto& point = handData.point;
         if(point.x != -1 && handData.phase >= 0){
             cv::Point3i pointCamera = GestureFabrique::convertToCameraSpace(point);
@@ -125,7 +125,7 @@ void Visualization::gesture2img(const Gesture& gesture, cv::Mat& matImg){
     }
 }
 
-void Visualization::gestures2img(const std::vector<Gesture>& gestures, cv::Mat& matImg, size_t length){
+void Visualization::gestures2img(const std::vector<std::shared_ptr<Gesture>>& gestures, cv::Mat& matImg, size_t length){
     for(auto& gesture : gestures) {
         gesture2img(gesture, matImg);
     }

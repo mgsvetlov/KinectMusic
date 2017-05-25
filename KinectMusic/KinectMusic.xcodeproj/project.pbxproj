@@ -22,6 +22,8 @@
 		720C22951DF4236A0066104B /* gesture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720C22931DF4236A0066104B /* gesture.cpp */; };
 		721F32361BA8B7FF00EC1B59 /* CsoundLib64.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 721F32351BA8B7FF00EC1B59 /* CsoundLib64.framework */; };
 		725B1B9D1ED18A800028AE34 /* gesturefabrique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1B9B1ED18A800028AE34 /* gesturefabrique.cpp */; };
+		725B1BA01ED768A60028AE34 /* gestureStop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1B9E1ED768A60028AE34 /* gestureStop.cpp */; };
+		725B1BA31ED772170028AE34 /* gestureReturn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1BA11ED772170028AE34 /* gestureReturn.cpp */; };
 		726227401D90737D00644016 /* libopencv_calib3d.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 726227321D90737D00644016 /* libopencv_calib3d.2.4.9.dylib */; };
 		726227411D90737D00644016 /* libopencv_core.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 726227331D90737D00644016 /* libopencv_core.2.4.9.dylib */; };
 		726227421D90737D00644016 /* libopencv_features2d.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 726227341D90737D00644016 /* libopencv_features2d.2.4.9.dylib */; };
@@ -92,6 +94,10 @@
 		722141C31DB015AE00B697E8 /* libfreenect_registration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect_registration.h; sourceTree = "<group>"; };
 		725B1B9B1ED18A800028AE34 /* gesturefabrique.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gesturefabrique.cpp; path = gestureExtraction/gesture/gesturefabrique.cpp; sourceTree = "<group>"; };
 		725B1B9C1ED18A800028AE34 /* gesturefabrique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gesturefabrique.h; path = gestureExtraction/gesture/gesturefabrique.h; sourceTree = "<group>"; };
+		725B1B9E1ED768A60028AE34 /* gestureStop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gestureStop.cpp; path = gestureExtraction/gesture/gestureStop.cpp; sourceTree = "<group>"; };
+		725B1B9F1ED768A60028AE34 /* gestureStop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gestureStop.h; path = gestureExtraction/gesture/gestureStop.h; sourceTree = "<group>"; };
+		725B1BA11ED772170028AE34 /* gestureReturn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gestureReturn.cpp; path = gestureExtraction/gesture/gestureReturn.cpp; sourceTree = "<group>"; };
+		725B1BA21ED772170028AE34 /* gestureReturn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gestureReturn.h; path = gestureExtraction/gesture/gestureReturn.h; sourceTree = "<group>"; };
 		7262270F1D906ED600644016 /* libopencv_calib3d.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_calib3d.dylib; path = ../../../../../../../usr/local/lib/libopencv_calib3d.dylib; sourceTree = "<group>"; };
 		726227111D906EF300644016 /* libopencv_core.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_core.dylib; path = ../../../../../../../usr/local/lib/libopencv_core.dylib; sourceTree = "<group>"; };
 		726227131D906F0200644016 /* libopencv_features2d.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_features2d.dylib; path = ../../../../../../../usr/local/lib/libopencv_features2d.dylib; sourceTree = "<group>"; };
@@ -283,6 +289,10 @@
 				720C22931DF4236A0066104B /* gesture.cpp */,
 				725B1B9C1ED18A800028AE34 /* gesturefabrique.h */,
 				725B1B9B1ED18A800028AE34 /* gesturefabrique.cpp */,
+				725B1B9F1ED768A60028AE34 /* gestureStop.h */,
+				725B1B9E1ED768A60028AE34 /* gestureStop.cpp */,
+				725B1BA21ED772170028AE34 /* gestureReturn.h */,
+				725B1BA11ED772170028AE34 /* gestureReturn.cpp */,
 			);
 			name = gesture;
 			sourceTree = "<group>";
@@ -414,6 +424,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				72799BB31DC61EAE00BAC3DC /* visualization.cpp in Sources */,
+				725B1BA31ED772170028AE34 /* gestureReturn.cpp in Sources */,
 				7298B7271D8D85840093134C /* main.cpp in Sources */,
 				72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */,
 				72799BAA1DC61E6D00BAC3DC /* blob.cpp in Sources */,
@@ -432,6 +443,7 @@
 				720164C01A6C058B00BC721A /* tilt.c in Sources */,
 				720164BE1A6C058B00BC721A /* loader.c in Sources */,
 				72799BA31DC61D5700BAC3DC /* csound_.cpp in Sources */,
+				725B1BA01ED768A60028AE34 /* gestureStop.cpp in Sources */,
 				720164BD1A6C058B00BC721A /* flags.c in Sources */,
 				72799BA71DC61E5800BAC3DC /* analyze.cpp in Sources */,
 				72B332B21BAF1050003DA9DA /* opengl_.c in Sources */,
