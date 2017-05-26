@@ -29,14 +29,15 @@ public:
     Gesture() : handInd(0), handsData(){}
     Gesture(size_t ind) : handInd(ind), handsData() {}
     void addData(const Track& track);
-    virtual void extract() = 0;
+    virtual bool extract() = 0;
 protected:
     void eraseHandsData(int nonErasedAtEndCount);
     void log();
 protected:
     size_t handInd;
     std::vector<HandData> handsData;
-
+    size_t countUnrecogn = 0;
+    static size_t threshUnrecogn;
 friend class Visualization;
 };
 

@@ -29,7 +29,7 @@ private:
     std::string getCurrentTime();
 public:
     static const double spaceCoeff;
-    static const double speedThreshSlow, speedThreshFast, speedThreshEnd;
+
     static std::ofstream gesturesLog;
 private:
     std::vector<std::shared_ptr<Gesture>> gestures;

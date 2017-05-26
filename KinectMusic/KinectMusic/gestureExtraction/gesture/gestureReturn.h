@@ -15,14 +15,17 @@ class GestureReturn : public Gesture {
 public:
     GestureReturn() {}
     GestureReturn(size_t ind) : Gesture(ind) {}
-    virtual void extract();
+    virtual bool extract();
 private:
-    bool isOutThreshold (const cv::Point3d& point, int ind) const;
-    bool isInThreshold (const cv::Point3d& point, int ind) const;
+    static bool isOutThreshold (const cv::Point3d& point1, const cv::Point3d& point2, const cv::Vec3d& thresh);
+    static bool isInThreshold (const cv::Point3d& point1, const cv::Point3d& point2, const cv::Vec3d& thresh);
 private:
     cv::Point3d startPoint = cv::Point3d(-1, -1, -1);
-    std::vector<cv::Vec3d> thresholds = { cv::Vec3d(1e6,1e6,30), cv::Vec3d(0,0,60) };
-    bool isThreshPassed = false;
+    bool hasBeenFar = false;
+    static cv::Vec3d threshStart;
+    static cv::Vec3d threshFar;
+    static cv::Vec3d threshReturn;
+    
 };
 
 #endif /* GestureReturn_h */

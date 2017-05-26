@@ -11,6 +11,8 @@
 #include "../tracking/tracking.h"
 #include "../analyze.h"
 
+size_t Gesture::threshUnrecogn = 2;
+
 void Gesture::addData(const Track& track){
     const std::list<Hand>& lHands = track.getLHands();
     if(lHands.empty()){
@@ -21,7 +23,6 @@ void Gesture::addData(const Track& track){
         handsData.push_back(HandData(GestureFabrique::convertToRealSpace(point), -1));
     }
 }
-
 
 
 void Gesture::eraseHandsData(int nonErasedAtEndCount){

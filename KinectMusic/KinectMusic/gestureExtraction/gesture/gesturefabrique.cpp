@@ -16,7 +16,7 @@ GestureFabrique* GestureFabrique::gestureFabriquePtr (nullptr)
 ;
 
 const double GestureFabrique::spaceCoeff(9./6400);
-const double GestureFabrique::speedThreshSlow (8e3 * GestureFabrique::spaceCoeff), GestureFabrique::speedThreshFast(16e3 * GestureFabrique::spaceCoeff), GestureFabrique::speedThreshEnd(2e3 * GestureFabrique::spaceCoeff);
+
 std::ofstream GestureFabrique::gesturesLog;
 
 void GestureFabrique::extractGestures(const std::vector<Track>& tracks){

@@ -15,9 +15,10 @@ class GestureStop : public Gesture {
 public:
     GestureStop() {}
     GestureStop(size_t ind) : Gesture(ind) {}
-    virtual void extract();
+    virtual bool extract();
 private:
-
+    static double speedThreshStart,  speedThreshEnd;
+    static int endIterationsCount;
 };
 
 #endif /* gestureStop_h */

@@ -11,10 +11,13 @@
 #include "../tracking/tracking.h"
 #include "../analyze.h"
 
-void GestureStop::extract(){
+double GestureStop::speedThreshStart (8e3 * GestureFabrique::spaceCoeff),  GestureStop::speedThreshEnd(2e3 * GestureFabrique::spaceCoeff);
+int GestureStop::endIterationsCount = 1;
+
+bool GestureStop::extract(){
     size_t size = handsData.size();
     if(size < 2)
-        return;
+        return false;
     
     auto rit = handsData.rbegin();
     int& phase = handsData.rbegin()->phase;
@@ -23,47 +26,48 @@ void GestureStop::extract(){
     auto ritPrev = handsData.rbegin();
     ritPrev++;
     int& phasePrev = ritPrev->phase;
-    const cv::Point3d& pointPrev = ritPrev->point;
     
-    if(point.x == -1 || pointPrev.x == -1){
-        if( phasePrev >= 0 ){
+    if( phasePrev < 0 ) {  //no gesture
+        cv::Vec3d moveVec = point - ritPrev->point;
+        double length = sqrt(static_cast<double>(moveVec[0] * moveVec[0] + moveVec[1] * moveVec[1] + moveVec[2] * moveVec[2]));
+        if(length > speedThreshStart ) {
+            phasePrev = frameNum - 1;
+            phase = frameNum; //начало
+            countUnrecogn = 0;
+            eraseHandsData(2); //erased all but 2 lasts
+            return true;
+        }
+        return false;
+    }
+    else {
+        bool isEnd (true);
+        if(point.x != -1)
+            countUnrecogn = 0;
+        else
+            countUnrecogn++;
+        if(countUnrecogn <= threshUnrecogn) {
+            for(int i = 0; i < endIterationsCount; ++i, ++rit, ++ritPrev){
+                if(ritPrev == handsData.rend() || rit->point.x == -1 || ritPrev->point.x == -1){
+                    isEnd = false;
+                    break;
+                }
+                cv::Vec3d moveVec = rit->point - ritPrev->point;
+                double length = sqrt(static_cast<double>(moveVec[0] * moveVec[0] + moveVec[1] * moveVec[1] + moveVec[2] * moveVec[2]));
+                if(length > speedThreshEnd){
+                    isEnd = false;
+                    break;
+                }
+            }
+        }
+        if(!isEnd){
+            phase = frameNum;  //середина
+        }
+        else {
             phase = -1; //конец
             log();
             eraseHandsData(1); //erased all but last
+            countUnrecogn = 0;
         }
-        else {
-            eraseHandsData(1); //erased all but last
-            return;
-        }
-        return;
+        return true;
     }
-    
-    cv::Vec3d moveVec = point - ritPrev->point;
-     double length = sqrt(static_cast<double>(moveVec[0] * moveVec[0] + moveVec[1] * moveVec[1] + moveVec[2] * moveVec[2]));
-    
-    if( phasePrev >= 0 ){
-        if(handsData.size() > 2 && length < GestureFabrique::speedThreshEnd) {
-            rit++, ritPrev++;
-            cv::Vec3d moveVec = rit->point - ritPrev->point;
-             double length = sqrt(static_cast<double>(moveVec[0] * moveVec[0] + moveVec[1] * moveVec[1] + moveVec[2] * moveVec[2]));
-             if(length < GestureFabrique::speedThreshEnd){
-             phase = -1; //конец
-             log();
-             eraseHandsData(1); //erased all but last
-             }
-             else {
-                 phase = frameNum; //середина
-             }
-        }
-        else {
-            phase = frameNum; //середина
-        }
-    }
-    else if(length > GestureFabrique::speedThreshSlow ) {
-            phasePrev = frameNum - 1;
-            phase = frameNum; //начало
-            eraseHandsData(2); //erased all but 2 lasts
-        
-    }
-    return;
 }
