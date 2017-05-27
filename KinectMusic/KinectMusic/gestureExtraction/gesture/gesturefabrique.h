@@ -12,12 +12,12 @@
 #include "gesture.h"
 #include "gestureStop.h"
 #include "gestureReturn.h"
-#include <fstream>
+
 #include <memory>
 
 class GestureFabrique {
 public:
-    static void extractGestures(const std::vector<Track>& tracks);
+    static FrameData extractGestures(const std::vector<Track>& tracks);
     static const std::vector<std::shared_ptr<Gesture>>& getGestures() {return gestureFabriquePtr->gestures;}
     static cv::Point3d convertToRealSpace(const cv::Point3i& p);
     static cv::Point3i convertToCameraSpace(const cv::Point3d& p);
@@ -25,12 +25,11 @@ public:
 private:
     GestureFabrique(size_t gestureCount);
     void addDataToGestures(const std::vector<Track>& tracks);
-    void extractGestures();
-    std::string getCurrentTime();
+    FrameData extractGestures();
 public:
     static const double spaceCoeff;
 
-    static std::ofstream gesturesLog;
+    
 private:
     std::vector<std::shared_ptr<Gesture>> gestures;
     static GestureFabrique* gestureFabriquePtr;

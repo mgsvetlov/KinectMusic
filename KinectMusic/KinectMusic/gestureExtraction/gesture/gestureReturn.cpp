@@ -28,10 +28,10 @@ bool GestureReturn::extract(){
     ritPrev++;
     int& phasePrev = ritPrev->phase;
     
-    if( phasePrev < 0 ) {
-        if(point.x != -1 && isOutThreshold(ritPrev->point, point, threshStart)) {
-            phasePrev = frameNum - 1;
-            phase = frameNum; //начало
+    if( phasePrev == NO_DATA_VALUE || phasePrev ==END_GESTURE_VALUE ) {
+        if(point.x != NO_DATA_VALUE && isOutThreshold(ritPrev->point, point, threshStart)) {
+            phasePrev = START_GESTURE_VALUE;
+            phase = INSIDE_GESTURE_VALUE;
             countUnrecogn = 0;
             startPoint = point;
             hasBeenFar = false;
@@ -41,19 +41,19 @@ bool GestureReturn::extract(){
         return false;
     }
     else {
-        if(point.x != -1)
+        if(point.x != NO_DATA_VALUE)
             countUnrecogn = 0;
         else
             countUnrecogn++;
         if(countUnrecogn > threshUnrecogn || (hasBeenFar && isInThreshold(startPoint,point,  threshReturn))){
-                phase = -1; //конец
-                log();
+                phase = END_GESTURE_VALUE;
+                //log();
                 eraseHandsData(1); //erased all but last
             }
             else {
-                if(point.x != -1 && !hasBeenFar && isOutThreshold(startPoint, point, threshFar))
+                if(point.x != NO_DATA_VALUE && !hasBeenFar && isOutThreshold(startPoint, point, threshFar))
                    hasBeenFar = true;
-                phase = frameNum; //середина
+                phase = INSIDE_GESTURE_VALUE; 
             }
         return true;
     }

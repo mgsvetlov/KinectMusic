@@ -112,15 +112,16 @@ void Visualization::hands2img(const std::vector<Track>& vTracks, cv::Mat& matImg
 }
 
 void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg){
-    if(gesture->handsData.front().phase < 0)
+    auto phase = gesture->handsData.front().phase;
+    if(phase ==  NO_DATA_VALUE || phase == END_GESTURE_VALUE)
         return;
     int pointSize(5);
     cv::Scalar color = gesture->handInd == 0 ? cv::Scalar(0,0,255) : cv::Scalar(255,255, 0);
     for(auto& handData : gesture->handsData) {
         auto& point = handData.point;
-        if(point.x != -1 && handData.phase >= 0){
-            cv::Point3i pointCamera = GestureFabrique::convertToCameraSpace(point);
-            keyPoint2img(pointCamera, matImg, color, pointSize);
+        if(point.x != NO_DATA_VALUE && handData.phase != NO_DATA_VALUE){
+            /*cv::Point3i pointCamera = GestureFabrique::convertToCameraSpace(point);*/
+            keyPoint2img(point/*Camera*/, matImg, color, pointSize);
         }
     }
 }

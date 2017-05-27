@@ -16,7 +16,7 @@ struct Cell {
     Cell(){}
     Cell(int ind, int val): ind(ind), val(val){}
     int ind;
-    int val = -1;
+    int val = NO_DATA_VALUE;
 };
 
 class Blob {

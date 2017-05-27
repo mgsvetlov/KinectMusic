@@ -16,11 +16,11 @@ size_t Gesture::threshUnrecogn = 2;
 void Gesture::addData(const Track& track){
     const std::list<Hand>& lHands = track.getLHands();
     if(lHands.empty()){
-        handsData.push_back(HandData(cv::Point3i(-1,-1,-1), -1));
+        handsData.push_back(HandData(cv::Point3i(NO_DATA_VALUE,NO_DATA_VALUE,NO_DATA_VALUE), NO_DATA_VALUE));
     }
     else {
         const cv::Point3i& point = lHands.back().getKeyPoint();
-        handsData.push_back(HandData(GestureFabrique::convertToRealSpace(point), -1));
+        handsData.push_back(HandData(point/*GestureFabrique::convertToRealSpace(point)*/, NO_DATA_VALUE));
     }
 }
 
@@ -35,13 +35,12 @@ void Gesture::eraseHandsData(int nonErasedAtEndCount){
 }
 
 void Gesture::log(){
-    std::ofstream& logFile = GestureFabrique::gesturesLog;
-    logFile << "hand\t" << handInd << "\n";
+    gesturesLog << "hand\t" << handInd << "\n";
     for( int i = 0; i < handsData.size(); ++i){
-        if(handsData[i].phase >=0)
-        logFile << handsData[i].phase
+        if(handsData[i].phase != NO_DATA_VALUE)
+            gesturesLog << (handsData[i].phase == START_GESTURE_VALUE ? "START" : handsData[i].phase ==INSIDE_GESTURE_VALUE ? "INSIDE" : "END")
         << "\t" << handsData[i].point << "\n";
     }
         
-    logFile << std::endl;
+    gesturesLog << std::endl;
 }

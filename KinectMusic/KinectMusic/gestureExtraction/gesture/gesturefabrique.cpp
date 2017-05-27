@@ -6,24 +6,23 @@
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
 
-#include <ctime>
-#include <sstream>
+
 
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
+#include "../analyze.h"
 
 GestureFabrique* GestureFabrique::gestureFabriquePtr (nullptr)
 ;
 
 const double GestureFabrique::spaceCoeff(9./6400);
 
-std::ofstream GestureFabrique::gesturesLog;
 
-void GestureFabrique::extractGestures(const std::vector<Track>& tracks){
+FrameData GestureFabrique::extractGestures(const std::vector<Track>& tracks){
     if(!gestureFabriquePtr)
         gestureFabriquePtr = new GestureFabrique(Track::trackCount);
     gestureFabriquePtr->addDataToGestures(tracks);
-    gestureFabriquePtr->extractGestures();
+    return gestureFabriquePtr->extractGestures();
 }
 
 GestureFabrique::GestureFabrique(size_t gestureCount) {
@@ -31,11 +30,9 @@ GestureFabrique::GestureFabrique(size_t gestureCount) {
         std::shared_ptr<Gesture> pGesture { new GestureReturn(ind) };
         gestures.push_back(pGesture);
     }
-    gesturesLog.open("gestures" + getCurrentTime() + ".log");
 }
 
 void GestureFabrique::destroy(){
-    gesturesLog.close();
     if(gestureFabriquePtr)
         delete gestureFabriquePtr;
 }
@@ -45,18 +42,14 @@ void GestureFabrique::addDataToGestures(const std::vector<Track>& tracks){
         gestures[i]->addData(tracks[i]);
 }
 
-void GestureFabrique::extractGestures(){
-    for(auto& gesture : gestures)
+FrameData  GestureFabrique::extractGestures(){
+    FrameData frameData;
+    frameData.frameNum = frameNum;
+    for(auto& gesture : gestures){
         gesture->extract();
-}
-
-std::string GestureFabrique::getCurrentTime(){
-    time_t t = time(0);   // get time now
-    struct tm * now = localtime( & t );
-    std::stringstream ss;
-    ss << '_' << (now->tm_year + 1900) << '_' << (now->tm_mon + 1) << '_'
-    <<  now->tm_mday << '_'<< now->tm_hour << '_'<< now->tm_min;
-    return ss.str();
+        frameData.data.push_back(gesture->getHandsData().back());
+    }
+    return frameData;
 }
 
 cv::Point3d GestureFabrique::convertToRealSpace(const cv::Point3i& p){

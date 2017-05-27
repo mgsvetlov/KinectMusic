@@ -15,14 +15,14 @@ Blob::Blob() :
 lCells(std::list<Cell>()),
 p_maxValCell(nullptr),
 p_minValCell(nullptr),
-centralCell(-1, -1)
+centralCell(NO_DATA_VALUE, NO_DATA_VALUE)
 {}
 
 Blob::Blob(cv::Mat mat16, int x, int y) :
 lCells(std::list<Cell>()),
 p_maxValCell(nullptr),
 p_minValCell(nullptr),
-centralCell(-1, -1),
+centralCell(NO_DATA_VALUE, NO_DATA_VALUE),
 matSize(mat16.size())
 {
     int w = mat16.cols;

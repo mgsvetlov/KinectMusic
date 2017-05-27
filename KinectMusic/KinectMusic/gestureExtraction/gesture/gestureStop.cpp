@@ -21,18 +21,18 @@ bool GestureStop::extract(){
     
     auto rit = handsData.rbegin();
     int& phase = handsData.rbegin()->phase;
-    const cv::Point3d& point = rit->point;
+    const auto& point = rit->point;
     
     auto ritPrev = handsData.rbegin();
     ritPrev++;
     int& phasePrev = ritPrev->phase;
     
-    if( phasePrev < 0 ) {  //no gesture
-        cv::Vec3d moveVec = point - ritPrev->point;
-        double length = sqrt(static_cast<double>(moveVec[0] * moveVec[0] + moveVec[1] * moveVec[1] + moveVec[2] * moveVec[2]));
+    if( phasePrev == NO_DATA_VALUE || phasePrev ==END_GESTURE_VALUE ) {  //no gesture
+        const auto& moveVec = point - ritPrev->point;
+        double length = sqrt(static_cast<double>(moveVec.x * moveVec.x + moveVec.y * moveVec.y + moveVec.z * moveVec.z));
         if(length > speedThreshStart ) {
-            phasePrev = frameNum - 1;
-            phase = frameNum; //начало
+            phasePrev = START_GESTURE_VALUE;
+            phase = INSIDE_GESTURE_VALUE; //начало
             countUnrecogn = 0;
             eraseHandsData(2); //erased all but 2 lasts
             return true;
@@ -41,18 +41,18 @@ bool GestureStop::extract(){
     }
     else {
         bool isEnd (true);
-        if(point.x != -1)
+        if(point.x != NO_DATA_VALUE)
             countUnrecogn = 0;
         else
             countUnrecogn++;
         if(countUnrecogn <= threshUnrecogn) {
             for(int i = 0; i < endIterationsCount; ++i, ++rit, ++ritPrev){
-                if(ritPrev == handsData.rend() || rit->point.x == -1 || ritPrev->point.x == -1){
+                if(ritPrev == handsData.rend() || rit->point.x == NO_DATA_VALUE || ritPrev->point.x == NO_DATA_VALUE){
                     isEnd = false;
                     break;
                 }
-                cv::Vec3d moveVec = rit->point - ritPrev->point;
-                double length = sqrt(static_cast<double>(moveVec[0] * moveVec[0] + moveVec[1] * moveVec[1] + moveVec[2] * moveVec[2]));
+                const auto moveVec = rit->point - ritPrev->point;
+                double length = sqrt(static_cast<double>(moveVec.x * moveVec.x + moveVec.y * moveVec.y + moveVec.z * moveVec.z));
                 if(length > speedThreshEnd){
                     isEnd = false;
                     break;
@@ -60,11 +60,11 @@ bool GestureStop::extract(){
             }
         }
         if(!isEnd){
-            phase = frameNum;  //середина
+            phase = INSIDE_GESTURE_VALUE;  //середина
         }
         else {
-            phase = -1; //конец
-            log();
+            phase = END_GESTURE_VALUE ; //конец
+            //log();
             eraseHandsData(1); //erased all but last
             countUnrecogn = 0;
         }

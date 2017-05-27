@@ -29,4 +29,7 @@ extern volatile int frameNum;
 
 void *analyze_threadfunc(void *arg);
 
+struct FrameData;
+void log(FrameData& frameData);
+
 #endif /* analyze_h */
