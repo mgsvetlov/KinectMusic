@@ -33,14 +33,3 @@ void Gesture::eraseHandsData(int nonErasedAtEndCount){
         --it;
     handsData.erase(handsData.begin(), it);
 }
-
-void Gesture::log(){
-    gesturesLog << "hand\t" << handInd << "\n";
-    for( int i = 0; i < handsData.size(); ++i){
-        if(handsData[i].phase != NO_DATA_VALUE)
-            gesturesLog << (handsData[i].phase == START_GESTURE_VALUE ? "START" : handsData[i].phase ==INSIDE_GESTURE_VALUE ? "INSIDE" : "END")
-        << "\t" << handsData[i].point << "\n";
-    }
-        
-    gesturesLog << std::endl;
-}

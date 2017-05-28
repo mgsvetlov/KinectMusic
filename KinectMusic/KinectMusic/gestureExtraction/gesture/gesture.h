@@ -25,7 +25,6 @@ public:
     virtual bool extract() = 0;
 protected:
     void eraseHandsData(int nonErasedAtEndCount);
-    void log();
 protected:
     size_t handInd;
     std::vector<HandData> handsData;

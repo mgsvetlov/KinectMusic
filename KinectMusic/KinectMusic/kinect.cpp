@@ -141,7 +141,7 @@ void *freenect_threadfunc(void *arg)
     
     int status = 0;
     
-    while (!die && status >= 0) {
+    while (!die_kinect && status >= 0) {
         status = freenect_process_events(f_ctx);
         if (requested_format != current_format || requested_resolution != current_resolution) {
             freenect_stop_video(f_dev);

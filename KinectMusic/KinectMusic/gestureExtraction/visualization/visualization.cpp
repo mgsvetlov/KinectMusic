@@ -40,11 +40,6 @@ bool Visualization::showImage() {
     if(cv::waitKey(1) == 27) {
         return false;
     }
-
-#ifdef USE_CSOUND
-    if(!CSOUND_START)
-        CSOUND_START = true;
-#endif //USE_CSOUND
     
     /*static int frameCount(0);
     static std::clock_t t = clock();

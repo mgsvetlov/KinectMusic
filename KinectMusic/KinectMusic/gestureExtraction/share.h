@@ -10,6 +10,7 @@
 #define share_h
 
 #include "types.h"
+#include <semaphore.h>  
 
 class Share {
 public:
@@ -18,13 +19,16 @@ public:
 private:
     Share(const FrameData& frameData);
     ~Share();
-    void share_data(const FrameData& frameData);
+    bool share_data(const FrameData& frameData);
+    static int exec_prog(const char **argv);
 private:
     static Share* sharePtr;
     int SIZE = 0;
-    const char *name = "/share_gesture";
-    int shm_fd;
+    int shm_id = -1;
+    key_t key = 5678;
     void *ptr = nullptr;
+    sem_t *sem;
+    const char* SEMAPHORE_NAME = "sem";
 };
 
 #endif /* share_h */

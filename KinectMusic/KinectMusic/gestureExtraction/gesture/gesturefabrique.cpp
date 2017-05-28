@@ -33,8 +33,10 @@ GestureFabrique::GestureFabrique(size_t gestureCount) {
 }
 
 void GestureFabrique::destroy(){
-    if(gestureFabriquePtr)
+    if(gestureFabriquePtr) {
         delete gestureFabriquePtr;
+        gestureFabriquePtr = nullptr;
+    }
 }
 
 void GestureFabrique::addDataToGestures(const std::vector<Track>& tracks){

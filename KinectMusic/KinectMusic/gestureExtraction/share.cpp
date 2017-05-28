@@ -15,7 +15,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <iostream>
+#include <future>
 #include "share.h"
+#include "../log/logs.h"
 
 Share* Share::sharePtr = nullptr;
 
@@ -28,38 +30,57 @@ bool Share::share(const FrameData& frameData){
             return false;
         }
     }
-    sharePtr->share_data(frameData);
-    return true;
+    return sharePtr->share_data(frameData);
 }
 
 void Share::destroy(){
-    if(sharePtr)
+    if(sharePtr) {
         delete sharePtr;
-}
-
-Share::Share(const FrameData& frameData){
-    /* create the shared memory segment */
-    shm_fd = shm_open(name, O_CREAT | O_RDWR, 0666);
-    
-    /* configure the size of the shared memory segment */
-    SIZE = static_cast<int>(4 * sizeof(int) + 4 * sizeof(int) * frameData.data.size());
-    ftruncate(shm_fd, SIZE);
-    
-    /* now map the shared memory segment in the address space of the process */
-    ptr = mmap(0, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-    if (ptr == MAP_FAILED) {
-        throw 1;
+        sharePtr = nullptr;
     }
 }
 
-Share::~Share(){
-    shm_unlink(name);
+Share::Share(const FrameData& frameData){
+
+    SIZE = static_cast<int>(4 * sizeof(int) + 4 * sizeof(int) * frameData.data.size());
+    
+    if ((shm_id = shmget( key, SIZE, IPC_CREAT | 0666)) < 0){
+        Logs::writeLog("gestures","shmget error");
+        throw 1;
+    }
+    if ((ptr = shmat(shm_id, NULL, 0)) == (char *) -1) {
+        Logs::writeLog("gestures","shmat error");
+        throw 2;
+    }
+    if ( (sem = sem_open(SEMAPHORE_NAME, O_CREAT, 0777, 0)) == SEM_FAILED ) {
+        Logs::writeLog("gestures","sem_open error");
+        throw 3;
+    }
+    
+    const char    *my_argv[64] = {"./Csound", NULL};
+    if(exec_prog(my_argv) == -1){
+        Logs::writeLog("gestures","./Csound launch error");
+        std::cout << "./Csound launch error" << std::endl;
+        throw 4;
+    }
+    std::cout << "./Csound launched\n" << std::endl;
 }
 
-void Share::share_data(const FrameData& frameData){
+Share::~Share(){
+    sem_wait(sem);
+    if ( shmctl( shm_id, IPC_RMID, NULL ) == -1 )
+        Logs::writeLog("gestures","shmctl failed to destroy");
+    sem_post(sem);
+    if ( sem_close(sem) < 0 ){
+        Logs::writeLog("gestures", "sem_close failed to destroy");
+    }
+}
+
+bool Share::share_data(const FrameData& frameData){
+    sem_wait(sem);
     int* intPtr = static_cast<int*>(ptr);
-    *intPtr = frameData.frameNum;
-    for(int i = 0; i < 4; ++i){
+    *intPtr++ = frameData.frameNum;
+    for(int i = 0; i < 3; ++i){
         *intPtr++ = 0;
     }
     for(auto& gestureData: frameData.data){
@@ -68,5 +89,18 @@ void Share::share_data(const FrameData& frameData){
         *intPtr++ = gestureData.point.y;
         *intPtr++ = gestureData.point.z;
     }
+    sem_post(sem);
+    return true;
 }
 
+int Share::exec_prog(const char **argv){
+    pid_t   my_pid;
+    
+    if (0 == (my_pid = fork())) {
+        if (-1 == execve(argv[0], (char **)argv , NULL)) {
+            Logs::writeLog("gestures", "child process execve failed");
+            return -1;
+        }
+    }
+    return 0;
+}

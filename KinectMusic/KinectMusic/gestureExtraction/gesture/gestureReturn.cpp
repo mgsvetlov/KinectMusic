@@ -47,7 +47,6 @@ bool GestureReturn::extract(){
             countUnrecogn++;
         if(countUnrecogn > threshUnrecogn || (hasBeenFar && isInThreshold(startPoint,point,  threshReturn))){
                 phase = END_GESTURE_VALUE;
-                //log();
                 eraseHandsData(1); //erased all but last
             }
             else {

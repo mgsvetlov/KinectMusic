@@ -5,7 +5,7 @@
 	<key>BuildLocationStyle</key>
 	<string>CustomLocation</string>
 	<key>CustomBuildIntermediatesPath</key>
-	<string>../build/Intermediates/Kinect</string>
+	<string>../Build/Intermediates/Csound</string>
 	<key>CustomBuildLocationType</key>
 	<string>RelativeToWorkspace</string>
 	<key>CustomBuildProductsPath</key>

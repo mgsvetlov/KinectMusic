@@ -12,9 +12,7 @@
 #define NO_DATA_VALUE -1
 
 #include <vector>
-#include <fstream>
 #include <ctime>
-#include <sstream>
 
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
@@ -28,13 +26,8 @@ extern int BLOB_MIN_SIZE_LAST;
 extern int MAX_NEIGHB_DIFF_COARSE;
 extern int MAX_NEIGHB_DIFF_FINE;
 
-#define USE_CSOUND
-
-#ifdef USE_CSOUND
-extern volatile bool CSOUND_START;
-#endif
-
-extern volatile int die;
+extern volatile int die_kinect;
+extern volatile int die_gesture;
 
 #define NO_DATA_VALUE -1
 #define START_GESTURE_VALUE -10
@@ -56,8 +49,5 @@ struct FrameData {
     std::vector<HandData> data;
 };
 
-extern std::ofstream gesturesLog;
-
-std::string getCurrentTime();
 
 #endif /* types_h */

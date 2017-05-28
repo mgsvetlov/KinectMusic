@@ -12,6 +12,7 @@
 #include <fcntl.h>      /* O_flags */
 #include <iostream>
 #include <queue>
+#include <sstream>
 
 #include "types.h"
 #include "visualization/visualization.h"
@@ -23,15 +24,15 @@
 #include "tracking/tracking.h"
 #include "gesture/gesturefabrique.h"
 #include "share.h"
+#include "../log/logs.h"
 
-#ifdef USE_CSOUND
-#include "../mapping/mapping.h"
-#endif //USE_CSOUND
 
 pthread_mutex_t depth_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t video_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t visualisation_mutex = PTHREAD_MUTEX_INITIALIZER;
-volatile int die = 0;
+
+volatile int die_kinect = 0;
+volatile int die_gesture = 0;
 
 volatile bool newFrame = false;
 
@@ -50,13 +51,9 @@ volatile int frameNum = 0;
 volatile int frameNum_analyze = 0;
 volatile int analyzeThreadId = 0;
 
-std::ofstream gesturesLog;
-
 void *analyze_threadfunc(void *arg) {
     
-     gesturesLog.open("gestures" + getCurrentTime() + ".log");
-    
-    while (!die){
+    while (!die_gesture){
         pthread_mutex_lock(&depth_mutex);
         if(frameNum_analyze == frameNum) {
             pthread_mutex_unlock(&depth_mutex);
@@ -108,7 +105,7 @@ void *analyze_threadfunc(void *arg) {
         //create and analyze hands tracked stream data
         FrameData frameData = GestureFabrique::extractGestures(vTracks);
         if(!Share::share(frameData)){
-            gesturesLog << "Share error!\n";
+            Logs::writeLog("gestures", "Share error!");
             break;
         }
         log(frameData);
@@ -119,10 +116,6 @@ void *analyze_threadfunc(void *arg) {
         Visualization::hands2img( vTracks, img, false);
         Visualization::gestures2img(GestureFabrique::getGestures(), img, 60);
         
-#ifdef USE_CSOUND
-        //Mapping::MapDirect(Gesture::getGesturesConst());
-#endif //USE_CSOUND
-        
         pthread_mutex_lock(&visualisation_mutex);
         Visualization::setMatImage(img);
         Visualization::setIsNeedRedraw(true);
@@ -130,30 +123,20 @@ void *analyze_threadfunc(void *arg) {
         
     }
     
-    GestureFabrique::destroy();
-    Share::destroy();
-    gesturesLog.close();
-    
     return NULL;
 }
 
 void log(FrameData& frameData){
-    gesturesLog << frameNum << "\t";
+    std::stringstream ss;
+    ss << frameData.frameNum << " ";
     for(auto& gestureData: frameData.data){
-            gesturesLog << (gestureData.phase == START_GESTURE_VALUE ? "START" : gestureData.phase ==INSIDE_GESTURE_VALUE ? "INSIDE" :
-                gestureData.phase ==
-                END_GESTURE_VALUE ? "END" :
-                "NO_DATA")
-            << "\t" << gestureData.point << "\t";
+        ss << (gestureData.phase == START_GESTURE_VALUE ? "START" : gestureData.phase ==INSIDE_GESTURE_VALUE ? "INSIDE" :
+            gestureData.phase ==
+            END_GESTURE_VALUE ? "END" :
+            "NO_DATA")
+        << " " << gestureData.point << " ";
     }
-    gesturesLog << "\n";
+    Logs::writeLog("gestures", ss.str());
 }
 
-std::string getCurrentTime(){
-    time_t t = time(0);   // get time now
-    struct tm * now = localtime( & t );
-    std::stringstream ss;
-    ss << '_' << (now->tm_year + 1900) << '_' << (now->tm_mon + 1) << '_'
-    <<  now->tm_mday << '_'<< now->tm_hour << '_'<< now->tm_min;
-    return ss.str();
-}
+

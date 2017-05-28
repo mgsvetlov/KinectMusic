@@ -64,7 +64,7 @@ bool GestureStop::extract(){
         }
         else {
             phase = END_GESTURE_VALUE ; //конец
-            //log();
+
             eraseHandsData(1); //erased all but last
             countUnrecogn = 0;
         }

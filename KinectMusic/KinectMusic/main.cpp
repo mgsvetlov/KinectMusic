@@ -38,10 +38,10 @@
 #include "analyze.h"
 #include "visualization.h"
 #include "gestureExtraction/types.h"
+#include "gestureExtraction/gesture/gesturefabrique.h"
+#include "share.h"
+#include "log/logs.h"
 
-#ifdef USE_CSOUND
-#include "sound/csound_.h"
-#endif //USE_CSOUND
 //#include "opengl_.h"
 
 
@@ -105,15 +105,6 @@ int main(int argc, char **argv)
         }
     }
     
-#ifdef USE_CSOUND
-    res = pthread_create(&csound_thread, NULL, csound_threadfunc, NULL);
-     if (res) {
-         printf("pthread_create csound_thread failed\n");
-         freenect_shutdown(f_ctx);
-         return 1;
-     }
-#endif //USE_CSOUND
-    
     while(true) {
         if(Visualization::getIsNeedRedraw()){
             if(!Visualization::showImage())
@@ -124,22 +115,21 @@ int main(int argc, char **argv)
         }
     }
     
-    die = 1;
-    pthread_join(freenect_thread, NULL);
+    die_gesture = 1;
     for(int i = 0; i < analyzeThreadsCount; i++){
         pthread_join(p_analyze_create[i], NULL);
     }
-#ifdef USE_CSOUND
-    csoundStop(csound);
-    pthread_join(csound_thread, NULL);
-#endif //USE_CSOUND
+    
+    die_kinect = 1;
+    pthread_join(freenect_thread, NULL);
+    
+    GestureFabrique::destroy();
+    Share::destroy();
+    Logs::closeLogs();
     free(rgb_back);
     free(rgb_mid);
     free(rgb_front);
 
-    
-
-    
 	// OS X requires GLUT to run on the main thread
 	//gl_threadfunc(NULL);
     
