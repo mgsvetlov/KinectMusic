@@ -21,6 +21,7 @@
 #include <sstream>
 #include "share_consumer.h"
 #include "../log/logs.h"
+#include "../mapping/mapping.h"
 
 ShareConsumer* ShareConsumer::shareConsumerPtr = nullptr;
 
@@ -68,7 +69,7 @@ bool ShareConsumer::share_data_consume(){
     
     sem_wait(sem);
     if(shmget(key, SIZE, 0) < 0){
-        std::stringstream ss;
+        
         Logs::writeLog("csound", "Can\'t find shared memory");
         sem_post(sem);
         return false;
@@ -81,11 +82,43 @@ bool ShareConsumer::share_data_consume(){
         return true;
     }
     prevFrameNum = *intPtr;
-    std::stringstream ss;
+   
+    FrameData& frameData = Mapping::getData();
     for(int i = 0; i < SIZE / sizeof(int); ++i, intPtr++){
-        ss << *intPtr<< " ";
+        switch(i){
+            case 0:
+                frameData.frameNum = *intPtr;
+                break;
+            case 4:
+                frameData.phase1 = *intPtr;
+                break;
+            case 5:
+                frameData.x1 = *intPtr;
+                break;
+            case 6:
+                frameData.y1 = *intPtr;
+                break;
+            case 7:
+                frameData.z1 = *intPtr;
+                break;
+            case 8:
+                frameData.phase2 = *intPtr;
+                break;
+            case 9:
+                frameData.x2 = *intPtr;
+                break;
+            case 10:
+                frameData.y2 = *intPtr;
+                break;
+            case 11:
+                frameData.z2 = *intPtr;
+                break;
+            default:
+                break;
+        }
     }
     sem_post(sem);
-    Logs::writeLog("csound", ss.str());
+    
+
     return true;
 }

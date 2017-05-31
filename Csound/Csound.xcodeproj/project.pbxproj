@@ -12,6 +12,8 @@
 		72048F8B1EDAA517006381E9 /* logs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72048F891EDAA517006381E9 /* logs.cpp */; };
 		72048F911EDB12EE006381E9 /* CsoundLib64.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72048F901EDB12EE006381E9 /* CsoundLib64.framework */; };
 		72048F961EDB1340006381E9 /* csound_.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72048F931EDB1340006381E9 /* csound_.cpp */; };
+		72048F9A1EDB22F8006381E9 /* mapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72048F981EDB22F8006381E9 /* mapping.cpp */; };
+		72048F9E1EDDB6E7006381E9 /* sinus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72048F9C1EDDB6E7006381E9 /* sinus.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +39,10 @@
 		72048F931EDB1340006381E9 /* csound_.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = csound_.cpp; path = sound/csound_.cpp; sourceTree = "<group>"; };
 		72048F941EDB1340006381E9 /* csound_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = csound_.h; path = sound/csound_.h; sourceTree = "<group>"; };
 		72048F951EDB1340006381E9 /* test.csd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = test.csd; path = sound/test.csd; sourceTree = "<group>"; };
+		72048F981EDB22F8006381E9 /* mapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mapping.cpp; path = mapping/mapping.cpp; sourceTree = "<group>"; };
+		72048F991EDB22F8006381E9 /* mapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mapping.h; path = mapping/mapping.h; sourceTree = "<group>"; };
+		72048F9C1EDDB6E7006381E9 /* sinus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sinus.cpp; path = mapping/sinus/sinus.cpp; sourceTree = "<group>"; };
+		72048F9D1EDDB6E7006381E9 /* sinus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sinus.h; path = mapping/sinus/sinus.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +77,7 @@
 		72048F7C1EDA938D006381E9 /* Csound */ = {
 			isa = PBXGroup;
 			children = (
+				72048F971EDB22D7006381E9 /* mapping */,
 				72048F921EDB132A006381E9 /* sound */,
 				72048F881EDAA4F3006381E9 /* log */,
 				72048F841EDA93D9006381E9 /* share_consumer */,
@@ -105,6 +112,25 @@
 				72048F951EDB1340006381E9 /* test.csd */,
 			);
 			name = sound;
+			sourceTree = "<group>";
+		};
+		72048F971EDB22D7006381E9 /* mapping */ = {
+			isa = PBXGroup;
+			children = (
+				72048F9B1EDDB6C6006381E9 /* sinus */,
+				72048F981EDB22F8006381E9 /* mapping.cpp */,
+				72048F991EDB22F8006381E9 /* mapping.h */,
+			);
+			name = mapping;
+			sourceTree = "<group>";
+		};
+		72048F9B1EDDB6C6006381E9 /* sinus */ = {
+			isa = PBXGroup;
+			children = (
+				72048F9C1EDDB6E7006381E9 /* sinus.cpp */,
+				72048F9D1EDDB6E7006381E9 /* sinus.h */,
+			);
+			name = sinus;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -165,8 +191,10 @@
 			files = (
 				72048F8B1EDAA517006381E9 /* logs.cpp in Sources */,
 				72048F7E1EDA938D006381E9 /* main.cpp in Sources */,
+				72048F9E1EDDB6E7006381E9 /* sinus.cpp in Sources */,
 				72048F871EDA9427006381E9 /* share_consumer.cpp in Sources */,
 				72048F961EDB1340006381E9 /* csound_.cpp in Sources */,
+				72048F9A1EDB22F8006381E9 /* mapping.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
