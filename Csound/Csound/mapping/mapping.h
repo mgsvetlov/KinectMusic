@@ -29,13 +29,16 @@ struct FrameData{
 
 class Mapping{
 public:
-    static FrameData& getData() { return frameData; }
+    FrameData& getData() { return frameData; }
+    const std::vector<double>& getCsound_dataDst() const { return  csound_dataDst;}
+    const std::string& getCsdName() const {return csdName;}
     virtual ~Mapping(){};
     virtual void mappingData() = 0;
     
 protected:
     int frameNum = 0;
-    static FrameData frameData;
-
+    FrameData frameData;
+    std::vector<double> csound_dataDst;
+    std::string csdName;
 };
 #endif /* mapping_hpp */

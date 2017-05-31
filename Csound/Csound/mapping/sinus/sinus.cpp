@@ -8,8 +8,13 @@
 
 #include <sstream>
 #include "sinus.h"
-#include "../../sound/csound_.h"
+#include "../../csound/csound_.h"
 #include "../../log/logs.h"
+
+Sinus::Sinus() {
+    csound_dataDst = { 440, 0.1, 440, 0.1};
+    csdName = "sinus";
+};
 
 void Sinus::mappingData() {
     if(frameData.frameNum == frameNum){
@@ -24,17 +29,17 @@ void Sinus::mappingData() {
     Logs::writeLog("csound", ss.str());
     
     if(frameData.phase1 == NO_DATA_VALUE ){
-        csound_dataDst[0][1] = 0.;
+        csound_dataDst[1] = 0.;
     }
     else if(frameData.x1 != NO_DATA_VALUE ){
-        csound_dataDst[0][1] = 0.4;
-        csound_dataDst[0][0] = (480 - frameData.y1) + 440;
+        csound_dataDst[1] = 0.4;
+        csound_dataDst[0] = (480 - frameData.y1) + 440;
     }
     if(frameData.phase2 == NO_DATA_VALUE){
-        csound_dataDst[1][1] = 0.;
+        csound_dataDst[3] = 0.;
     }
     else if(frameData.x2 != NO_DATA_VALUE ){
-        csound_dataDst[1][1] = 0.4;
-        csound_dataDst[1][0] = (480 - frameData.x2) + 440;
+        csound_dataDst[3] = 0.4;
+        csound_dataDst[2] = (480 - frameData.x2) + 440;
     }
 }

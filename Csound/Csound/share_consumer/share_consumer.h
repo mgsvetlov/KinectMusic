@@ -10,14 +10,16 @@
 #define share_consumer_h
 #include <semaphore.h>
 
+class Mapping;
+
 class ShareConsumer {
 public:
-    static bool share();
+    static bool share(Mapping* );
     static void destroy();
 private:
     ShareConsumer();
     ~ShareConsumer();
-    bool share_data_consume();
+    bool share_data_consume(Mapping* );
 private:
     static ShareConsumer* shareConsumerPtr;
     int SIZE = 0;

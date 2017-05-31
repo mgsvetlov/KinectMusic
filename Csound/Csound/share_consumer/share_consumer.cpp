@@ -7,7 +7,6 @@
 //
 
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,7 +24,7 @@
 
 ShareConsumer* ShareConsumer::shareConsumerPtr = nullptr;
 
-bool ShareConsumer::share(){
+bool ShareConsumer::share(Mapping* mapping){
     if(!shareConsumerPtr){
         try {
             shareConsumerPtr = new ShareConsumer();
@@ -34,7 +33,7 @@ bool ShareConsumer::share(){
             return false;
         }
     }
-    return shareConsumerPtr->share_data_consume();
+    return shareConsumerPtr->share_data_consume(mapping);
 }
 
 void ShareConsumer::destroy(){
@@ -65,7 +64,7 @@ ShareConsumer::~ShareConsumer(){
 
 }
 
-bool ShareConsumer::share_data_consume(){
+bool ShareConsumer::share_data_consume(Mapping* mapping){
     
     sem_wait(sem);
     if(shmget(key, SIZE, 0) < 0){
@@ -83,7 +82,7 @@ bool ShareConsumer::share_data_consume(){
     }
     prevFrameNum = *intPtr;
    
-    FrameData& frameData = Mapping::getData();
+    FrameData& frameData = mapping->getData();
     for(int i = 0; i < SIZE / sizeof(int); ++i, intPtr++){
         switch(i){
             case 0:

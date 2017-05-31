@@ -13,6 +13,8 @@
 
 class Sinus : public Mapping {
 public:
+    Sinus();
     virtual void mappingData();
 };
+
 #endif /* sinus_h */

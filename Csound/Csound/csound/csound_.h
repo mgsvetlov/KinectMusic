@@ -19,7 +19,6 @@ extern pthread_t csound_thread;
 void *csound_threadfunc(void *arg);
 extern bool die;
 extern CSOUND* csound;
-extern std::vector<std::vector<double>> csound_dataDst;
 
 void ramp(double& param, const double paramDst,  double rampCoeff);
 
