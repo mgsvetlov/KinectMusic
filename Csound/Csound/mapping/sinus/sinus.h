@@ -9,12 +9,17 @@
 #ifndef sinus_h
 #define sinus_h
 
+#include <vector>
 #include "../mapping.h"
 
 class Sinus : public Mapping {
 public:
     Sinus();
     virtual void mappingData();
+
+private:
+    double freqMin;
+    double freqMax;
 };
 
 #endif /* sinus_h */

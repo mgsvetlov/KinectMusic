@@ -28,6 +28,8 @@ private:
     void *ptr = nullptr;
     sem_t *sem;
     const char* SEMAPHORE_NAME = "sem";
+    double screen_width = 640.;
+    double screen_height = 480.;
 };
 
 #endif /* share_consumer_h */

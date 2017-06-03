@@ -37,30 +37,32 @@ void *csound_threadfunc(void *arg){
     
     if(result == 0){
 
-        for(int i = 0; i < 2; i ++){
-            MYFLT pFields[] = {static_cast<double>(i), 0, -1};
+        const auto& csound_dataDst = mapping->getCsound_dataDst();
+        
+        for(int i = 0; i < csound_dataDst.size(); i ++){
+            MYFLT pFields[] = {static_cast<double>(i+1), 0, -1};
             csoundScoreEvent(csound, 'i', pFields, 3);
         }
         
-        const auto& csound_dataDst = mapping->getCsound_dataDst();
-        
-        std::vector<double> csound_data = csound_dataDst;
+        std::vector<std::vector<double>> csound_data = csound_dataDst;
         int sample_count(0);
         int sec_count(0);
         
         while(!die && csoundPerformKsmps(csound) == 0)
         {
             for(int i = 0; i < csound_dataDst.size(); i++){
-                std::stringstream ss;
-                ss << i;
-                std::string chn =  "p" + ss.str();
-               
-                MYFLT *p;
-                if(csoundGetChannelPtr(csound, &p, chn.c_str(), CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) == 0){
-                    ramp(csound_data[i], csound_dataDst[i], 5e-1);
-                    *p = csound_data[i];
+                std::stringstream ssinstr;
+                ssinstr << i + 1;
+                for(int j = 0; j < csound_dataDst[i].size(); j++){
+                    std::stringstream ssparam;
+                    ssparam << j;
+                    std::string chn =  "p" + ssinstr.str() + ssparam.str();
+                    MYFLT *p;
+                    if(csoundGetChannelPtr(csound, &p, chn.c_str(), CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) == 0){
+                        ramp(csound_data[i][j], csound_dataDst[i][j], 5e-2);
+                        *p = csound_data[i][j];
+                    }
                 }
-                
             }
             if(++sample_count == 441){
                 ++sec_count;

@@ -12,18 +12,18 @@ nchnls = 2
 0dbfs = 2.0
 
         instr 1
-kfreq chnget "p0"
-kamp chnget "p1"
-a1      oscil   kamp, kfreq, 1
+kfreq chnget "p10"
+kamp chnget "p11"
+kvibr chnget "p12"
+kmod chnget "p13"
+
+kcar = 1
+
+k1      oscil   kfreq * 0.01, kvibr, 1
+a1      foscil kamp, kfreq + k1, 1, 2, kmod, 1
+
         out     a1
         endin
-
-        instr 2
-kfreq chnget "p2"
-kamp chnget "p3"
-a1      oscil   kamp, kfreq, 1
-out     a1
-endin
 
 </CsInstruments>
 
@@ -32,7 +32,6 @@ f1  0   4096    10 1  ; use GEN10 to compute a sine wave
 
 ;ins    strt    dur
 i1      0       3600
-i2      0       3600
 
 e                     ; indicates the end of the score
 </CsScore>

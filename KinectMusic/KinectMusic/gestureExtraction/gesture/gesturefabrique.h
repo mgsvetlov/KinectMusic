@@ -10,6 +10,7 @@
 #define gesturefabrique_h
 
 #include "gesture.h"
+#include "gestureAll.h"
 #include "gestureStop.h"
 #include "gestureReturn.h"
 

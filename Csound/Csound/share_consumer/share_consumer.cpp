@@ -65,6 +65,7 @@ ShareConsumer::~ShareConsumer(){
 }
 
 bool ShareConsumer::share_data_consume(Mapping* mapping){
+    static FrameData frameDataPrev;
     
     sem_wait(sem);
     if(shmget(key, SIZE, 0) < 0){
@@ -83,34 +84,34 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
     prevFrameNum = *intPtr;
    
     FrameData& frameData = mapping->getData();
+  
     for(int i = 0; i < SIZE / sizeof(int); ++i, intPtr++){
         switch(i){
             case 0:
                 frameData.frameNum = *intPtr;
                 break;
             case 4:
-                frameData.phase1 = *intPtr;
+                frameData.hands[0].phase = *intPtr;
                 break;
             case 5:
-                frameData.x1 = *intPtr;
+                frameData.hands[0].x = *intPtr == NO_DATA_VALUE ? frameDataPrev.hands[0].x : *intPtr / screen_width;
                 break;
             case 6:
-                frameData.y1 = *intPtr;
+                frameData.hands[0].y = *intPtr == NO_DATA_VALUE ? frameDataPrev.hands[0].y : (screen_height - *intPtr) / screen_height;
                 break;
             case 7:
-                frameData.z1 = *intPtr;
+                frameData.hands[0].z = *intPtr;
                 break;
             case 8:
-                frameData.phase2 = *intPtr;
+                frameData.hands[1].phase = *intPtr;
                 break;
             case 9:
-                frameData.x2 = *intPtr;
+                frameData.hands[1].x = *intPtr == NO_DATA_VALUE ? frameDataPrev.hands[1].x : *intPtr / screen_width;
                 break;
             case 10:
-                frameData.y2 = *intPtr;
-                break;
+                frameData.hands[1].y = *intPtr == NO_DATA_VALUE ? frameDataPrev.hands[1].y : (screen_height - *intPtr) / screen_height;
             case 11:
-                frameData.z2 = *intPtr;
+                frameData.hands[1].z = *intPtr;
                 break;
             default:
                 break;
@@ -118,6 +119,13 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
     }
     sem_post(sem);
     
+    frameDataPrev = frameData;
+    
+    std::stringstream ss;
+    intPtr = static_cast<int*>(ptr);
+    for(int i = 0; i < SIZE / sizeof(int); ++i, ++intPtr )
+        ss << *intPtr  << " ";
+    Logs::writeLog("csound", ss.str());
 
     return true;
 }

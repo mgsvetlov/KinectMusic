@@ -27,7 +27,7 @@ FrameData GestureFabrique::extractGestures(const std::vector<Track>& tracks){
 
 GestureFabrique::GestureFabrique(size_t gestureCount) {
     for(size_t ind = 0; ind < gestureCount; ind++){
-        std::shared_ptr<Gesture> pGesture { new GestureReturn(ind) };
+        std::shared_ptr<Gesture> pGesture { new GestureAll(ind) };
         gestures.push_back(pGesture);
     }
 }
