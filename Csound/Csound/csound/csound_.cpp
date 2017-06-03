@@ -59,12 +59,12 @@ void *csound_threadfunc(void *arg){
                     std::string chn =  "p" + ssinstr.str() + ssparam.str();
                     MYFLT *p;
                     if(csoundGetChannelPtr(csound, &p, chn.c_str(), CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) == 0){
-                        ramp(csound_data[i][j], csound_dataDst[i][j], 5e-2);
-                        *p = csound_data[i][j];
+                        ramp(csound_data[i][j], csound_dataDst[i][j], 3e-2);
+                        *p = csound_dataDst[i][j];
                     }
                 }
             }
-            if(++sample_count == 441){
+            if(++sample_count == 4410){
                 ++sec_count;
                 sample_count = 0;
             }

@@ -18,8 +18,8 @@ public:
     virtual void mappingData();
 
 private:
-    double freqMin;
-    double freqMax;
+    double midiMin;
+    double midiMax;
 };
 
 #endif /* sinus_h */

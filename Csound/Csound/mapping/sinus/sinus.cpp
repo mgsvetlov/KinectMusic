@@ -15,8 +15,8 @@
 Sinus::Sinus() {
     csound_dataDst = { {440, 0.01, 0.0, 1.0}};
     csdName = "sinus";
-    freqMin = 110;
-    freqMax = 880;
+    midiMin = 60;
+    midiMax = 90;
 
     startGestureData = {HandData (NO_DATA_VALUE, NO_DATA_VALUE,NO_DATA_VALUE,NO_DATA_VALUE)};
 };
@@ -35,7 +35,7 @@ void Sinus::mappingData() {
         //freq
         int pitchInd = frameData.hands[0].x > frameData.hands[1].x ?
         0 : 1;
-        csound_dataDst[0][0] = frameData.hands[pitchInd].y * (freqMax - freqMin) + freqMin;
+        csound_dataDst[0][0] = frameData.hands[pitchInd].y * (midiMax - midiMin) + midiMin;
         //vol
         int volInd = 1 - pitchInd;
         double y = frameData.hands[volInd].y;
