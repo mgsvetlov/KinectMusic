@@ -9,6 +9,8 @@
 #ifndef log_h
 #define log_h
 
+//#define WRITE_LOGS
+
 #include <string>
 #include <map>
 

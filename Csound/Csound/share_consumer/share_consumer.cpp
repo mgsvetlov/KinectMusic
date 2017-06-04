@@ -69,8 +69,9 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
     
     sem_wait(sem);
     if(shmget(key, SIZE, 0) < 0){
-        
+#ifdef WRITE_LOGS
         Logs::writeLog("csound", "Can\'t find shared memory");
+#endif //WRITE_LOGS
         sem_post(sem);
         return false;
     }
@@ -89,6 +90,9 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
         switch(i){
             case 0:
                 frameData.frameNum = *intPtr;
+                break;
+            case 1:
+                frameData.bodyDepth = *intPtr;
                 break;
             case 4:
                 frameData.hands[0].phase = *intPtr;
@@ -110,6 +114,7 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
                 break;
             case 10:
                 frameData.hands[1].y = *intPtr == NO_DATA_VALUE ? frameDataPrev.hands[1].y : (screen_height - *intPtr) / screen_height;
+                break;
             case 11:
                 frameData.hands[1].z = *intPtr;
                 break;
@@ -120,12 +125,14 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
     sem_post(sem);
     
     frameDataPrev = frameData;
-    
+
+#ifdef WRITE_LOGS
     std::stringstream ss;
     intPtr = static_cast<int*>(ptr);
     for(int i = 0; i < SIZE / sizeof(int); ++i, ++intPtr )
         ss << *intPtr  << " ";
     Logs::writeLog("csound", ss.str());
+#endif //WRITE_LOGS
 
     return true;
 }

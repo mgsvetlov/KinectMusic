@@ -27,13 +27,21 @@ struct HandData{
 
 struct FrameData{
     int frameNum;
+    int bodyDepth;
     std::vector<HandData> hands = std::vector<HandData>(2);
+};
+
+struct ParamData {
+    double param;
+    double rampCoeff;
+    ParamData(double param, double rampCoeff) :
+    param(param), rampCoeff(rampCoeff) {}
 };
 
 class Mapping{
 public:
     FrameData& getData() { return frameData; }
-    const std::vector<std::vector<double>>& getCsound_dataDst() const { return  csound_dataDst;}
+    const std::vector<std::vector<ParamData>>& getCsound_data() const { return  csound_data;}
     const std::string& getCsdName() const {return csdName;}
     virtual ~Mapping(){};
     virtual void mappingData() = 0;
@@ -41,7 +49,7 @@ public:
 protected:
     int frameNum = 0;
     FrameData frameData;
-    std::vector<std::vector<double>> csound_dataDst;
+    std::vector<std::vector<ParamData>> csound_data;
     std::string csdName;
     std::vector<HandData> startGestureData;
 };

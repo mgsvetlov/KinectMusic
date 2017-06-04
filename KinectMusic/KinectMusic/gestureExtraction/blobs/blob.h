@@ -25,7 +25,7 @@ public:
 private:
     Blob(cv::Mat mat16, int x, int y);
 public:
-    static void findBlobs(cv::Mat mat16, std::list<Blob>& lvBlobs, int mode = 0);
+    static int findBlobs(cv::Mat mat16, std::list<Blob>& lvBlobs, int mode = 0);
     std::list<Cell>& getLCells() {return lCells;}
     const std::list<Cell>& getLCellsConst() const {return lCells;}
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);

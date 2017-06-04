@@ -32,9 +32,9 @@ bool Visualization::showImage() {
         Visualization();
     }
     cv::flip(matImage, matImage, 1);
-    //cv::Mat matImageRes;
-    //cv::resize(matImage, matImageRes, cv::Size(matImage.cols >> BLOBS_RESIZE_POW, matImage.rows >> BLOBS_RESIZE_POW));
-    cv::imshow( "Display window", matImage);
+    cv::Mat matImageRes;
+    cv::resize(matImage, matImageRes, cv::Size(matImage.cols >> BLOBS_RESIZE_POW, matImage.rows >> BLOBS_RESIZE_POW));
+    cv::imshow( "Display window", matImageRes);
     pthread_mutex_unlock(&visualisation_mutex);
     
     if(cv::waitKey(1) == 27) {

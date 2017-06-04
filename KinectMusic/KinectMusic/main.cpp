@@ -106,6 +106,7 @@ int main(int argc, char **argv)
     }
     
     while(true) {
+#ifdef VISUALIZATION
         if(Visualization::getIsNeedRedraw()){
             if(!Visualization::showImage())
                 break;
@@ -113,6 +114,13 @@ int main(int argc, char **argv)
         else {
             usleep(10);
         }
+#else
+    std::string s;
+    std::cin >> s;
+        if(s == "q")
+            break;
+    usleep(10);
+#endif //VISUALIZATION
     }
     
     die_gesture = 1;

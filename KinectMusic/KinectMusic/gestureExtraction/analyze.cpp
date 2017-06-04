@@ -79,7 +79,7 @@ void *analyze_threadfunc(void *arg) {
         
         //extract person
         std::list<Blob> lBlobs;
-        Blob::findBlobs(mat16_resized, lBlobs);
+        int body_depth = Blob::findBlobs(mat16_resized, lBlobs);
         
         cv::Mat matBlobs = Blob::blobs2mat(lBlobs, mat16_resized.size());
         
@@ -104,12 +104,15 @@ void *analyze_threadfunc(void *arg) {
        
         //create and analyze hands tracked stream data
         FrameData frameData = GestureFabrique::extractGestures(vTracks);
+        frameData.bodyDepth = body_depth;
         if(!Share::share(frameData)){
             Logs::writeLog("gestures", "Share error!");
             break;
         }
+#ifdef WRITE_LOGS
         log(frameData);
-        
+#endif //WRITE_LOGS
+#ifdef  VISUALIZATION
         cv::Mat img;
         Visualization::mat2img(mat16, img);
         
@@ -120,6 +123,7 @@ void *analyze_threadfunc(void *arg) {
         Visualization::setMatImage(img);
         Visualization::setIsNeedRedraw(true);
         pthread_mutex_unlock(&visualisation_mutex);
+#endif //VISUALIZATION
         
     }
     

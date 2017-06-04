@@ -66,8 +66,10 @@ void Blob::addCell(int ind, int val){
         p_maxValCell = &lCells.back();
 }
 
-void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
-
+int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
+    
+    int body_depth = -1;
+    
     cv::Mat mat16_clone = mat16.clone();
     int largeBlobMaxVal(-1);
     while(true){
@@ -115,6 +117,19 @@ void Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
         
     }
     
+    //compute bode_depth
+    if(mode == 0 && !lBlobs.empty()){
+        auto it = lBlobs.begin();
+        Blob& largestBlob = *it++;
+        for(; it != lBlobs.end(); ++it){
+            if(it->lCells.size() > largestBlob.lCells.size())
+                largestBlob = *it;
+        }
+        if(largestBlob.computeCentralCell())
+            body_depth = largestBlob.centralCell.val;
+    }
+    
+    return body_depth;
 }
 
 bool Blob::computeCentralNearCell(double med){

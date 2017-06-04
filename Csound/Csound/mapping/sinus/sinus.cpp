@@ -13,7 +13,14 @@
 #include "../../log/logs.h"
 
 Sinus::Sinus() {
-    csound_dataDst = { {440, 0.01, 0.0, 1.0}};
+    csound_data = { {ParamData(69, 2e-2),  //midi
+                    ParamData(0.01, 1e-2), //amp
+                    ParamData(10., 2e-3), //vibr rate
+                    ParamData(1.0, 2e-3)},
+                    {ParamData(69, 2e-2),  //midi
+                    ParamData(0.01, 1e-2), //amp
+                    ParamData(10., 2e-3), //vibr rate
+                    ParamData(1.0, 2e-3)}}; //mod side
     csdName = "sinus";
     midiMin = 60;
     midiMax = 90;
@@ -27,27 +34,33 @@ void Sinus::mappingData() {
     }
     frameNum = frameData.frameNum;
     
-    static FrameData frameDataPrev;
     if(frameData.hands[0].phase == NO_DATA_VALUE || frameData.hands[1].phase == NO_DATA_VALUE){
-        csound_dataDst[0][1] = 0.;
+        csound_data[0][1].param = csound_data[1][1].param = 0.;
     }
     else {
-        //freq
-        int pitchInd = frameData.hands[0].x > frameData.hands[1].x ?
-        0 : 1;
-        csound_dataDst[0][0] = frameData.hands[pitchInd].y * (midiMax - midiMin) + midiMin;
-        //vol
-        int volInd = 1 - pitchInd;
-        double y = frameData.hands[volInd].y;
-        y = y > 0.5 ? 0.5 : y;
-        double vol = (0.5 - frameData.hands[volInd].y) * 2;
-        csound_dataDst[0][1] = pow(vol, 2);
-        //vibr
-        csound_dataDst[0][2] = 10. + ((rand() % 100) / 100. - 0.5) * 4;
-        //side mod
-        double mod = 1 - frameData.hands[volInd].x  * 2.;
-        mod  = mod  < 0. ? 0. : mod;
-        csound_dataDst[0][3] = mod * 2;
+        double freq[2];
+        for(int i = 0; i < frameData.hands.size(); ++i){
+            //freq
+            freq[i] = frameData.hands[i].y * (midiMax - midiMin) + midiMin;
+            //vol
+            int dz = frameData.hands[i].z - frameData.bodyDepth;
+            double vol = pow(-dz / 300., 1);
+            if(vol < 0.01)
+                vol = 0.01;
+            else if(vol > 1.0)
+                vol = 1.0;
+            vol = pow(vol, 2) * 0.5;
+            csound_data[i][1].param = vol;
+            //vibr
+            csound_data[i][2].param = 10. + ((rand() % 100) / 100. - 0.5) * 4;
+            //side mod
+            double x = frameData.hands[i].x;
+            x = x < 0.5 ? 0.5 - x : x - 0.5;
+            double mod = x  * 2.;
+            mod  = mod  < 0. ? 0. : mod;
+            csound_data[i][3].param = mod * 2;
+        }
+        csound_data[0][0].param = csound_data[1][0].param = (freq[0]+ freq[1]) * 0.5;
+
     }
-    
 }

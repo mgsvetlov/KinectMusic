@@ -23,9 +23,13 @@ private:
 private:
     cv::Point3i keyPoint;
     cv::Mat mat;
+public:
     cv::Point2i refPoint;
+private:
     cv::Size size;
+public:
     std::list<cv::Point3i> lPoints;
+private:
     std::vector<std::vector<cv::Point3i>> vvPointsBorder;
     
     static cv::Mat matHand, matHandOrig;
