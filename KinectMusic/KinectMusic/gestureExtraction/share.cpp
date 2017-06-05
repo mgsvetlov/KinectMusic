@@ -18,6 +18,7 @@
 #include <future>
 #include "share.h"
 #include "../log/logs.h"
+#include "../config/config.h"
 
 Share* Share::sharePtr = nullptr;
 
@@ -57,13 +58,15 @@ Share::Share(const FrameData& frameData){
         throw 3;
     }
     
-    const char    *my_argv[64] = {"./Csound", NULL};
-    if(exec_prog(my_argv) == -1){
-        Logs::writeLog("gestures","./Csound launch error");
-        std::cout << "./Csound launch error" << std::endl;
-        throw 4;
+    if(Config::instance()->getIsCsound()){
+        const char    *my_argv[64] = {"./Csound", NULL};
+        if(exec_prog(my_argv) == -1){
+            Logs::writeLog("gestures","./Csound launch error");
+            std::cout << "./Csound launch error" << std::endl;
+            throw 4;
+        }
+        std::cout << "./Csound launched\n" << std::endl;
     }
-    std::cout << "./Csound launched\n" << std::endl;
 }
 
 Share::~Share(){

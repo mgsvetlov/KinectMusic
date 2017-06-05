@@ -8,11 +8,12 @@
 
 #include <sstream>
 #include <cmath>
-#include "sinus.h"
+#include "theremin.h"
 #include "../../csound/csound_.h"
 #include "../../log/logs.h"
+#include "../../config/config.h"
 
-Sinus::Sinus() {
+Theremin::Theremin() {
     csound_data = { {ParamData(69, 2e-2),  //midi
                     ParamData(0.01, 1e-2), //amp
                     ParamData(10., 2e-3), //vibr rate
@@ -21,14 +22,14 @@ Sinus::Sinus() {
                     ParamData(0.01, 1e-2), //amp
                     ParamData(10., 2e-3), //vibr rate
                     ParamData(1.0, 2e-3)}}; //mod side
-    csdName = "sinus";
-    midiMin = 60;
-    midiMax = 90;
+    csdName = "theremin";
+    midiMin = Config::instance()->getThereminMidiMin();
+    midiMax = Config::instance()->getThereminMidiMax();
 
     startGestureData = {HandData (NO_DATA_VALUE, NO_DATA_VALUE,NO_DATA_VALUE,NO_DATA_VALUE)};
 };
 
-void Sinus::mappingData() {
+void Theremin::mappingData() {
     if(frameData.frameNum == frameNum){
         return ;
     }

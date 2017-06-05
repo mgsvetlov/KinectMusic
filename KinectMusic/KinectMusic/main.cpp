@@ -41,13 +41,19 @@
 #include "gestureExtraction/gesture/gesturefabrique.h"
 #include "share.h"
 #include "log/logs.h"
+#include "config/config.h"
 
 //#include "opengl_.h"
 
 
 int main(int argc, char **argv)
 {
-	int res;
+    Config::setFileName("../../../config.ini");
+    Config* config = Config::instance();
+    if(config == nullptr){
+        Logs::closeLogs();
+        return -1;
+    }
     
 	//depth_mid = (uint8_t*)malloc(640*480*3);
 	//depth_front = (uint8_t*)malloc(640*480*3);
@@ -88,7 +94,7 @@ int main(int argc, char **argv)
 	}
    
     pthread_t freenect_thread;
-	res = pthread_create(&freenect_thread, NULL, freenect_threadfunc, NULL);
+	int res = pthread_create(&freenect_thread, NULL, freenect_threadfunc, NULL);
 	if (res) {
 		printf("pthread_create freenect_thread failed\n");
 		freenect_shutdown(f_ctx);
@@ -106,21 +112,22 @@ int main(int argc, char **argv)
     }
     
     while(true) {
-#ifdef VISUALIZATION
-        if(Visualization::getIsNeedRedraw()){
-            if(!Visualization::showImage())
-                break;
+        if(config->getIsVisualisation()){
+            if(Visualization::getIsNeedRedraw()){
+                if(!Visualization::showImage())
+                    break;
+            }
+            else {
+                usleep(10);
+            }
         }
         else {
+            std::string s;
+            std::cin >> s;
+                if(s == "q")
+                    break;
             usleep(10);
         }
-#else
-    std::string s;
-    std::cin >> s;
-        if(s == "q")
-            break;
-    usleep(10);
-#endif //VISUALIZATION
     }
     
     die_gesture = 1;
@@ -140,8 +147,6 @@ int main(int argc, char **argv)
 
 	// OS X requires GLUT to run on the main thread
 	//gl_threadfunc(NULL);
-    
-    
     
 	return 0;
 }

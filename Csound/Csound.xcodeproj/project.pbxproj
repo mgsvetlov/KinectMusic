@@ -11,7 +11,8 @@
 		72048F871EDA9427006381E9 /* share_consumer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72048F851EDA9427006381E9 /* share_consumer.cpp */; };
 		72048F8B1EDAA517006381E9 /* logs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72048F891EDAA517006381E9 /* logs.cpp */; };
 		72048F911EDB12EE006381E9 /* CsoundLib64.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72048F901EDB12EE006381E9 /* CsoundLib64.framework */; };
-		72048F9E1EDDB6E7006381E9 /* sinus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72048F9C1EDDB6E7006381E9 /* sinus.cpp */; };
+		720A04EF1EE5AF4C00731552 /* theremin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720A04EC1EE5AF4C00731552 /* theremin.cpp */; };
+		720A04F81EE5CD8300731552 /* config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720A04F61EE5CD8300731552 /* config.cpp */; };
 		7289108E1EDF59B100694CBF /* csound_.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7289108C1EDF59B100694CBF /* csound_.cpp */; };
 /* End PBXBuildFile section */
 
@@ -36,11 +37,14 @@
 		72048F8A1EDAA517006381E9 /* logs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = logs.h; path = log/logs.h; sourceTree = "<group>"; };
 		72048F901EDB12EE006381E9 /* CsoundLib64.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CsoundLib64.framework; path = ../../../../../../../Library/Frameworks/CsoundLib64.framework; sourceTree = "<group>"; };
 		72048F991EDB22F8006381E9 /* mapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mapping.h; path = mapping/mapping.h; sourceTree = "<group>"; };
-		72048F9C1EDDB6E7006381E9 /* sinus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sinus.cpp; path = mapping/sinus/sinus.cpp; sourceTree = "<group>"; };
-		72048F9D1EDDB6E7006381E9 /* sinus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sinus.h; path = mapping/sinus/sinus.h; sourceTree = "<group>"; };
+		720A04EC1EE5AF4C00731552 /* theremin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = theremin.cpp; path = mapping/theremin/theremin.cpp; sourceTree = "<group>"; };
+		720A04ED1EE5AF4C00731552 /* theremin.csd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = theremin.csd; path = mapping/theremin/theremin.csd; sourceTree = "<group>"; };
+		720A04EE1EE5AF4C00731552 /* theremin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = theremin.h; path = mapping/theremin/theremin.h; sourceTree = "<group>"; };
+		720A04F61EE5CD8300731552 /* config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = config.cpp; path = config/config.cpp; sourceTree = "<group>"; };
+		720A04F71EE5CD8300731552 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = config/config.h; sourceTree = "<group>"; };
+		720A04F91EE5CD9E00731552 /* config.ini */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = config.ini; path = ../../config.ini; sourceTree = "<group>"; };
 		7289108C1EDF59B100694CBF /* csound_.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = csound_.cpp; path = csound/csound_.cpp; sourceTree = "<group>"; };
 		7289108D1EDF59B100694CBF /* csound_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = csound_.h; path = csound/csound_.h; sourceTree = "<group>"; };
-		7289108F1EDF59F900694CBF /* sinus.csd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = sinus.csd; path = mapping/sinus/sinus.csd; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,11 +79,12 @@
 		72048F7C1EDA938D006381E9 /* Csound */ = {
 			isa = PBXGroup;
 			children = (
+				72048F7D1EDA938D006381E9 /* main.cpp */,
+				720A04F51EE5CD6F00731552 /* config */,
 				72048F971EDB22D7006381E9 /* mapping */,
 				72048F921EDB132A006381E9 /* csound */,
 				72048F881EDAA4F3006381E9 /* log */,
 				72048F841EDA93D9006381E9 /* share_consumer */,
-				72048F7D1EDA938D006381E9 /* main.cpp */,
 			);
 			path = Csound;
 			sourceTree = "<group>";
@@ -115,19 +120,29 @@
 			isa = PBXGroup;
 			children = (
 				72048F991EDB22F8006381E9 /* mapping.h */,
-				72048F9B1EDDB6C6006381E9 /* sinus */,
+				72048F9B1EDDB6C6006381E9 /* theremin */,
 			);
 			name = mapping;
 			sourceTree = "<group>";
 		};
-		72048F9B1EDDB6C6006381E9 /* sinus */ = {
+		72048F9B1EDDB6C6006381E9 /* theremin */ = {
 			isa = PBXGroup;
 			children = (
-				7289108F1EDF59F900694CBF /* sinus.csd */,
-				72048F9D1EDDB6E7006381E9 /* sinus.h */,
-				72048F9C1EDDB6E7006381E9 /* sinus.cpp */,
+				720A04ED1EE5AF4C00731552 /* theremin.csd */,
+				720A04EE1EE5AF4C00731552 /* theremin.h */,
+				720A04EC1EE5AF4C00731552 /* theremin.cpp */,
 			);
-			name = sinus;
+			name = theremin;
+			sourceTree = "<group>";
+		};
+		720A04F51EE5CD6F00731552 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				720A04F71EE5CD8300731552 /* config.h */,
+				720A04F61EE5CD8300731552 /* config.cpp */,
+				720A04F91EE5CD9E00731552 /* config.ini */,
+			);
+			name = config;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -186,11 +201,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				720A04EF1EE5AF4C00731552 /* theremin.cpp in Sources */,
 				72048F8B1EDAA517006381E9 /* logs.cpp in Sources */,
 				72048F7E1EDA938D006381E9 /* main.cpp in Sources */,
-				72048F9E1EDDB6E7006381E9 /* sinus.cpp in Sources */,
 				7289108E1EDF59B100694CBF /* csound_.cpp in Sources */,
 				72048F871EDA9427006381E9 /* share_consumer.cpp in Sources */,
+				720A04F81EE5CD8300731552 /* config.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

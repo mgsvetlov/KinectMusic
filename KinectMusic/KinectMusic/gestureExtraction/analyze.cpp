@@ -25,6 +25,7 @@
 #include "gesture/gesturefabrique.h"
 #include "share.h"
 #include "../log/logs.h"
+#include "../config/config.h"
 
 
 pthread_mutex_t depth_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -112,19 +113,18 @@ void *analyze_threadfunc(void *arg) {
 #ifdef WRITE_LOGS
         log(frameData);
 #endif //WRITE_LOGS
-#ifdef  VISUALIZATION
-        cv::Mat img;
-        Visualization::mat2img(mat16, img);
-        
-        Visualization::hands2img( vTracks, img, false);
-        Visualization::gestures2img(GestureFabrique::getGestures(), img, 60);
-        
-        pthread_mutex_lock(&visualisation_mutex);
-        Visualization::setMatImage(img);
-        Visualization::setIsNeedRedraw(true);
-        pthread_mutex_unlock(&visualisation_mutex);
-#endif //VISUALIZATION
-        
+        if(Config::instance()->getIsVisualisation()){
+            cv::Mat img;
+            Visualization::mat2img(mat16, img);
+            
+            Visualization::hands2img( vTracks, img, false);
+            Visualization::gestures2img(GestureFabrique::getGestures(), img, 60);
+            
+            pthread_mutex_lock(&visualisation_mutex);
+            Visualization::setMatImage(img);
+            Visualization::setIsNeedRedraw(true);
+            pthread_mutex_unlock(&visualisation_mutex);
+        }
     }
     
     return NULL;

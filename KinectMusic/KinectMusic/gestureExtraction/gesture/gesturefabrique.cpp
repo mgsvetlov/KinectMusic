@@ -11,6 +11,7 @@
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
 #include "../analyze.h"
+#include "../../config/config.h"
 
 GestureFabrique* GestureFabrique::gestureFabriquePtr (nullptr)
 ;
@@ -27,7 +28,15 @@ FrameData GestureFabrique::extractGestures(const std::vector<Track>& tracks){
 
 GestureFabrique::GestureFabrique(size_t gestureCount) {
     for(size_t ind = 0; ind < gestureCount; ind++){
-        std::shared_ptr<Gesture> pGesture { new GestureAll(ind) };
+        std::shared_ptr<Gesture> pGesture;
+        int gestureType = Config::instance()->getGestureType();
+        switch(gestureType) {
+            default:
+            case 0: pGesture.reset ( new GestureAll(ind)); break;
+            case 1: pGesture.reset ( new GestureStop(ind)); break;
+            case 2: pGesture.reset ( new GestureReturn(ind)); break;
+        }
+        
         gestures.push_back(pGesture);
     }
 }

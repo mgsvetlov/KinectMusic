@@ -6,15 +6,15 @@
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
 
-#ifndef sinus_h
-#define sinus_h
+#ifndef theremin_h
+#define theremin_h
 
 #include <vector>
 #include "../mapping.h"
 
-class Sinus : public Mapping {
+class Theremin : public Mapping {
 public:
-    Sinus();
+    Theremin();
     virtual void mappingData();
 
 private:
@@ -22,4 +22,4 @@ private:
     double midiMax;
 };
 
-#endif /* sinus_h */
+#endif /* theremin_h */

@@ -11,12 +11,20 @@
 #include "csound/csound_.h"
 #include "share_consumer/share_consumer.h"
 #include "log/logs.h"
+#include "config/config.h"
 #include "mapping/mapping.h"
-#include "mapping/sinus/sinus.h"
+#include "mapping/theremin/theremin.h"
 
 int main(int argc, const char * argv[]) {
     
-    Mapping* mapping = new Sinus();
+    Config::setFileName("../../../config.ini");
+    Config* config = Config::instance();
+    if(config == nullptr){
+        Logs::closeLogs();
+        return -1;
+    }
+    
+    Mapping* mapping = new Theremin();
     
     int res = pthread_create(&csound_thread, NULL, csound_threadfunc, mapping);
     if (res) {
