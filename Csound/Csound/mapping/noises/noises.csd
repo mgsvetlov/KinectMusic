@@ -15,13 +15,18 @@ nchnls = 2
 
 instr 1
 
-kamp chnget "amp1"
+kamp chnget "amp0"
+
+if kamp > 0.01  kgoto contin
+turnoff2 1, 0, 0   ; then quit
+
+contin:
 
 ichnls = ftchnls(p5)
 print ichnls
 
 if (ichnls == 1) then
-   asigL loscil .8, 1, p4, 1
+   asigL loscil kamp, 1, p4, 1
    asigR = 	asigL
 elseif (ichnls == 2) then
    asigL, asigR loscil kamp, 1, p4, 1
@@ -35,13 +40,18 @@ endin
 
 instr 2
 
-kamp chnget "amp2"
+kamp chnget "amp1"
+
+if kamp > 0.01  kgoto contin
+turnoff2 2, 0, 0   ; then quit
+
+contin:
 
 ichnls = ftchnls(p5)
 print ichnls
 
 if (ichnls == 1) then
-asigL loscil .8, 1, p4, 1
+asigL loscil kamp, 1, p4, 1
 asigR = 	asigL
 elseif (ichnls == 2) then
 asigL, asigR loscil kamp, 1, p4, 1
@@ -72,20 +82,4 @@ i100      0     36000
 e
 </CsScore>
 </CsoundSynthesizer>
-<bsbPanel>
- <label>Widgets</label>
- <objectName/>
- <x>100</x>
- <y>100</y>
- <width>320</width>
- <height>240</height>
- <visible>true</visible>
- <uuid/>
- <bgcolor mode="nobackground">
-  <r>255</r>
-  <g>255</g>
-  <b>255</b>
- </bgcolor>
-</bsbPanel>
-<bsbPresets>
-</bsbPresets>
+
