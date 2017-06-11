@@ -7,15 +7,15 @@
 <CsInstruments>
 
 sr = 44100
-ksmps = 10
+ksmps = 5
 nchnls = 2
 0dbfs = 2.0
 
         instr 1
-kmidi chnget "p10"
-kamp chnget "p11"
-kvibr chnget "p12"
-kmod chnget "p13"
+kmidi chnget "midiPitch0"
+kamp chnget "amp0"
+kvibr chnget "vibrRate0"
+kmod chnget "fmodSide0"
 
 kcar = 1
 kcps  = cpsmidinn(kmidi)
@@ -26,10 +26,10 @@ outs     a1, a2
 endin
 
 instr 2
-kmidi chnget "p20"
-kamp chnget "p21"
-kvibr chnget "p22"
-kmod chnget "p23"
+kmidi chnget "midiPitch1"
+kamp chnget "amp1"
+kvibr chnget "vibrRate1"
+kmod chnget "fmodSide1"
 
 kcar = 1
 kcps  = cpsmidinn(kmidi)
@@ -39,14 +39,15 @@ a2      oscil 0, 440, 1
 outs     a2, a1
 endin
 
+instr 100
+endin
 </CsInstruments>
 
 <CsScore>
 f1  0   4096    10 1  ; use GEN10 to compute a sine wave
 
 ;ins    strt    dur
-i1      0       3600
-i2      0       3600
+i100      0     36000
 e                     ; indicates the end of the score
 </CsScore>
 

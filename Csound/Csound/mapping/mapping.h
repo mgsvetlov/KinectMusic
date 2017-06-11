@@ -9,6 +9,8 @@
 #ifndef mapping_h
 #define mapping_h
 #include <vector>
+#include <string>
+#include <map>
 
 #define NO_DATA_VALUE -1
 #define START_GESTURE_VALUE -10
@@ -32,25 +34,28 @@ struct FrameData{
 };
 
 struct ParamData {
+    //std::string name;
     double param;
     double rampCoeff;
+    ParamData(){}
     ParamData(double param, double rampCoeff) :
-    param(param), rampCoeff(rampCoeff) {}
+                param(param), rampCoeff(rampCoeff) {}
 };
 
 class Mapping{
 public:
     FrameData& getData() { return frameData; }
-    const std::vector<std::vector<ParamData>>& getCsound_data() const { return  csound_data;}
+    const std::map<std::string,ParamData>& getCsound_data() const { return  csound_data;}
     const std::string& getCsdName() const {return csdName;}
     virtual ~Mapping(){};
+    virtual void initialScoreEvents() = 0;
     virtual void mappingData() = 0;
-    
+
 protected:
+    std::string csdName;
     int frameNum = 0;
     FrameData frameData;
-    std::vector<std::vector<ParamData>> csound_data;
-    std::string csdName;
-    std::vector<HandData> startGestureData;
+    std::map<std::string,ParamData> csound_data;
+    
 };
 #endif /* mapping_hpp */

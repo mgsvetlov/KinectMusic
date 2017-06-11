@@ -13,6 +13,7 @@
 		72048F911EDB12EE006381E9 /* CsoundLib64.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72048F901EDB12EE006381E9 /* CsoundLib64.framework */; };
 		720A04EF1EE5AF4C00731552 /* theremin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720A04EC1EE5AF4C00731552 /* theremin.cpp */; };
 		720A04F81EE5CD8300731552 /* config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720A04F61EE5CD8300731552 /* config.cpp */; };
+		720A05111EED7AFD00731552 /* noises.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720A050F1EED7AFD00731552 /* noises.cpp */; };
 		7289108E1EDF59B100694CBF /* csound_.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7289108C1EDF59B100694CBF /* csound_.cpp */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +44,9 @@
 		720A04F61EE5CD8300731552 /* config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = config.cpp; path = config/config.cpp; sourceTree = "<group>"; };
 		720A04F71EE5CD8300731552 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = config/config.h; sourceTree = "<group>"; };
 		720A04F91EE5CD9E00731552 /* config.ini */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = config.ini; path = ../../config.ini; sourceTree = "<group>"; };
+		720A050E1EED734800731552 /* noises.csd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = noises.csd; path = mapping/noises/noises.csd; sourceTree = "<group>"; };
+		720A050F1EED7AFD00731552 /* noises.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = noises.cpp; path = mapping/noises/noises.cpp; sourceTree = "<group>"; };
+		720A05101EED7AFD00731552 /* noises.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = noises.h; path = mapping/noises/noises.h; sourceTree = "<group>"; };
 		7289108C1EDF59B100694CBF /* csound_.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = csound_.cpp; path = csound/csound_.cpp; sourceTree = "<group>"; };
 		7289108D1EDF59B100694CBF /* csound_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = csound_.h; path = csound/csound_.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -120,6 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				72048F991EDB22F8006381E9 /* mapping.h */,
+				720A050D1EED732F00731552 /* noises */,
 				72048F9B1EDDB6C6006381E9 /* theremin */,
 			);
 			name = mapping;
@@ -143,6 +148,16 @@
 				720A04F91EE5CD9E00731552 /* config.ini */,
 			);
 			name = config;
+			sourceTree = "<group>";
+		};
+		720A050D1EED732F00731552 /* noises */ = {
+			isa = PBXGroup;
+			children = (
+				720A050E1EED734800731552 /* noises.csd */,
+				720A05101EED7AFD00731552 /* noises.h */,
+				720A050F1EED7AFD00731552 /* noises.cpp */,
+			);
+			name = noises;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -201,6 +216,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				720A05111EED7AFD00731552 /* noises.cpp in Sources */,
 				720A04EF1EE5AF4C00731552 /* theremin.cpp in Sources */,
 				72048F8B1EDAA517006381E9 /* logs.cpp in Sources */,
 				72048F7E1EDA938D006381E9 /* main.cpp in Sources */,

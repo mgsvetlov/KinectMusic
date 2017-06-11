@@ -36,40 +36,27 @@ void *csound_threadfunc(void *arg){
     int result = csoundCompile(csound, argc_, argv_);
     
     if(result == 0){
-
+        
+        mapping->initialScoreEvents();
+        
         const auto& csound_data = mapping->getCsound_data();
-        
-        for(int i = 0; i < csound_data.size(); i ++){
-            MYFLT pFields[] = {static_cast<double>(i+1), 0, -1};
-            csoundScoreEvent(csound, 'i', pFields, 3);
-        }
-        
-        std::vector<std::vector<ParamData>> csound_dataPrev = csound_data;
-        int sample_count(0);
-        int sec_count(0);
+        auto csound_dataPrev = csound_data;
         
         while(!die && csoundPerformKsmps(csound) == 0)
         {
-            for(int i = 0; i < csound_data.size(); i++){
-                std::stringstream ssinstr;
-                ssinstr << i + 1;
-                for(int j = 0; j < csound_data[i].size(); j++){
-                    std::stringstream ssparam;
-                    ssparam << j;
-                    std::string chn =  "p" + ssinstr.str() + ssparam.str();
-                    MYFLT *p;
-                    if(csoundGetChannelPtr(csound, &p, chn.c_str(), CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) == 0){
-                        ramp(csound_dataPrev[i][j].param, csound_data[i][j].param, csound_dataPrev[i][j].rampCoeff);
-                        *p = csound_dataPrev[i][j].param;
-                    }
+            for(const auto& pair : csound_data) {
+                const std::string& name = pair.first;
+                const ParamData& paramData = pair.second;
+                MYFLT *p;
+                if(csoundGetChannelPtr(csound, &p, name.c_str(), CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) == 0){
+                    ramp(csound_dataPrev[name].param, paramData.param, paramData.rampCoeff);
+                    *p = csound_dataPrev[name].param;
                 }
             }
-            if(++sample_count == 4410){
-                ++sec_count;
-                sample_count = 0;
-            }
         }
+        
         csoundCleanup(csound);
+        
     }
     delete cs;
     return NULL;
@@ -80,5 +67,9 @@ void ramp(double& param, const double paramDst,  double rampCoeff){
     param += delta;
     if(param < 0)
         param = 0;
+}
+
+void scoreEvent(MYFLT arr[], long numField){
+    csoundScoreEvent(csound, 'i', arr, numField);
 }
 

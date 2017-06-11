@@ -17,14 +17,19 @@ Config* Config::_self = nullptr;
 
 std::map<std::string, double> Config::varmap =
 {
+    { "isLogCsound", 0. },
+    {"mappingType", 0. },
     { "thereminMidiMin", 60. },
     { "thereminMidiMax", 90. }
 };
 
 Config::Config() :
+isLogCsound(varmap["isLogCsound"]),
+mappingType(varmap["mappingType"]),
 thereminMidiMin(varmap["thereminMidiMin"]),
 thereminMidiMax(varmap["thereminMidiMax"])
-{}
+{
+}
 
 bool Config::parse()
 {

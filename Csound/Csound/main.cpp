@@ -14,6 +14,7 @@
 #include "config/config.h"
 #include "mapping/mapping.h"
 #include "mapping/theremin/theremin.h"
+#include "mapping/noises/noises.h"
 
 int main(int argc, const char * argv[]) {
     
@@ -24,7 +25,11 @@ int main(int argc, const char * argv[]) {
         return -1;
     }
     
-    Mapping* mapping = new Theremin();
+    Mapping* mapping;
+    if(Config::instance()->getMappingType() == 0)
+        mapping = new Theremin();
+    else
+        mapping = new Noises();
     
     int res = pthread_create(&csound_thread, NULL, csound_threadfunc, mapping);
     if (res) {

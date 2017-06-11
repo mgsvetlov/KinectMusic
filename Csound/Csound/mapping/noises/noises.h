@@ -1,26 +1,25 @@
 //
-//  Sinus.hpp
+//  noises.hpp
 //  Csound
 //
-//  Created by Mikhail Svetlov on 30/05/17.
+//  Created by Mikhail Svetlov on 11/06/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
 
-#ifndef theremin_h
-#define theremin_h
+#ifndef noises_h
+#define noises_h
 
 #include <vector>
 #include "../mapping.h"
 
-class Theremin : public Mapping {
+class Noises : public Mapping {
 public:
-    Theremin();
+    Noises();
     virtual void initialScoreEvents();
     virtual void mappingData();
-
+    
 private:
-    double midiMin;
-    double midiMax;
+    std::vector<int> gestureCurrState;
 };
 
-#endif /* theremin_h */
+#endif /* noises_h */

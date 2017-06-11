@@ -39,6 +39,8 @@ protected:
 public:
     static void setFileName(std::string value) {fileName = value;}
     
+    bool getIsLogCsound() const {return isLogCsound;}
+    int getMappingType() const {return mappingType;}
     double getThereminMidiMin() const {return thereminMidiMin; }
     double getThereminMidiMax() const {return thereminMidiMax; }
     
@@ -50,6 +52,8 @@ private:
     static Config* _self;
     static std::map<std::string, double> varmap;
     
+    bool isLogCsound;
+    int mappingType;
     double thereminMidiMin;
     double thereminMidiMax;
 };

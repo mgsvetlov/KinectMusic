@@ -42,6 +42,7 @@ uint16_t * const depthAnalyze = new uint16_t[w*h];
 
 int MAX_KINECT_VALUE;
 int MAX_KINECT_DEPTH = 1800;
+int MIN_KINECT_DEPTH = 1000;
 int BLOBS_RESIZE_POW  = 2;
 int BLOB_MIN_SIZE = 25;
 int BLOB_MIN_SIZE_LAST = 3000;
@@ -70,7 +71,7 @@ void *analyze_threadfunc(void *arg) {
         uint16_t* p_mat = (uint16_t*)(mat16_filt.data);
         for(size_t i = 0; i < mat16_filt.total(); i++, p_mat++)
         {
-            if(*p_mat > MAX_KINECT_DEPTH)
+            if(*p_mat > MAX_KINECT_DEPTH || *p_mat < MIN_KINECT_DEPTH)
                 *p_mat = 0;
         }
         

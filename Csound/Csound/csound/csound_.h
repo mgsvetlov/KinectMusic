@@ -21,6 +21,6 @@ extern bool die;
 extern CSOUND* csound;
 
 void ramp(double& param, const double paramDst,  double rampCoeff);
-
+void scoreEvent(MYFLT arr[], long numField);
 
 #endif

@@ -21,6 +21,7 @@
 #include "share_consumer.h"
 #include "../log/logs.h"
 #include "../mapping/mapping.h"
+#include "../config/config.h"
 
 ShareConsumer* ShareConsumer::shareConsumerPtr = nullptr;
 
@@ -69,9 +70,8 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
     
     sem_wait(sem);
     if(shmget(key, SIZE, 0) < 0){
-#ifdef WRITE_LOGS
-        Logs::writeLog("csound", "Can\'t find shared memory");
-#endif //WRITE_LOGS
+        if(Config::instance()->getIsLogCsound())
+            Logs::writeLog("csound", "Can\'t find shared memory");
         sem_post(sem);
         return false;
     }
@@ -126,13 +126,14 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
     
     frameDataPrev = frameData;
 
-#ifdef WRITE_LOGS
-    std::stringstream ss;
-    intPtr = static_cast<int*>(ptr);
-    for(int i = 0; i < SIZE / sizeof(int); ++i, ++intPtr )
-        ss << *intPtr  << " ";
-    Logs::writeLog("csound", ss.str());
-#endif //WRITE_LOGS
+    if(Config::instance()->getIsLogCsound()){
+        std::stringstream ss;
+        intPtr = static_cast<int*>(ptr);
+        for(int i = 0; i < SIZE / sizeof(int); ++i, ++intPtr )
+            ss << *intPtr  << " ";
+        Logs::writeLog("csound", ss.str());
+    }
+
 
     return true;
 }
