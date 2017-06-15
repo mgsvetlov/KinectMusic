@@ -10,16 +10,21 @@
 #define noises_h
 
 #include <vector>
+#include "../../csound/csound_.h"
 #include "../mapping.h"
 
 class Noises : public Mapping {
+    enum class GestureType : unsigned char { SLOW, MIDDLE, FAST};
 public:
     Noises();
     virtual void initialScoreEvents();
     virtual void mappingData();
-    
 private:
-    std::vector<int> gestureCurrState;
+    GestureType distance (const HandData& handData1, const HandData& handData2);
+    void generateScoreEvent(int handNum, GestureType gestureType);
+private:
+    std::vector<HandData> handsDataPrev;
+    
 };
 
 #endif /* noises_h */
