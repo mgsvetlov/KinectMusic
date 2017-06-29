@@ -22,7 +22,7 @@ struct HandData{
     double x;
     double y;
     int z;
-    HandData(){}
+    HandData() : z(-1){}
     HandData(int phase, double x, double y, int z) :
     phase(phase), x(x), y(y), z(z){}
 };

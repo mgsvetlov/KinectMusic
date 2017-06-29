@@ -19,17 +19,19 @@ Theremin::Theremin() {
     csdName = "theremin";
     csound_data = {
                     {"midiPitch0",ParamData( 69, 1e-2)},  //midi
-                    {"amp0", ParamData(0.01, 1e-2)}, //amp
+                    {"amp0", ParamData(0.01, 1e-0)}, //amp
                     {"vibrRate0", ParamData( 10., 2e-3)}, //vibr rate
                     {"fmodSide0",ParamData( 1.0, 2e-3)}, //mod side
                     {"midiPitch1", ParamData( 69, 1e-2)},  //midi
-                    {"amp1",ParamData( 0.01, 1e-2)}, //amp
+                    {"amp1",ParamData( 0.01, 1e-0)}, //amp
                     {"vibrRate1", ParamData(10., 2e-3)}, //vibr rate
                     {"fmodSide1", ParamData(1.0, 2e-3)} //mod side
                 };
 //private:
     midiMin = Config::instance()->getThereminMidiMin();
     midiMax = Config::instance()->getThereminMidiMax();
+    handsDataPrev = { HandData(), HandData() };
+    vol = {0.0, 0.0};
 };
 
 void Theremin::initialScoreEvents(){
@@ -45,26 +47,41 @@ void Theremin::mappingData() {
     }
     frameNum = frameData.frameNum;
     
-    if(frameData.hands[0].phase == NO_DATA_VALUE || frameData.hands[1].phase == NO_DATA_VALUE){
-        csound_data["amp0"].param = csound_data["amp1"].param = 0.;
+    if(frameData.hands[0].phase == NO_DATA_VALUE || frameData.hands[1].phase == NO_DATA_VALUE /*|| handsDataPrev[0].phase == NO_DATA_VALUE || handsDataPrev[1].phase == NO_DATA_VALUE*/){
+        //csound_data["amp0"].param = csound_data["amp1"].param = 0.;
     }
     else {
-        double freq[2];
+        int minInd = frameData.hands[0].x < frameData.hands[1].x ? 0 : 1;
+        //double freq[2];
         for(int i = 0; i < frameData.hands.size(); ++i){
-            //freq
-            freq[i] = frameData.hands[i].y * (midiMax - midiMin) + midiMin;
-            //amp
-            int dz = frameData.hands[i].z - frameData.bodyDepth;
-            double vol = pow(-dz / 300., 1);
-            if(vol < 0.01)
-                vol = 0.01;
-            else if(vol > 1.0)
-                vol = 1.0;
-            vol = pow(vol, 2) * 0.5;
             std::stringstream ss;
             ss << i;
             std::string iStr (ss.str());
-            csound_data["amp"+iStr].param = vol;
+            //freq
+            if(i == minInd){
+                csound_data["midiPitch0"].param = csound_data["midiPitch1"].param = frameData.hands[i].y * (midiMax - midiMin) + midiMin;
+            }
+            else {
+                if(handsDataPrev[i].z != -1){
+                    int dz = frameData.hands[i].z - handsDataPrev[i].z;
+                    int absDz = std::abs(dz )<  5 ? 0 : std::abs(dz);
+                    double dVol = std::abs(absDz * absDz * absDz  / 100.);
+                    
+                    if(dz > 0)
+                        dVol *= -1;
+                    vol[i] += dVol;
+                    if(vol[i] < 0.01)
+                        vol[i] = 0.01;
+                    else if(vol[i] > 1.0)
+                        vol[i] = 1.0;
+                    std::stringstream ss;
+                    ss << i << " z " << frameData.hands[i].z <<  " dz " << dz << " dVol " << dVol << " vol " << vol[i];
+                    Logs::writeLog("csound", ss.str());
+                }
+                csound_data["amp0"].param = csound_data["amp1"].param = 1.0;//vol[i];
+            }
+            
+            
             //vibr
             csound_data["vibrRate"+iStr].param = 2. + ((rand() % 100) / 100. - 0.5) * 4;
             //side mod
@@ -74,7 +91,7 @@ void Theremin::mappingData() {
             mod  = mod  < 0. ? 0. : mod;
             csound_data["fmodSide"+iStr].param = mod * 2;
         }
-        csound_data["midiPitch0"].param = csound_data["midiPitch1"].param = (freq[0]+ freq[1]) * 0.5;
-
+        handsDataPrev = frameData.hands;
     }
+    
 }

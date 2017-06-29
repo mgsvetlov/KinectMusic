@@ -171,7 +171,16 @@ bool Blob::computeCentralNearCell(double med){
 bool Blob::computeCentralCell(){
     if(lCells.empty())
         return false;
-    double  ySum(0), xSum(0), valSum(0);
+    int ind(0), val(MAX_KINECT_DEPTH);
+    for( auto& cell: lCells){
+        if(cell.val < val){
+            ind = cell.ind;
+            val = cell.val;
+        }
+    }
+    this->centralCell.ind = ind;
+    this->centralCell.val = val;
+    /*double  ySum(0), xSum(0), valSum(0);
 
     for( auto& cell: lCells){
         int ind = cell.ind;
@@ -187,7 +196,7 @@ bool Blob::computeCentralCell(){
     int val = valSum / lCells.size();
     int ind = this->matSize.width * y + x;
     this->centralCell.ind = ind;
-    this->centralCell.val = val;
+    this->centralCell.val = val;*/
     return true;
 }
 
