@@ -49,7 +49,7 @@ void *csound_threadfunc(void *arg){
                 const ParamData& paramData = pair.second;
                 MYFLT *p;
                 if(csoundGetChannelPtr(csound, &p, name.c_str(), CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) == 0){
-                    ramp(csound_dataPrev[name].param, paramData.param, paramData.rampCoeff);
+                    ramp(csound_dataPrev[name].param, paramData.param, paramData.ramp);
                     *p = csound_dataPrev[name].param;
                 }
             }
@@ -62,11 +62,14 @@ void *csound_threadfunc(void *arg){
     return NULL;
 }
 
-void ramp(double& param, const double paramDst,  double rampCoeff){
-    double delta = (paramDst - param) * rampCoeff;
-    param += delta;
-    if(param < 0)
-        param = 0;
+void ramp(double& param, const double paramDst,  double ramp){
+    double delta = paramDst - param;
+    if(std::abs(delta) < ramp){
+        param = paramDst;
+    }
+    else {
+        param = delta > 0. ? param + ramp : param - ramp;
+    }
 }
 
 void scoreEvent(MYFLT arr[], long numField){

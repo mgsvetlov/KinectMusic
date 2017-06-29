@@ -36,10 +36,10 @@ struct FrameData{
 struct ParamData {
     //std::string name;
     double param;
-    double rampCoeff;
+    double ramp;
     ParamData(){}
-    ParamData(double param, double rampCoeff) :
-                param(param), rampCoeff(rampCoeff) {}
+    ParamData(double param, double ramp) :
+                param(param), ramp(ramp) {}
 };
 
 class Mapping{

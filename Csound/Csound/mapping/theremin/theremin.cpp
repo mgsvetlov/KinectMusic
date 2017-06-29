@@ -18,11 +18,11 @@ Theremin::Theremin() {
 //protected:
     csdName = "theremin";
     csound_data = {
-                    {"midiPitch0",ParamData( 69, 2e-2)},  //midi
+                    {"midiPitch0",ParamData( 69, 1e-2)},  //midi
                     {"amp0", ParamData(0.01, 1e-2)}, //amp
                     {"vibrRate0", ParamData( 10., 2e-3)}, //vibr rate
                     {"fmodSide0",ParamData( 1.0, 2e-3)}, //mod side
-                    {"midiPitch1", ParamData( 69, 2e-2)},  //midi
+                    {"midiPitch1", ParamData( 69, 1e-2)},  //midi
                     {"amp1",ParamData( 0.01, 1e-2)}, //amp
                     {"vibrRate1", ParamData(10., 2e-3)}, //vibr rate
                     {"fmodSide1", ParamData(1.0, 2e-3)} //mod side
