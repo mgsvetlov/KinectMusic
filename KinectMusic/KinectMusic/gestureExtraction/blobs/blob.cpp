@@ -10,6 +10,7 @@
 #include <queue>
 #include <algorithm>    // std::sort
 #include <vector>       // std::vector
+#include <vector>
 
 Blob::Blob() :
 lCells(std::list<Cell>()),
@@ -125,8 +126,7 @@ int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
             if(it->lCells.size() > largestBlob.lCells.size())
                 largestBlob = *it;
         }
-        if(largestBlob.computeCentralCell())
-            body_depth = largestBlob.centralCell.val;
+        body_depth = largestBlob.computeAverageValue();
     }
     
     return body_depth;
@@ -200,6 +200,14 @@ bool Blob::computeCentralCell(){
     return true;
 }
 
+int Blob::computeAverageValue(){
+    int sum (0);
+    for( auto& cell: lCells){
+        sum += cell.val;
+    }
+    return sum / lCells.size();
+}
+
 bool Blob::isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh)
 {
     if(this->centralCell.ind == -1 || blob.centralCell.ind == -1)
@@ -269,12 +277,36 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
             it = lBlobsClustered.erase(it);
             continue;
         }
-        it->computeCentralNearCell(0.25);
+        //it->computeCentralNearCell(0.25);
+        it->computeCentralCell();
         it++;
     }
     
     return true;
 }
+
+void Blob::sort(std::list<Blob>& lBlobs) {
+    if(lBlobs.size() < 2){
+        lBlobs.clear();
+        return;
+    }
+    std::vector<Blob> vBlobs (lBlobs.begin(), lBlobs.end());
+    std::sort(vBlobs.begin(), vBlobs.end(), [](const Blob& b1, const Blob& b2){ return b1.centralCell.val < b2.centralCell.val; });
+    lBlobs = std::list<Blob>(vBlobs.begin(), vBlobs.begin() + 2);
+}
+
+void Blob::filterNearBody(std::list<Blob>& lBlobs, int bodyDepth, int minDistToBody){
+    std::list<Blob> lBlobsResult;
+    auto it = lBlobs.begin();
+    while(it != lBlobs.end()){
+        if(it->centralCell.val < bodyDepth - minDistToBody){
+            lBlobsResult.push_back(std::move(*it));
+        }
+        ++it;
+    }
+    lBlobs = std::move(lBlobsResult);
+}
+
 cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
     cv::Mat mat = cv::Mat_<uint16_t>::zeros(size);
     
@@ -285,6 +317,24 @@ cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
             uint16_t* p_mat = (uint16_t*)(mat.data) + ind;
             *p_mat = cell.val;
         }
+    }
+    
+    return mat;
+}
+
+cv::Mat Blob::blobs2mat_marked(const std::list<Blob>& lBlobs, const cv::Size& size, int body_depth) {
+    cv::Mat mat = cv::Mat_<unsigned char>::zeros(size);
+    
+    int val = 255;
+    const int step = 120;
+    for(auto& blob : lBlobs) {
+        auto& lCells = blob.getLCellsConst();
+        for(auto& cell : lCells) {
+            int ind = cell.ind;
+            unsigned char* p_mat = (unsigned char*)(mat.data) + ind;
+            *p_mat = val;
+        }
+        val -= step;
     }
     
     return mat;

@@ -13,6 +13,7 @@
 #include <iostream>
 #include <queue>
 #include <sstream>
+#include <algorithm>
 
 #include "types.h"
 #include "visualization/visualization.h"
@@ -96,7 +97,15 @@ void *analyze_threadfunc(void *arg) {
         std::list<Blob> lBlobsClust;
         int xyThresh(20), depthThresh(1000);
         Blob::blobsClustering(lBlobs1, lBlobsClust, xyThresh, depthThresh);
-                //extract hands from points in full matrix
+        
+        if(!lBlobsClust.empty()){
+            int minDistToBody(150);
+            Blob::filterNearBody(lBlobsClust,  body_depth, minDistToBody);
+            Blob::sort(lBlobsClust);
+        }
+        cv::Mat matBlobs1 = Blob::blobs2mat_marked(lBlobsClust, mat16_resized.size(), body_depth);//new!!!
+        /*
+            //extract hands from points in full matrix
         int bbXY (60), bbZ(200);
         std::list<Hand> lHands = HandsFromPoints::extractHandBlobs(mat16, lBlobsClust, bbXY, bbZ);
         
@@ -110,16 +119,20 @@ void *analyze_threadfunc(void *arg) {
         if(!Share::share(frameData)){
             Logs::writeLog("gestures", "Share error!");
             break;
-        }
+        }*/
 #ifdef WRITE_LOGS
         log(frameData);
 #endif //WRITE_LOGS
         if(Config::instance()->getIsVisualisation()){
             cv::Mat img;
-            Visualization::mat2img(mat16, img);
+            cv::Mat matBlobs1_resized;
+            cv::resize(matBlobs1, img, cv::Size(w, h));
+            //Visualization::mat2img(matBlobs1_resized, img);
+            //Visualization::mat2img(mat16, img);
             
-            Visualization::hands2img( vTracks, img, false);
-            Visualization::gestures2img(GestureFabrique::getGestures(), img, 60);
+            ////Visualization::hands2img( vTracks, img, false);
+            //Visualization::hands2img( lHands, img, true);
+            //Visualization::gestures2img(GestureFabrique::getGestures(), img, 60);
             
             pthread_mutex_lock(&visualisation_mutex);
             Visualization::setMatImage(img);

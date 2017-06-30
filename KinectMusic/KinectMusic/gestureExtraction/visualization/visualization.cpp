@@ -106,6 +106,18 @@ void Visualization::hands2img(const std::vector<Track>& vTracks, cv::Mat& matImg
     }
 }
 
+void Visualization::hands2img(const std::list<Hand>& lHands, cv::Mat& matImg, bool drawKeyPoints ){
+    int count(0);
+    for(const auto& hand : lHands){
+        int c = count % 3;
+        cv::Scalar color = c == 0? cv::Scalar(0,0.5,0) : c == 1? cv::Scalar(0.5,0,0) : cv::Scalar(0.5,0.5,0.);
+        hand2img(hand, matImg, color);
+        if(drawKeyPoints)
+            keyPoint2img(hand.keyPoint, matImg, cv::Scalar(127, 127, 127), 10);
+        count++;
+    }
+}
+
 void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg){
     auto phase = gesture->handsData.front().phase;
     if(phase ==  NO_DATA_VALUE || phase == END_GESTURE_VALUE)

@@ -96,13 +96,13 @@ Hand Hand::extractHand() const{
             hand.refPoint = this->refPoint;
             hand.mat = this->mat;
             hand.findBorderPoints();
-            if(hand.checkIsHand()){
+            //if(hand.checkIsHand()){
                 hand.keyPoint = this->keyPoint;
                 return hand;
-            }
+            /*}
             else {
                 return Hand();
-            }
+            }*/
         }
     }
     return Hand();

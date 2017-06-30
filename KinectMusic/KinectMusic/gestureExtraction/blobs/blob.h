@@ -29,8 +29,12 @@ public:
     std::list<Cell>& getLCells() {return lCells;}
     const std::list<Cell>& getLCellsConst() const {return lCells;}
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
+      static cv::Mat blobs2mat_marked(const std::list<Blob>& lBlobs, const cv::Size& size, int body_depth);
     
     static bool blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh);
+    
+    static void sort(std::list<Blob>& lBlobs);
+    static void filterNearBody(std::list<Blob>& lBlobs, int bodyDepth, int minDistToBody);
     
     const Cell& getCentralCell() const {return centralCell;}
     const cv::Size& getMatSize() const {return this->matSize;}
@@ -40,6 +44,7 @@ private:
     void addCell(int ind, int val);
     void mergeBlob(const Blob& blob);
     bool computeCentralCell();
+    int computeAverageValue();
     bool computeCentralNearCell(double med);
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
 

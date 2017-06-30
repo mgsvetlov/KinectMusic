@@ -31,6 +31,7 @@ public:
     
     static void mat2img(cv::Mat mat, cv::Mat& matImg);
     static void hands2img(const std::vector<Track>& tracks, cv::Mat& matImg, bool drawKeyPoints = true);
+    static void hands2img(const std::list<Hand>& lHands, cv::Mat& matImg, bool drawKeyPoints = true);
     static void gestures2img(const std::vector<std::shared_ptr<Gesture>>& handsTrackedStreams, cv::Mat& matImg, size_t length);
 private:
     static void hand2img(const Hand& hand, cv::Mat& matImg, const cv::Scalar& color);
