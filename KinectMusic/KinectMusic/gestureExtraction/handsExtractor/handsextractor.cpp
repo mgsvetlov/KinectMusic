@@ -6,9 +6,9 @@
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
 
-#include "handsheadextractor.h"
+#include "handsextractor.h"
 
-cv::Mat HandsHeadExtractor::extractHandsHead(cv::Mat mat, int filt_size, int filt_depth, int core_half_size)
+cv::Mat HandsExtractor::extractHands(cv::Mat mat, int filt_size, int filt_depth, int core_half_size)
 {
     cv::Mat matDst = cv::Mat_<uint16_t>::zeros(mat.size());
     uint16_t* p_mat = (uint16_t*)(mat.data);

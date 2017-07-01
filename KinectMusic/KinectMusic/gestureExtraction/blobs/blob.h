@@ -39,6 +39,7 @@ public:
     const Cell& getCentralCell() const {return centralCell;}
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
+    void computeAngle();
 
 private:
     void addCell(int ind, int val);
@@ -53,9 +54,10 @@ private:
     const Cell* p_minValCell = nullptr;
     std::list<Cell> lCells;
     Cell centralCell;
+    float angle;
     cv::Size matSize;
     
-    friend class HandsFromPoints;
+    friend class Hand;
     friend class Visualization;
 };
 #endif /* blob_h */

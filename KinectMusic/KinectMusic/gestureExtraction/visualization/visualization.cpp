@@ -89,65 +89,55 @@ void Visualization::mat2img(cv::Mat mat, cv::Mat& matImg) {
     cv::merge(channels, matImg);
 }
 
-void Visualization::hands2img(const std::vector<Track>& vTracks, cv::Mat& matImg, bool drawKeyPoints){
+void Visualization::blobs2img(const std::list<Blob>& lBlobs, cv::Mat& matImg, bool drawKeyPoints ){
     int count(0);
-    for(auto& track : vTracks) {
-        std::list<Hand> lHands = track.getLHands();
-        if(lHands.empty()) {
-            count++;
-            continue;
-        }
-        Hand& hand = lHands.back();
-        cv::Scalar color = count == 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
-        hand2img(hand, matImg, color);
-        if(drawKeyPoints)
-            keyPoint2img(hand.keyPoint, matImg, cv::Scalar(127, 127, 127), 10);
-        count++;
-    }
-}
-
-void Visualization::hands2img(const std::list<Hand>& lHands, cv::Mat& matImg, bool drawKeyPoints ){
-    int count(0);
-    for(const auto& hand : lHands){
+    for(const auto& blob : lBlobs){
         int c = count % 3;
         cv::Scalar color = c == 0? cv::Scalar(0,0.5,0) : c == 1? cv::Scalar(0.5,0,0) : cv::Scalar(0.5,0.5,0.);
-        hand2img(hand, matImg, color);
-        if(drawKeyPoints)
-            keyPoint2img(hand.keyPoint, matImg, cv::Scalar(127, 127, 127), 10);
+        blob2img(blob, matImg, color);
+        if(drawKeyPoints) {
+            int ind = blob.centralCell.ind;
+            int x = ind % matImg.cols;
+            int y = (ind-x) /matImg.cols;
+            int z = blob.centralCell.val;
+            keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 127, 127), 10);
+        }
         count++;
     }
 }
 
-void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg){
-    auto phase = gesture->handsData.front().phase;
-    if(phase ==  NO_DATA_VALUE || phase == END_GESTURE_VALUE)
-        return;
+void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg, size_t length){
     int pointSize(5);
     cv::Scalar color = gesture->handInd == 0 ? cv::Scalar(0,0,255) : cv::Scalar(255,255, 0);
-    for(auto& handData : gesture->handsData) {
-        auto& point = handData.point;
+    auto rit = gesture->handsData.crbegin();
+    if(length == 0 || gesture->handsData.size() < length)
+        length = gesture->handsData.size();
+    for(int i = 0; i < length; ++i, ++rit){
+        const auto& handData = *rit;
+        const auto& point = handData.point;
         if(point.x != NO_DATA_VALUE && handData.phase != NO_DATA_VALUE){
-            /*cv::Point3i pointCamera = GestureFabrique::convertToCameraSpace(point);*/
-            keyPoint2img(point/*Camera*/, matImg, color, pointSize);
+            keyPoint2img(point, matImg, color, pointSize);
         }
     }
 }
 
 void Visualization::gestures2img(const std::vector<std::shared_ptr<Gesture>>& gestures, cv::Mat& matImg, size_t length){
     for(auto& gesture : gestures) {
-        gesture2img(gesture, matImg);
+        gesture2img(gesture, matImg, length);
     }
 }
 
-void Visualization::hand2img(const Hand& hand, cv::Mat& matImg, const cv::Scalar& color){
-    for(auto& point : hand.lPoints){
-        unsigned int col = 255 - point.z * 255. / MAX_KINECT_VALUE;
+
+void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar& color){
+    for(auto& cell : blob.lCells){
+        unsigned int col = 255 - cell.val * 255. / MAX_KINECT_VALUE;
         cv::Scalar colorPoint = color;
         for(int i = 0; i < 3; i++)
             colorPoint[i] *= col;
-        int x = point.x + hand.refPoint.x;
-        int y = point.y + hand.refPoint.y;
-        cv::circle(matImg, cv::Point(x, y), 1,  colorPoint, -1);
+        int ind = cell.ind;
+        int x = ind % matImg.cols;
+        int y = (ind-x) /matImg.cols;
+        cv::circle(matImg, cv::Point(x, y), 4,  colorPoint, -1);
     }
 }
 
@@ -159,7 +149,6 @@ void Visualization::keyPoint2img(const cv::Point3i& keyPoint, cv::Mat& matImg, c
     cv::circle(matImg, cv::Point(x, y), size,  color, -1);
 }
 
-//drawText(matImg, text, 1.5, 3, colors[i], cv::Point2f(0.5, 0.3)) on flipped img!
 void Visualization::drawText(cv::Mat& mat, std::string text, double fontScale, int thickness, cv::Scalar color, cv::Point2f textCenter)
 {
     int fontFace = cv::FONT_HERSHEY_SIMPLEX;

@@ -17,6 +17,7 @@
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
 #include "opencv2/opencv.hpp"
+#include <iostream>
 
 extern int MAX_KINECT_VALUE;
 extern int MAX_KINECT_DEPTH;
@@ -50,5 +51,6 @@ struct FrameData {
     std::vector<HandData> data;
 };
 
+std::ostream& operator << (std::ostream& os, const FrameData& data);
 
 #endif /* types_h */

@@ -30,12 +30,14 @@ public:
     static bool getIsNeedRedraw() {return isNeedRedraw;}
     
     static void mat2img(cv::Mat mat, cv::Mat& matImg);
-    static void hands2img(const std::vector<Track>& tracks, cv::Mat& matImg, bool drawKeyPoints = true);
-    static void hands2img(const std::list<Hand>& lHands, cv::Mat& matImg, bool drawKeyPoints = true);
-    static void gestures2img(const std::vector<std::shared_ptr<Gesture>>& handsTrackedStreams, cv::Mat& matImg, size_t length);
+
+    static void blobs2img(const std::list<Blob>& lBlobs, cv::Mat& matImg, bool drawKeyPoints = true);
+
+    static void gestures2img(const std::vector<std::shared_ptr<Gesture>>& handsTrackedStreams, cv::Mat& matImg, size_t length = 0);
 private:
-    static void hand2img(const Hand& hand, cv::Mat& matImg, const cv::Scalar& color);
-    static void gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg);
+
+    static void blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar& color);
+    static void gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg, size_t length = 0);
     static void keyPoint2img(const cv::Point3i& keyPoint, cv::Mat& matImg, const cv::Scalar& color, int size);
     static void drawText(cv::Mat& mat, std::string text, double fontScale, int thickness, cv::Scalar color, cv::Point2f textCenter);
 private:

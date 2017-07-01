@@ -307,6 +307,11 @@ void Blob::filterNearBody(std::list<Blob>& lBlobs, int bodyDepth, int minDistToB
     lBlobs = std::move(lBlobsResult);
 }
 
+void Blob::computeAngle(){
+    float angle (0.);
+
+}
+
 cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
     cv::Mat mat = cv::Mat_<uint16_t>::zeros(size);
     

@@ -15,7 +15,9 @@ bool GestureAll::extract(){
     auto rit = handsData.rbegin();
     int& phase = handsData.rbegin()->phase;
     const cv::Point3d& point = rit->point;
-    if(point.x != NO_DATA_VALUE)
+    if(point.x != NO_DATA_VALUE) {
         phase  = INSIDE_GESTURE_VALUE;
+    }
+    eraseHandsData(1);
     return true;
 }

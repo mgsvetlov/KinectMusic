@@ -19,8 +19,7 @@
 #include "visualization/visualization.h"
 #include "analyze.h"
 #include "blobs/blob.h"
-#include "handsHeadExtractor/handsheadextractor.h"
-#include "handsHeadExtractor/handsfrompoints.h"
+#include "handsExtractor/handsextractor.h"
 #include "hand/hand.h"
 #include "tracking/tracking.h"
 #include "gesture/gesturefabrique.h"
@@ -88,7 +87,7 @@ void *analyze_threadfunc(void *arg) {
         
         //extract hands
         static int filt_size(8), filt_depth(15), core_half_size(2);
-        cv::Mat matDst = HandsHeadExtractor::extractHandsHead(matBlobs, filt_size, filt_depth, core_half_size);
+        cv::Mat matDst = HandsExtractor::extractHands(matBlobs, filt_size, filt_depth, core_half_size);
        
         std::list<Blob> lBlobs1;
         int mode (1);
@@ -103,11 +102,13 @@ void *analyze_threadfunc(void *arg) {
             Blob::filterNearBody(lBlobsClust,  body_depth, minDistToBody);
             Blob::sort(lBlobsClust);
         }
-        cv::Mat matBlobs1 = Blob::blobs2mat_marked(lBlobsClust, mat16_resized.size(), body_depth);//new!!!
-        /*
-            //extract hands from points in full matrix
-        int bbXY (60), bbZ(200);
-        std::list<Hand> lHands = HandsFromPoints::extractHandBlobs(mat16, lBlobsClust, bbXY, bbZ);
+        
+        //temporal
+        std::list<Hand> lHands;
+        for(const auto& blob : lBlobsClust){
+            lHands.push_back(Hand(blob, matDst.size()));
+        }
+        //~temporal
         
         //tracking hands
         Track::analyzeFrame(lHands);
@@ -116,23 +117,33 @@ void *analyze_threadfunc(void *arg) {
         //create and analyze hands tracked stream data
         FrameData frameData = GestureFabrique::extractGestures(vTracks);
         frameData.bodyDepth = body_depth;
-        if(!Share::share(frameData)){
-            Logs::writeLog("gestures", "Share error!");
-            break;
-        }*/
+        
+        if(Config::instance()->getIsCsound()){
+            if(!Share::share(frameData)){
+                Logs::writeLog("gestures", "Share error!");
+                break;
+            }
+        }
 #ifdef WRITE_LOGS
-        log(frameData);
+        std::cout << frameData;
 #endif //WRITE_LOGS
         if(Config::instance()->getIsVisualisation()){
             cv::Mat img;
-            cv::Mat matBlobs1_resized;
-            cv::resize(matBlobs1, img, cv::Size(w, h));
-            //Visualization::mat2img(matBlobs1_resized, img);
-            //Visualization::mat2img(mat16, img);
-            
-            ////Visualization::hands2img( vTracks, img, false);
-            //Visualization::hands2img( lHands, img, true);
-            //Visualization::gestures2img(GestureFabrique::getGestures(), img, 60);
+            Visualization::mat2img(mat16, img);
+            for(auto& blob : lBlobsClust){
+                auto& cells = blob.getLCells();
+                for( auto& cell : cells){
+                    int& ind = cell.ind;
+                    int x = ind % matDst.cols;
+                    int y = (ind-x) /matDst.cols;
+                    x <<= BLOBS_RESIZE_POW;
+                    y <<= BLOBS_RESIZE_POW;
+                    ind = img.cols * y + x;
+                }
+            }
+            Visualization::blobs2img( lBlobsClust, img, false);
+          
+            Visualization::gestures2img(GestureFabrique::getGestures(), img);
             
             pthread_mutex_lock(&visualisation_mutex);
             Visualization::setMatImage(img);
@@ -144,17 +155,18 @@ void *analyze_threadfunc(void *arg) {
     return NULL;
 }
 
-void log(FrameData& frameData){
+std::ostream& operator << (std::ostream& os, const FrameData& frameData){
     std::stringstream ss;
     ss << frameData.frameNum << " ";
     for(auto& gestureData: frameData.data){
         ss << (gestureData.phase == START_GESTURE_VALUE ? "START" : gestureData.phase ==INSIDE_GESTURE_VALUE ? "INSIDE" :
-            gestureData.phase ==
-            END_GESTURE_VALUE ? "END" :
-            "NO_DATA")
+               gestureData.phase ==
+               END_GESTURE_VALUE ? "END" :
+               "NO_DATA")
         << " " << gestureData.point << " ";
     }
     Logs::writeLog("gestures", ss.str());
+    return os;
 }
 
 

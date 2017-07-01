@@ -13,25 +13,16 @@
 class Hand {
 public:
     Hand(){}
-    Hand(cv::Mat mat, int bbXY, const cv::Point3i& keyPoint);
-    Hand extractHand() const;
+    Hand(const Blob& blob, const cv::Size& matSize);
+
     const cv::Point3i& getKeyPoint() const {return keyPoint;}
 private:
-    void findBorderPoints();
-    bool checkIsHand();
     double dist2hand(const Hand& hand) const;
 private:
     cv::Point3i keyPoint;
-    cv::Mat mat;
-    cv::Point2i refPoint;
-    cv::Size size;
-    std::list<cv::Point3i> lPoints;
-    std::vector<std::vector<cv::Point3i>> vvPointsBorder;
-    
-    static cv::Mat matHand, matHandOrig;
+
     
     friend class Visualization;
-    friend class HandsFromPoints;
     friend class Track;
 };
 
