@@ -85,8 +85,8 @@ bool Share::share_data(const FrameData& frameData){
     int* intPtr = static_cast<int*>(ptr);
     *intPtr++ = frameData.frameNum;
     *intPtr++ = frameData.bodyDepth;
-    intPtr++;
-    intPtr++;
+    *intPtr++ = frameData.data[0].angle;
+    *intPtr++ = frameData.data[1].angle;
     for(auto& gestureData: frameData.data){
         *intPtr++ = gestureData.phase;
         *intPtr++ = gestureData.point.x;

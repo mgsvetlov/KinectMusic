@@ -16,11 +16,12 @@ public:
     Hand(const Blob& blob, const cv::Size& matSize);
 
     const cv::Point3i& getKeyPoint() const {return keyPoint;}
+    int getAngle() const { return angle;}
 private:
     double dist2hand(const Hand& hand) const;
 private:
     cv::Point3i keyPoint;
-
+    int angle;
     
     friend class Visualization;
     friend class Track;

@@ -6,7 +6,6 @@
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
 
-
 #include "hand.h"
 
 Hand::Hand(const Blob& blob, const cv::Size& matSize){
@@ -17,6 +16,7 @@ Hand::Hand(const Blob& blob, const cv::Size& matSize){
     int y = (ind-x) / w;
     int z = centralCell.val;
     keyPoint = cv::Point3i(x<<BLOBS_RESIZE_POW,y<<BLOBS_RESIZE_POW,z);
+    angle = blob.angle;
 }
 
 double Hand::dist2hand(const Hand& hand) const{

@@ -94,6 +94,12 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
             case 1:
                 frameData.bodyDepth = *intPtr;
                 break;
+            case 2:
+                frameData.hands[0].angle = *intPtr;
+                break;
+            case 3:
+                frameData.hands[1].angle = *intPtr;
+                break;
             case 4:
                 frameData.hands[0].phase = *intPtr;
                 break;

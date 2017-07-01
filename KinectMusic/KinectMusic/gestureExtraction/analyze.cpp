@@ -94,7 +94,7 @@ void *analyze_threadfunc(void *arg) {
         Blob::findBlobs(matDst, lBlobs1, mode);
         
         std::list<Blob> lBlobsClust;
-        int xyThresh(20), depthThresh(1000);
+        int xyThresh(20), depthThresh(100);
         Blob::blobsClustering(lBlobs1, lBlobsClust, xyThresh, depthThresh);
         
         if(!lBlobsClust.empty()){
@@ -103,12 +103,13 @@ void *analyze_threadfunc(void *arg) {
             Blob::sort(lBlobsClust);
         }
         
-        //temporal
         std::list<Hand> lHands;
-        for(const auto& blob : lBlobsClust){
-            lHands.push_back(Hand(blob, matDst.size()));
+        if(!lBlobsClust.empty()){
+            for(auto& blob : lBlobsClust){
+                blob.computeAngle();
+                lHands.push_back(Hand(blob, matDst.size()));
+            }
         }
-        //~temporal
         
         //tracking hands
         Track::analyzeFrame(lHands);

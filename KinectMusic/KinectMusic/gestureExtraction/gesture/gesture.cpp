@@ -16,11 +16,12 @@ size_t Gesture::threshUnrecogn = 2;
 void Gesture::addData(const Track& track){
     const std::list<Hand>& lHands = track.getLHands();
     if(lHands.empty()){
-        handsData.push_back(HandData(cv::Point3i(NO_DATA_VALUE,NO_DATA_VALUE,NO_DATA_VALUE), NO_DATA_VALUE));
+        handsData.push_back(HandData(cv::Point3i(NO_DATA_VALUE,NO_DATA_VALUE,NO_DATA_VALUE), NO_DATA_VALUE, NO_DATA_VALUE));
     }
     else {
         const cv::Point3i& point = lHands.back().getKeyPoint();
-        handsData.push_back(HandData(point/*GestureFabrique::convertToRealSpace(point)*/, NO_DATA_VALUE));
+        int angle = lHands.back().getAngle();
+        handsData.push_back(HandData(point, NO_DATA_VALUE, angle));
     }
 }
 

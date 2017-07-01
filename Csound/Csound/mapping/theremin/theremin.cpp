@@ -19,11 +19,11 @@ Theremin::Theremin() {
     csdName = "theremin";
     csound_data = {
                     {"midiPitch0",ParamData( 69, 1e-2)},  //midi
-                    {"amp0", ParamData(0.01, 1e-0)}, //amp
+                    {"amp0", ParamData(0.01, 1e-1)}, //amp
                     {"vibrRate0", ParamData( 10., 2e-3)}, //vibr rate
                     {"fmodSide0",ParamData( 1.0, 2e-3)}, //mod side
                     {"midiPitch1", ParamData( 69, 1e-2)},  //midi
-                    {"amp1",ParamData( 0.01, 1e-0)}, //amp
+                    {"amp1",ParamData( 0.01, 1e-1)}, //amp
                     {"vibrRate1", ParamData(10., 2e-3)}, //vibr rate
                     {"fmodSide1", ParamData(1.0, 2e-3)} //mod side
                 };
@@ -46,12 +46,16 @@ void Theremin::mappingData() {
         return ;
     }
     frameNum = frameData.frameNum;
-    
+    static bool isSound(false);
+    static int z (0), y(0);
     if(frameData.hands[0].phase == NO_DATA_VALUE || frameData.hands[1].phase == NO_DATA_VALUE /*|| handsDataPrev[0].phase == NO_DATA_VALUE || handsDataPrev[1].phase == NO_DATA_VALUE*/){
-        //csound_data["amp0"].param = csound_data["amp1"].param = 0.;
+        //csound_data["amp0"].param = csound_data["amp1"].param = 0.001;
+        //isSound = false;
+        //z = 0;
     }
     else {
         int minInd = frameData.hands[0].x < frameData.hands[1].x ? 0 : 1;
+       
         //double freq[2];
         for(int i = 0; i < frameData.hands.size(); ++i){
             std::stringstream ss;
@@ -63,22 +67,25 @@ void Theremin::mappingData() {
             }
             else {
                 if(handsDataPrev[i].z != -1){
-                    int dz = frameData.hands[i].z - handsDataPrev[i].z;
-                    int absDz = std::abs(dz )<  5 ? 0 : std::abs(dz);
-                    double dVol = std::abs(absDz * absDz * absDz  / 100.);
+                    int angle = frameData.hands[i].angle;
+                    if(isSound){
+                        if(angle > 50 ){
+                            csound_data["amp0"].param = csound_data["amp1"].param = 0.001;
+                            isSound = false;
+                            y = frameData.hands[i].y;
+                            z = frameData.hands[i].z;
+                        }
+                    }
+                    else {
+                        if(z == 0 || (/*angle < 40 &&*/ frameData.hands[i].z < z - 5) ){
+                            csound_data["amp0"].param = csound_data["amp1"].param = 1.;
+                            isSound = true;
+                            //z = frameData.hands[i].z;
+                        }
+                    }
                     
-                    if(dz > 0)
-                        dVol *= -1;
-                    vol[i] += dVol;
-                    if(vol[i] < 0.01)
-                        vol[i] = 0.01;
-                    else if(vol[i] > 1.0)
-                        vol[i] = 1.0;
-                    std::stringstream ss;
-                    ss << i << " z " << frameData.hands[i].z <<  " dz " << dz << " dVol " << dVol << " vol " << vol[i];
-                    Logs::writeLog("csound", ss.str());
+                    //csound_data["amp0"].param = csound_data["amp1"].param = vol;
                 }
-                csound_data["amp0"].param = csound_data["amp1"].param = 1.0;//vol[i];
             }
             
             

@@ -6,11 +6,15 @@
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
 #include <iostream>
-#include "blob.h"
 #include <queue>
 #include <algorithm>    // std::sort
 #include <vector>       // std::vector
 #include <vector>
+#include <sstream>
+#include "blob.h"
+#include "../../log/logs.h"
+#include "../analyze.h"
+
 
 Blob::Blob() :
 lCells(std::list<Cell>()),
@@ -308,8 +312,16 @@ void Blob::filterNearBody(std::list<Blob>& lBlobs, int bodyDepth, int minDistToB
 }
 
 void Blob::computeAngle(){
-    float angle (0.);
-
+    //float angle (0.);
+    typedef std::list<Cell>::iterator IterList;
+    std::vector<Cell> vCells (std::move_iterator<IterList>(lCells.begin()), std::move_iterator<IterList>(lCells.end()));
+    std::sort(vCells.begin(), vCells.end(), [](const Cell& cell1, const Cell& cell2){ return cell1.val < cell2.val;});
+    typedef std::vector<Cell>::iterator IterVec;
+    lCells = std::list<Cell>(std::move_iterator<IterVec>(vCells.begin()), std::move_iterator<IterVec>(vCells.end()));
+    int start(-1), end(-1);
+    this->findInterval(10, 10, start, end);
+    this->angle = end - start;
+    //std::cout << *this;
 }
 
 cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
@@ -343,4 +355,68 @@ cv::Mat Blob::blobs2mat_marked(const std::list<Blob>& lBlobs, const cv::Size& si
     }
     
     return mat;
+}
+
+void Blob::findInterval(int threshInterval, int threshBegin,int& start, int& end) const {
+    start = end = -1;
+    auto itStart = lCells.begin();
+    auto itEnd = lCells.begin();
+    int iStart(0), iEnd(0);
+    int maxInterval (-1);
+    
+    std::stringstream ss;
+    while(itEnd != lCells.end()){
+        if(itEnd->val - itStart->val <= threshInterval){
+            int interval = iEnd - iStart;
+            if(interval > maxInterval){
+                maxInterval = interval;
+                start = iStart;
+                end = iEnd;
+            }
+            ++itEnd, ++iEnd;
+            continue;
+        }
+        ++itStart, ++iStart;
+        if(iStart == threshBegin)
+            break;
+    }
+   
+}
+
+std::ostream& operator << (std::ostream& os, const Blob& blob){
+    
+    std::stringstream ss;
+    
+    if(blob.lCells.empty()){
+        ss << "Empty Blob frame "  << frameNum;
+    }
+    else {
+        auto cellOut = [&ss](const Cell& cell, cv::Size matSize) {
+            int ind = cell.ind;
+            int x = ind % matSize.width;
+            int y = (ind-x) /matSize.width;
+            ss << "x " << x << " y " << y << " z " << cell.val << "\n";
+        };
+        int start(-1), end(-1);
+        blob.findInterval(5, 10, start, end);
+        
+        if(start != -1 && end >= start){
+            int count(0);
+            for(const auto& cell : blob.lCells){
+                if(count > end)
+                    break;
+                if(count >= start){
+                    ss << count << " ";
+                    cellOut(cell, blob.matSize);
+                }
+                count ++;
+            }
+
+            ss << "size " << end - start << "\n";
+        }
+
+    }
+ 
+    Logs::writeLog("gestures", ss.str());
+    return os;
 }

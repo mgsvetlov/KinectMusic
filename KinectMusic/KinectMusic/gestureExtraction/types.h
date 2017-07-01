@@ -38,10 +38,12 @@ extern volatile int die_gesture;
 struct HandData {
     cv::Point3i point;
     int phase = NO_DATA_VALUE;
-    HandData() : point (NO_DATA_VALUE,NO_DATA_VALUE,NO_DATA_VALUE), phase(NO_DATA_VALUE) {}
-    HandData(const cv::Point3i& point, int phase) :
+    int angle = NO_DATA_VALUE;
+    HandData() : point (NO_DATA_VALUE,NO_DATA_VALUE,NO_DATA_VALUE), phase(NO_DATA_VALUE), angle(NO_DATA_VALUE) {}
+    HandData(const cv::Point3i& point, int phase, int angle) :
     point(point),
-    phase(phase)
+    phase(phase),
+    angle(angle)
     {}
 };
 

@@ -48,16 +48,19 @@ private:
     int computeAverageValue();
     bool computeCentralNearCell(double med);
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
-
+    void findInterval(int threshInterval, int threshBegin, int& start, int& end) const;
 private:
     const Cell* p_maxValCell = nullptr;
     const Cell* p_minValCell = nullptr;
     std::list<Cell> lCells;
     Cell centralCell;
-    float angle;
+    int angle;
     cv::Size matSize;
     
     friend class Hand;
     friend class Visualization;
+    friend std::ostream& operator << (std::ostream& os, const Blob& blob);
 };
+
+std::ostream& operator << (std::ostream& os, const Blob& blob);
 #endif /* blob_h */
