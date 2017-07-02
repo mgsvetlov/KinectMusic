@@ -47,11 +47,9 @@ void Theremin::mappingData() {
     }
     frameNum = frameData.frameNum;
     static bool isSound(false);
-    static int z (0), y(0);
-    if(frameData.hands[0].phase == NO_DATA_VALUE || frameData.hands[1].phase == NO_DATA_VALUE /*|| handsDataPrev[0].phase == NO_DATA_VALUE || handsDataPrev[1].phase == NO_DATA_VALUE*/){
-        //csound_data["amp0"].param = csound_data["amp1"].param = 0.001;
-        //isSound = false;
-        //z = 0;
+    static double  y(1.);
+    if(frameData.hands[0].phase == NO_DATA_VALUE || frameData.hands[1].phase == NO_DATA_VALUE ){
+        csound_data["amp0"].param = csound_data["amp1"].param = 0.001;
     }
     else {
         int minInd = frameData.hands[0].x < frameData.hands[1].x ? 0 : 1;
@@ -67,24 +65,30 @@ void Theremin::mappingData() {
             }
             else {
                 if(handsDataPrev[i].z != -1){
-                    int angle = frameData.hands[i].angle;
                     if(isSound){
-                        if(angle > 50 ){
+                        if(frameData.hands[i].angle  > 0
+                            && frameData.hands[i].y > y + 0.03 ){
                             csound_data["amp0"].param = csound_data["amp1"].param = 0.001;
                             isSound = false;
                             y = frameData.hands[i].y;
-                            z = frameData.hands[i].z;
+                            std::stringstream ss;
+                            ss << "OFF angle " << frameData.hands[i].angle<< " y " << frameData.hands[i].y;
+                            Logs::writeLog("csound", ss.str());
                         }
                     }
                     else {
-                        if(z == 0 || (/*angle < 40 &&*/ frameData.hands[i].z < z - 5) ){
+                        if(frameData.hands[i].angle < -30
+                            && frameData.hands[i].y < y - 0.03
+                           ){
                             csound_data["amp0"].param = csound_data["amp1"].param = 1.;
                             isSound = true;
-                            //z = frameData.hands[i].z;
+                            y = frameData.hands[i].y;
+                            std::stringstream ss;
+                            ss << "ON angle " << frameData.hands[i].angle << " y " << frameData.hands[i].y;
+                            Logs::writeLog("csound", ss.str());
                         }
                     }
                     
-                    //csound_data["amp0"].param = csound_data["amp1"].param = vol;
                 }
             }
             

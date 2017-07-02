@@ -11,6 +11,7 @@
 #include <vector>       // std::vector
 #include <vector>
 #include <sstream>
+#include <iterator>
 #include "blob.h"
 #include "../../log/logs.h"
 #include "../analyze.h"
@@ -319,9 +320,63 @@ void Blob::computeAngle(){
     typedef std::vector<Cell>::iterator IterVec;
     lCells = std::list<Cell>(std::move_iterator<IterVec>(vCells.begin()), std::move_iterator<IterVec>(vCells.end()));
     int start(-1), end(-1);
-    this->findInterval(10, 10, start, end);
-    this->angle = end - start;
+    int sign = this->findInterval(10, 40, start, end);
+    this->angle = (end - start) * sign;
+    /*auto it1 = std::next(lCells.begin(), start);
+    auto it2 = std::next(lCells.begin(), end);
+    int ind1 = it1->ind;
+    int x1 = ind1 % this->matSize.width;
+    int y1 = (ind1-x1) /this->matSize.width;
+    int ind2 = it2->ind;
+    int x2 = ind2 % this->matSize.width;
+    int y2 = (ind2-x2) /this->matSize.width;
+    if(y2 < y1)
+        this->angle *= -1;*/
     //std::cout << *this;
+}
+
+int Blob::findInterval(int threshInterval, int threshBegin,int& start, int& end) const {
+    start = end = -1;
+    auto itStart = lCells.begin();
+    auto itEnd = lCells.begin();
+    int iStart(0), iEnd(0);
+    int maxInterval (-1);
+    
+    std::stringstream ss;
+    while(itEnd != lCells.end()){
+        if(itEnd->val - itStart->val <= threshInterval){
+            int interval = iEnd - iStart;
+            if(interval > maxInterval){
+                maxInterval = interval;
+                start = iStart;
+                end = iEnd;
+            }
+            ++itEnd, ++iEnd;
+            continue;
+        }
+        ++itStart, ++iStart;
+        if(iStart == threshBegin)
+            break;
+    }
+    //compute if palm is directed up or down
+    int sign = 0;
+    itStart = std::next(lCells.begin(), start);
+    itEnd = std::next(lCells.begin(), end + 1);
+    while(itStart != itEnd) {
+        int ind1 = itStart->ind;
+        int x1 = ind1 % this->matSize.width;
+        int y1 = (ind1-x1) /this->matSize.width;
+        auto it = itStart;
+        while(it != itEnd){
+            int ind2 = it->ind;
+            int x2 = ind2 % this->matSize.width;
+            int y2 = (ind2-x2) /this->matSize.width;
+            sign += (y2 > y1 ? 1 : y2 < y1 ? -1 : 0);
+            ++it;
+        }
+        ++itStart;
+    }
+    return sign == 0 ? 0 : sign / std::abs(sign);
 }
 
 cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
@@ -355,32 +410,6 @@ cv::Mat Blob::blobs2mat_marked(const std::list<Blob>& lBlobs, const cv::Size& si
     }
     
     return mat;
-}
-
-void Blob::findInterval(int threshInterval, int threshBegin,int& start, int& end) const {
-    start = end = -1;
-    auto itStart = lCells.begin();
-    auto itEnd = lCells.begin();
-    int iStart(0), iEnd(0);
-    int maxInterval (-1);
-    
-    std::stringstream ss;
-    while(itEnd != lCells.end()){
-        if(itEnd->val - itStart->val <= threshInterval){
-            int interval = iEnd - iStart;
-            if(interval > maxInterval){
-                maxInterval = interval;
-                start = iStart;
-                end = iEnd;
-            }
-            ++itEnd, ++iEnd;
-            continue;
-        }
-        ++itStart, ++iStart;
-        if(iStart == threshBegin)
-            break;
-    }
-   
 }
 
 std::ostream& operator << (std::ostream& os, const Blob& blob){

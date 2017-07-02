@@ -48,7 +48,7 @@ private:
     int computeAverageValue();
     bool computeCentralNearCell(double med);
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
-    void findInterval(int threshInterval, int threshBegin, int& start, int& end) const;
+    int findInterval(int threshInterval, int threshBegin, int& start, int& end) const;
 private:
     const Cell* p_maxValCell = nullptr;
     const Cell* p_minValCell = nullptr;
