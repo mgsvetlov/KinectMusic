@@ -46,7 +46,7 @@ void Theremin::mappingData() {
         return ;
     }
     frameNum = frameData.frameNum;
-    //static bool isSound(false);
+    static bool isSound(false);
     if(frameData.hands[0].phase == NO_DATA_VALUE && frameData.hands[1].phase == NO_DATA_VALUE ){
         //csound_data["amp0"].param = csound_data["amp1"].param = 0.001;
     }
@@ -57,7 +57,7 @@ void Theremin::mappingData() {
             minInd = 1;
         else if(frameData.hands[1].phase == NO_DATA_VALUE)
             minInd = 0;
-        else if(frameData.hands[0].z < frameData.hands[1].z)
+        else if(frameData.hands[0].x < frameData.hands[1].x)
             minInd = 0;
         else
             minInd = 1;
@@ -71,11 +71,11 @@ void Theremin::mappingData() {
             if(i == minInd){
                 csound_data["midiPitch0"].param = csound_data["midiPitch1"].param = frameData.hands[i].y * (midiMax - midiMin) + midiMin;
             }
-            /*else {
+            else {
                 if(handsDataPrev[i].z != -1){
                     if(isSound){
                         if(frameData.hands[i].angle  > 0){
-                            csound_data["amp0"].param = csound_data["amp1"].param = 1.;
+                            csound_data["amp0"].param = csound_data["amp1"].param = 0.01;
                             isSound = false;
                             std::stringstream ss;
                             ss << "OFF angle " << frameData.hands[i].angle<< " y " << frameData.hands[i].y;
@@ -93,7 +93,7 @@ void Theremin::mappingData() {
                     }
                     
                 }
-            }*/
+            }
             
             
             //vibr

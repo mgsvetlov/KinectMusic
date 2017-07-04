@@ -359,15 +359,15 @@ void Blob::originalData(cv::Mat originalMat){
 }
 
 void Blob::computeAngle(){
-    /*typedef std::list<Cell>::iterator IterList;
+    typedef std::list<Cell>::iterator IterList;
     std::vector<Cell> vCells (std::move_iterator<IterList>(lCells.begin()), std::move_iterator<IterList>(lCells.end()));
     std::sort(vCells.begin(), vCells.end(), [](const Cell& cell1, const Cell& cell2){ return cell1.val < cell2.val;});
     typedef std::vector<Cell>::iterator IterVec;
     lCells = std::list<Cell>(std::move_iterator<IterVec>(vCells.begin()), std::move_iterator<IterVec>(vCells.end()));
     int start(-1), end(-1);
     int sign = this->findInterval(10, 40, start, end);
-    this->angle = (end - start) * sign;*/
-    int ySum(0);
+    this->angle = (end - start) * sign;
+    /*int ySum(0);
     for( auto& cell: lCells){
         int ind = cell.ind;
         int x = ind % this->matSize.width;
@@ -379,7 +379,7 @@ void Blob::computeAngle(){
     int indCentral = centralCell.ind;
     int xCentral = indCentral % this->matSize.width;
     int yCentral = (indCentral-xCentral) /this->matSize.width;
-    this->angle = -yCentral + y;
+    this->angle = -yCentral + y;*/
 }
 
 int Blob::findInterval(int threshInterval, int threshBegin,int& start, int& end) const {
