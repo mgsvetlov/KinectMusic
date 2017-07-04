@@ -292,7 +292,7 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
 
 void Blob::sort(std::list<Blob>& lBlobs) {
     if(lBlobs.size() < 2){
-        lBlobs.clear();
+        //lBlobs.clear();
         return;
     }
     std::vector<Blob> vBlobs (lBlobs.begin(), lBlobs.end());
@@ -312,27 +312,74 @@ void Blob::filterNearBody(std::list<Blob>& lBlobs, int bodyDepth, int minDistToB
     lBlobs = std::move(lBlobsResult);
 }
 
+void Blob::originalData(cv::Mat originalMat){
+    int minX(matSize.width), minY(matSize.height), maxX(-1), maxY(-1);
+    for(const auto& cell : lCells){
+        int ind = cell.ind;
+        int x = ind % this->matSize.width;
+        int y = (ind-x) /this->matSize.width;
+        if(x < minX)
+            minX = x;
+        if(x > maxX)
+            maxX = x;
+        if(y < minY)
+            minY = y;
+        if(y > maxY)
+            maxY = y;
+    }
+    minX <<= BLOBS_RESIZE_POW;
+    maxX <<= BLOBS_RESIZE_POW;
+    minY <<= BLOBS_RESIZE_POW;
+    maxY <<= BLOBS_RESIZE_POW;
+    
+    uint16_t* p_nearest = (uint16_t*)(originalMat.data) + originalMat.cols * minY + minX;
+    for(int y = minY; y <= maxY; ++y){
+        uint16_t* p = (uint16_t*)(originalMat.data) + originalMat.cols * y + minX;
+        for(int x = minX; x <= maxX; ++x, ++p){
+            if((*p>0) &&   ((*p_nearest) == 0 || *p < *p_nearest))
+                p_nearest = p;
+        }
+    }
+    
+    centralCell = Cell(static_cast<int>(p_nearest - (uint16_t*)(originalMat.data)), *p_nearest);
+    matSize = originalMat.size();
+    p_maxValCell = p_minValCell = nullptr;
+    
+    lCells.clear();
+    
+    int minVal = centralCell.val;
+    for(int y = minY; y <= maxY; ++y){
+        uint16_t* p = (uint16_t*)(originalMat.data) + originalMat.cols * y + minX;
+        for(int x = minX; x <= maxX; ++x, ++p){
+            if((*p>0) &&   *p - minVal < 100)
+                lCells.emplace_back(Cell(static_cast<int>(p - (uint16_t*)(originalMat.data)), *p));
+        }
+    }
+    
+}
+
 void Blob::computeAngle(){
-    //float angle (0.);
-    typedef std::list<Cell>::iterator IterList;
+    /*typedef std::list<Cell>::iterator IterList;
     std::vector<Cell> vCells (std::move_iterator<IterList>(lCells.begin()), std::move_iterator<IterList>(lCells.end()));
     std::sort(vCells.begin(), vCells.end(), [](const Cell& cell1, const Cell& cell2){ return cell1.val < cell2.val;});
     typedef std::vector<Cell>::iterator IterVec;
     lCells = std::list<Cell>(std::move_iterator<IterVec>(vCells.begin()), std::move_iterator<IterVec>(vCells.end()));
     int start(-1), end(-1);
     int sign = this->findInterval(10, 40, start, end);
-    this->angle = (end - start) * sign;
-    /*auto it1 = std::next(lCells.begin(), start);
-    auto it2 = std::next(lCells.begin(), end);
-    int ind1 = it1->ind;
-    int x1 = ind1 % this->matSize.width;
-    int y1 = (ind1-x1) /this->matSize.width;
-    int ind2 = it2->ind;
-    int x2 = ind2 % this->matSize.width;
-    int y2 = (ind2-x2) /this->matSize.width;
-    if(y2 < y1)
-        this->angle *= -1;*/
-    //std::cout << *this;
+    this->angle = (end - start) * sign;*/
+    int ySum(0);
+    for( auto& cell: lCells){
+        int ind = cell.ind;
+        int x = ind % this->matSize.width;
+        int y = (ind-x) /this->matSize.width;
+        ySum += y;
+        
+    }
+    int y = ySum /lCells.size();
+    int indCentral = centralCell.ind;
+    int xCentral = indCentral % this->matSize.width;
+    int yCentral = (indCentral-xCentral) /this->matSize.width;
+    this->angle = -yCentral + y;
 }
 
 int Blob::findInterval(int threshInterval, int threshBegin,int& start, int& end) const {

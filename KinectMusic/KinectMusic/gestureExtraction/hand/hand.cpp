@@ -15,7 +15,7 @@ Hand::Hand(const Blob& blob, const cv::Size& matSize){
     int x = ind % w;
     int y = (ind-x) / w;
     int z = centralCell.val;
-    keyPoint = cv::Point3i(x<<BLOBS_RESIZE_POW,y<<BLOBS_RESIZE_POW,z);
+    keyPoint = cv::Point3i(x,y,z);
     angle = blob.angle;
 }
 

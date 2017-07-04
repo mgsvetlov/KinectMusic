@@ -106,8 +106,9 @@ void *analyze_threadfunc(void *arg) {
         std::list<Hand> lHands;
         if(!lBlobsClust.empty()){
             for(auto& blob : lBlobsClust){
+                blob.originalData(mat16_filt);
                 blob.computeAngle();
-                lHands.push_back(Hand(blob, matDst.size()));
+                lHands.push_back(Hand(blob, mat16_filt.size()));
             }
         }
         
@@ -131,19 +132,7 @@ void *analyze_threadfunc(void *arg) {
         if(Config::instance()->getIsVisualisation()){
             cv::Mat img;
             Visualization::mat2img(mat16, img);
-            for(auto& blob : lBlobsClust){
-                auto& cells = blob.getLCells();
-                for( auto& cell : cells){
-                    int& ind = cell.ind;
-                    int x = ind % matDst.cols;
-                    int y = (ind-x) /matDst.cols;
-                    x <<= BLOBS_RESIZE_POW;
-                    y <<= BLOBS_RESIZE_POW;
-                    ind = img.cols * y + x;
-                }
-            }
             Visualization::blobs2img( lBlobsClust, img, false);
-          
             Visualization::gestures2img(GestureFabrique::getGestures(), img);
             
             pthread_mutex_lock(&visualisation_mutex);

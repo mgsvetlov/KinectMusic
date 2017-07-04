@@ -39,7 +39,9 @@ public:
     const Cell& getCentralCell() const {return centralCell;}
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
+    void originalData(cv::Mat originalMat);
     void computeAngle();
+    
 
 private:
     void addCell(int ind, int val);
