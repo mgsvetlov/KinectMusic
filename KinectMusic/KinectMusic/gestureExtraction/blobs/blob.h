@@ -62,6 +62,7 @@ private:
     friend class Hand;
     friend class Visualization;
     friend std::ostream& operator << (std::ostream& os, const Blob& blob);
+    friend void fitPlane(Blob& blob);
 };
 
 std::ostream& operator << (std::ostream& os, const Blob& blob);

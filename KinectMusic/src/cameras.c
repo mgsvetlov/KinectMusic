@@ -1262,8 +1262,8 @@ FN_INTERNAL int freenect_camera_init(freenect_device *dev)
 		FN_ERROR("freenect_camera_init(): Failed to fetch zero plane info for device\n");
 		return res;
 	}
-	res = freenect_set_video_mode(dev, freenect_find_video_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_VIDEO_RGB));
-	res = freenect_set_depth_mode(dev, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_11BIT));
+    freenect_set_video_mode(dev, freenect_find_video_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_VIDEO_RGB));
+    freenect_set_depth_mode(dev, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_11BIT));
 	res = freenect_fetch_reg_const_shift(dev);
 	if (res < 0) {
 		FN_ERROR("freenect_camera_init(): Failed to fetch const shift for device\n");

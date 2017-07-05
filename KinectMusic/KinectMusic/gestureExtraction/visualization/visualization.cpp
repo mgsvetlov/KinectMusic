@@ -92,9 +92,7 @@ void Visualization::mat2img(cv::Mat mat, cv::Mat& matImg) {
 void Visualization::blobs2img(const std::list<Blob>& lBlobs, cv::Mat& matImg, bool drawKeyPoints ){
     int count(0);
     for(const auto& blob : lBlobs){
-        int c = count % 3;
         cv::Scalar color = blob.angle > 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
-        /*cv::Scalar color = c == 0? cv::Scalar(0,0.5,0) : c == 1? cv::Scalar(0.5,0,0) : cv::Scalar(0.5,0.5,0.);*/
         blob2img(blob, matImg, color);
         if(drawKeyPoints) {
             int ind = blob.centralCell.ind;

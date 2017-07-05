@@ -102,7 +102,7 @@ void *analyze_threadfunc(void *arg) {
             Blob::filterNearBody(lBlobsClust,  body_depth, minDistToBody);
             Blob::sort(lBlobsClust);
         }
-        
+        Logs::writeLog("gestures", "frame");
         std::list<Hand> lHands;
         if(!lBlobsClust.empty()){
             for(auto& blob : lBlobsClust){

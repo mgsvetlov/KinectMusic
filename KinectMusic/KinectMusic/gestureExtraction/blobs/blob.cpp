@@ -15,6 +15,7 @@
 #include "blob.h"
 #include "../../log/logs.h"
 #include "../analyze.h"
+#include  "../pcl/pcl.hpp"
 
 
 Blob::Blob() :
@@ -380,6 +381,7 @@ void Blob::computeAngle(){
     int xCentral = indCentral % this->matSize.width;
     int yCentral = (indCentral-xCentral) /this->matSize.width;
     this->angle = -yCentral + y;*/
+    fitPlane(*this);
 }
 
 int Blob::findInterval(int threshInterval, int threshBegin,int& start, int& end) const {
