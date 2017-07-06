@@ -19,19 +19,17 @@ Theremin::Theremin() {
     csdName = "theremin";
     csound_data = {
                     {"midiPitch0",ParamData( 69, 1e-1)},  //midi
-                    {"amp0", ParamData(1., 1e-1)}, //amp
+                    {"amp0", ParamData(0.001, 1e-1)}, //amp
                     {"vibrRate0", ParamData( 10., 2e-3)}, //vibr rate
-                    {"fmodSide0",ParamData( 1.0, 2e-3)}, //mod side
+                    {"fmodSide0",ParamData( 1.0, 1e-1)}, //mod side
                     {"midiPitch1", ParamData( 69, 1e-1)},  //midi
-                    {"amp1",ParamData( 1., 1e-1)}, //amp
+                    {"amp1",ParamData( 0.001, 1e-1)}, //amp
                     {"vibrRate1", ParamData(10., 2e-3)}, //vibr rate
-                    {"fmodSide1", ParamData(1.0, 2e-3)} //mod side
+                    {"fmodSide1", ParamData(1.0, 1e-1)} //mod side
                 };
 //private:
     midiMin = Config::instance()->getThereminMidiMin();
     midiMax = Config::instance()->getThereminMidiMax();
-    handsDataPrev = { HandData(), HandData() };
-    vol = {0.0, 0.0};
 };
 
 void Theremin::initialScoreEvents(){
@@ -46,66 +44,34 @@ void Theremin::mappingData() {
         return ;
     }
     frameNum = frameData.frameNum;
-    static bool isSound(false);
-    if(frameData.hands[0].phase == NO_DATA_VALUE && frameData.hands[1].phase == NO_DATA_VALUE ){
-        //csound_data["amp0"].param = csound_data["amp1"].param = 0.001;
+    if(frameData.hands[0].phase == NO_DATA_VALUE || frameData.hands[1].phase == NO_DATA_VALUE ){
+        csound_data["amp0"].param = csound_data["amp1"].param = 0.001;
     }
     else {
+        int rightHandInd = frameData.hands[0].x < frameData.hands[1].x ? 0 : 1;
         
-        int minInd (-1);
-        if(frameData.hands[0].phase == NO_DATA_VALUE)
-            minInd = 1;
-        else if(frameData.hands[1].phase == NO_DATA_VALUE)
-            minInd = 0;
-        else if(frameData.hands[0].x < frameData.hands[1].x)
-            minInd = 0;
-        else
-            minInd = 1;
-        
-        //double freq[2];
+        //vibr
+        csound_data["vibrRate0"].param = 2. + ((rand() % 100) / 100. - 0.5) * 2;
+        csound_data["vibrRate1"].param = 2. + ((rand() % 100) / 100. - 0.5) * 2;
         for(int i = 0; i < frameData.hands.size(); ++i){
-            std::stringstream ss;
-            ss << i;
-            std::string iStr (ss.str());
-            //freq
-            if(i == minInd){
+            if(i == rightHandInd){
+                //freq
                 csound_data["midiPitch0"].param = csound_data["midiPitch1"].param = frameData.hands[i].y * (midiMax - midiMin) + midiMin;
             }
             else {
-                if(handsDataPrev[i].z != -1){
-                    if(isSound){
-                        if(frameData.hands[i].angle  > 0){
-                            csound_data["amp0"].param = csound_data["amp1"].param = 0.01;
-                            isSound = false;
-                            std::stringstream ss;
-                            ss << "OFF angle " << frameData.hands[i].angle<< " y " << frameData.hands[i].y;
-                            Logs::writeLog("csound", ss.str());
-                        }
-                    }
-                    else {
-                        if(frameData.hands[i].angle  < 0){
-                            csound_data["amp0"].param = csound_data["amp1"].param = 1.;
-                            isSound = true;
-                            std::stringstream ss;
-                            ss << "ON angle " << frameData.hands[i].angle << " y " << frameData.hands[i].y;
-                            Logs::writeLog("csound", ss.str());
-                        }
-                    }
-                    
-                }
+                //amp
+                csound_data["amp0"].param = csound_data["amp1"].param =  sqrt(frameData.hands[i].y);
+                //side mod
+                float mod = frameData.hands[i].angle;
+                if(mod < -50.f)
+                    mod = -50.f;
+                else if(mod > 50.f)
+                    mod = 50.f;
+                mod += 50.f;
+                csound_data["fmodSide0"].param = csound_data["fmodSide1"].param   = mod * 0.01f;
+                
             }
-            
-            
-            //vibr
-            csound_data["vibrRate"+iStr].param = 2. + ((rand() % 100) / 100. - 0.5) * 4;
-            //side mod
-            double x = frameData.hands[i].x;
-            x = x < 0.5 ? 0.5 - x : x - 0.5;
-            double mod = x  * 2.;
-            mod  = mod  < 0. ? 0. : mod;
-            csound_data["fmodSide"+iStr].param = mod * 2;
         }
-        handsDataPrev = frameData.hands;
     }
     
 }

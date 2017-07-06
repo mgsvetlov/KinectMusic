@@ -17,7 +17,7 @@
 #include "pcl.hpp"
 #include "../../log/logs.h"
 
-void fitPlane(Blob& blob){
+float fitPlane(Blob& blob){
     
     // initialize PointClouds
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -37,7 +37,7 @@ void fitPlane(Blob& blob){
         cloud->points[i].z =  it->val;
     }
     
-    std::vector<int> inliers, model;
+    //std::vector<int> inliers, model;
     Eigen::VectorXf model_coefficients;
     pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr
     model_p (new pcl::SampleConsensusModelPlane<pcl::PointXYZ> (cloud));
@@ -46,18 +46,27 @@ void fitPlane(Blob& blob){
     
     ransac.computeModel();
     ransac.getModelCoefficients(model_coefficients);
-    ransac.getInliers(inliers);
-    ransac.getModel(model);
+    //ransac.getInliers(inliers);
+    //ransac.getModel(model);
+    //float x = model_coefficients.x();
+    float y = model_coefficients.y();
+    float z = model_coefficients.z();
+    float angle = std::abs(z);
+    float norm = sqrt(y*y + z*z);
+    if( norm != 0.0f)
+        angle /= norm;
+    if(z * y < 0)
+        angle *= -1;
+    
     std::stringstream ss;
-    ss << "model: ";
-    //for(auto m : model)
-    ss << model_coefficients << " ";
+    ss << angle;
     Logs::writeLog("gestures", ss.str());
-    typedef std::list<Cell>::iterator IterList;
+    //model_coefficients[x];
+    /*typedef std::list<Cell>::iterator IterList;
     std::vector<Cell> vCells (std::move_iterator<IterList>(blob.lCells.begin()), std::move_iterator<IterList>(blob.lCells.end()));
     blob.lCells.clear();
     for(auto i : inliers){
         blob.lCells.emplace_back(vCells[i]);
-    }
-
+    }*/
+    return angle;
 }

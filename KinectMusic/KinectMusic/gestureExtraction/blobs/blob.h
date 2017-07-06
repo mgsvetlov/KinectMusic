@@ -42,7 +42,6 @@ public:
     void originalData(cv::Mat originalMat);
     void computeAngle();
     
-
 private:
     void addCell(int ind, int val);
     void mergeBlob(const Blob& blob);
@@ -50,7 +49,7 @@ private:
     int computeAverageValue();
     bool computeCentralNearCell(double med);
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
-    int findInterval(int threshInterval, int threshBegin, int& start, int& end) const;
+
 private:
     const Cell* p_maxValCell = nullptr;
     const Cell* p_minValCell = nullptr;
@@ -62,8 +61,7 @@ private:
     friend class Hand;
     friend class Visualization;
     friend std::ostream& operator << (std::ostream& os, const Blob& blob);
-    friend void fitPlane(Blob& blob);
+    friend float fitPlane(Blob& blob);
 };
 
-std::ostream& operator << (std::ostream& os, const Blob& blob);
 #endif /* blob_h */

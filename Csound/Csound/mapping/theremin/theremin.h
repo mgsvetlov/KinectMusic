@@ -21,8 +21,6 @@ public:
 private:
     double midiMin;
     double midiMax;
-    std::vector<HandData> handsDataPrev;
-    std::vector<double> vol;
 };
 
 #endif /* theremin_h */

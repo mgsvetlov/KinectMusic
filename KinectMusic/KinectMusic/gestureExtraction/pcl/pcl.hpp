@@ -10,6 +10,6 @@
 #define pcl_hpp
 #include "../blobs/blob.h"
 
-void fitPlane(Blob& blob);
+float fitPlane(Blob& blob);
 
 #endif /* pcl_hpp */

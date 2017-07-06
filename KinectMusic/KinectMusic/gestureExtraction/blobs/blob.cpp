@@ -314,24 +314,22 @@ void Blob::filterNearBody(std::list<Blob>& lBlobs, int bodyDepth, int minDistToB
 }
 
 void Blob::originalData(cv::Mat originalMat){
-    int minX(matSize.width), minY(matSize.height), maxX(-1), maxY(-1);
-    for(const auto& cell : lCells){
-        int ind = cell.ind;
-        int x = ind % this->matSize.width;
-        int y = (ind-x) /this->matSize.width;
-        if(x < minX)
-            minX = x;
-        if(x > maxX)
-            maxX = x;
-        if(y < minY)
-            minY = y;
-        if(y > maxY)
-            maxY = y;
-    }
-    minX <<= BLOBS_RESIZE_POW;
-    maxX <<= BLOBS_RESIZE_POW;
-    minY <<= BLOBS_RESIZE_POW;
-    maxY <<= BLOBS_RESIZE_POW;
+    int ind = centralCell.ind;
+    int x = ind % this->matSize.width;
+    int y = (ind-x) /this->matSize.width;
+    x <<= BLOBS_RESIZE_POW;
+    y <<= BLOBS_RESIZE_POW;
+    int halfSize(80);
+    int depthThresh(200);
+    int minX(x - halfSize), minY(y - halfSize), maxX(x + halfSize), maxY(y + halfSize);
+    if(minX < 0)
+        minX = 0;
+    if(minY < 0)
+        minY = 0;
+    if(maxX >= originalMat.cols)
+        maxX = originalMat.cols - 1;
+    if(maxY >= originalMat.rows)
+        maxY = originalMat.rows - 1;
     
     uint16_t* p_nearest = (uint16_t*)(originalMat.data) + originalMat.cols * minY + minX;
     for(int y = minY; y <= maxY; ++y){
@@ -352,7 +350,7 @@ void Blob::originalData(cv::Mat originalMat){
     for(int y = minY; y <= maxY; ++y){
         uint16_t* p = (uint16_t*)(originalMat.data) + originalMat.cols * y + minX;
         for(int x = minX; x <= maxX; ++x, ++p){
-            if((*p>0) &&   *p - minVal < 100)
+            if((*p>0) &&   *p - minVal < depthThresh)
                 lCells.emplace_back(Cell(static_cast<int>(p - (uint16_t*)(originalMat.data)), *p));
         }
     }
@@ -360,72 +358,7 @@ void Blob::originalData(cv::Mat originalMat){
 }
 
 void Blob::computeAngle(){
-    typedef std::list<Cell>::iterator IterList;
-    std::vector<Cell> vCells (std::move_iterator<IterList>(lCells.begin()), std::move_iterator<IterList>(lCells.end()));
-    std::sort(vCells.begin(), vCells.end(), [](const Cell& cell1, const Cell& cell2){ return cell1.val < cell2.val;});
-    typedef std::vector<Cell>::iterator IterVec;
-    lCells = std::list<Cell>(std::move_iterator<IterVec>(vCells.begin()), std::move_iterator<IterVec>(vCells.end()));
-    int start(-1), end(-1);
-    int sign = this->findInterval(10, 40, start, end);
-    this->angle = (end - start) * sign;
-    /*int ySum(0);
-    for( auto& cell: lCells){
-        int ind = cell.ind;
-        int x = ind % this->matSize.width;
-        int y = (ind-x) /this->matSize.width;
-        ySum += y;
-        
-    }
-    int y = ySum /lCells.size();
-    int indCentral = centralCell.ind;
-    int xCentral = indCentral % this->matSize.width;
-    int yCentral = (indCentral-xCentral) /this->matSize.width;
-    this->angle = -yCentral + y;*/
-    fitPlane(*this);
-}
-
-int Blob::findInterval(int threshInterval, int threshBegin,int& start, int& end) const {
-    start = end = -1;
-    auto itStart = lCells.begin();
-    auto itEnd = lCells.begin();
-    int iStart(0), iEnd(0);
-    int maxInterval (-1);
-    
-    std::stringstream ss;
-    while(itEnd != lCells.end()){
-        if(itEnd->val - itStart->val <= threshInterval){
-            int interval = iEnd - iStart;
-            if(interval > maxInterval){
-                maxInterval = interval;
-                start = iStart;
-                end = iEnd;
-            }
-            ++itEnd, ++iEnd;
-            continue;
-        }
-        ++itStart, ++iStart;
-        if(iStart == threshBegin)
-            break;
-    }
-    //compute if palm is directed up or down
-    int sign = 0;
-    itStart = std::next(lCells.begin(), start);
-    itEnd = std::next(lCells.begin(), end + 1);
-    while(itStart != itEnd) {
-        int ind1 = itStart->ind;
-        int x1 = ind1 % this->matSize.width;
-        int y1 = (ind1-x1) /this->matSize.width;
-        auto it = itStart;
-        while(it != itEnd){
-            int ind2 = it->ind;
-            int x2 = ind2 % this->matSize.width;
-            int y2 = (ind2-x2) /this->matSize.width;
-            sign += (y2 > y1 ? 1 : y2 < y1 ? -1 : 0);
-            ++it;
-        }
-        ++itStart;
-    }
-    return sign == 0 ? 0 : sign / std::abs(sign);
+    this->angle = lCells.size() >= 3 ? fitPlane(*this) * 100.f : 0.0f;
 }
 
 cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
@@ -461,40 +394,3 @@ cv::Mat Blob::blobs2mat_marked(const std::list<Blob>& lBlobs, const cv::Size& si
     return mat;
 }
 
-std::ostream& operator << (std::ostream& os, const Blob& blob){
-    
-    std::stringstream ss;
-    
-    if(blob.lCells.empty()){
-        ss << "Empty Blob frame "  << frameNum;
-    }
-    else {
-        auto cellOut = [&ss](const Cell& cell, cv::Size matSize) {
-            int ind = cell.ind;
-            int x = ind % matSize.width;
-            int y = (ind-x) /matSize.width;
-            ss << "x " << x << " y " << y << " z " << cell.val << "\n";
-        };
-        int start(-1), end(-1);
-        blob.findInterval(5, 10, start, end);
-        
-        if(start != -1 && end >= start){
-            int count(0);
-            for(const auto& cell : blob.lCells){
-                if(count > end)
-                    break;
-                if(count >= start){
-                    ss << count << " ";
-                    cellOut(cell, blob.matSize);
-                }
-                count ++;
-            }
-
-            ss << "size " << end - start << "\n";
-        }
-
-    }
- 
-    Logs::writeLog("gestures", ss.str());
-    return os;
-}
