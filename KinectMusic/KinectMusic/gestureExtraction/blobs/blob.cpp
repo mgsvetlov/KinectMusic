@@ -319,8 +319,9 @@ void Blob::originalData(cv::Mat originalMat){
     int y = (ind-x) /this->matSize.width;
     x <<= BLOBS_RESIZE_POW;
     y <<= BLOBS_RESIZE_POW;
-    int halfSize(80);
-    int depthThresh(200);
+    static constexpr int halfSize(60);
+    static constexpr int depthThresh(150);
+    static constexpr int depthThresh2(depthThresh * depthThresh * 0.8);
     int minX(x - halfSize), minY(y - halfSize), maxX(x + halfSize), maxY(y + halfSize);
     if(minX < 0)
         minX = 0;
@@ -346,19 +347,38 @@ void Blob::originalData(cv::Mat originalMat){
     
     lCells.clear();
     
-    int minVal = centralCell.val;
+    int closest_z = centralCell.val;
+    int closest_x = centralCell.ind % this->matSize.width;
+    int closest_y = (centralCell.ind-closest_x) /this->matSize.width;
     for(int y = minY; y <= maxY; ++y){
         uint16_t* p = (uint16_t*)(originalMat.data) + originalMat.cols * y + minX;
         for(int x = minX; x <= maxX; ++x, ++p){
-            if((*p>0) &&   *p - minVal < depthThresh)
+            if((*p>0) &&   *p - closest_z < depthThresh){
+                int dx = x - closest_x;
+                int dy = y - closest_y;
+                int dz = *p - closest_z;
+                if(dx*dx + dy*dy + dz*dz< depthThresh2)
                 lCells.emplace_back(Cell(static_cast<int>(p - (uint16_t*)(originalMat.data)), *p));
+            }
         }
     }
     
 }
 
 void Blob::computeAngle(){
-    this->angle = lCells.size() >= 3 ? fitPlane(*this) * 100.f : 0.0f;
+    if( lCells.size() < 3){
+        this->angle = 0.0f;
+        return;
+    }
+    float x(0.0), y(0.0), z(0.0), w(0.0);
+    Pcl::fitPlane(*this, x, y, z, w);
+    float angle = std::abs(z);
+    float norm = sqrt(y*y + z*z);
+    if( norm != 0.0f)
+        angle /= norm;
+    if(z * y < 0)
+        angle *= -1;
+    this->angle = angle * 100.f;
 }
 
 cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
@@ -376,21 +396,4 @@ cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
     return mat;
 }
 
-cv::Mat Blob::blobs2mat_marked(const std::list<Blob>& lBlobs, const cv::Size& size, int body_depth) {
-    cv::Mat mat = cv::Mat_<unsigned char>::zeros(size);
-    
-    int val = 255;
-    const int step = 120;
-    for(auto& blob : lBlobs) {
-        auto& lCells = blob.getLCellsConst();
-        for(auto& cell : lCells) {
-            int ind = cell.ind;
-            unsigned char* p_mat = (unsigned char*)(mat.data) + ind;
-            *p_mat = val;
-        }
-        val -= step;
-    }
-    
-    return mat;
-}
 

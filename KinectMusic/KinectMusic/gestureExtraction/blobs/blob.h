@@ -29,8 +29,6 @@ public:
     std::list<Cell>& getLCells() {return lCells;}
     const std::list<Cell>& getLCellsConst() const {return lCells;}
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
-      static cv::Mat blobs2mat_marked(const std::list<Blob>& lBlobs, const cv::Size& size, int body_depth);
-    
     static bool blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh);
     
     static void sort(std::list<Blob>& lBlobs);
@@ -61,7 +59,6 @@ private:
     friend class Hand;
     friend class Visualization;
     friend std::ostream& operator << (std::ostream& os, const Blob& blob);
-    friend float fitPlane(Blob& blob);
 };
 
 #endif /* blob_h */

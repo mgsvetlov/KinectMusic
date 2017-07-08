@@ -98,7 +98,7 @@ void *analyze_threadfunc(void *arg) {
         Blob::blobsClustering(lBlobs1, lBlobsClust, xyThresh, depthThresh);
         
         if(!lBlobsClust.empty()){
-            int minDistToBody(150);
+            int minDistToBody(200);
             Blob::filterNearBody(lBlobsClust,  body_depth, minDistToBody);
             Blob::sort(lBlobsClust);
         }
