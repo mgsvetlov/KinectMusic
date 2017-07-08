@@ -35,6 +35,7 @@ public:
     static void filterNearBody(std::list<Blob>& lBlobs, int bodyDepth, int minDistToBody);
     
     const Cell& getCentralCell() const {return centralCell;}
+    void setCentralCell(const Cell cc) {centralCell = cc;}
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
     void originalData(cv::Mat originalMat);

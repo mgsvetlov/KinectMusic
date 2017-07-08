@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 01/10/16.
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
-#include <ctime>
+
 #include <stdio.h>
 #include "visualization.h"
 #include "../blobs/blob.h"
@@ -40,18 +40,6 @@ bool Visualization::showImage() {
     if(cv::waitKey(1) == 27) {
         return false;
     }
-    
-    /*static int frameCount(0);
-    static std::clock_t t = clock();
-    if(frameNum % 30 == 0){
-        std::clock_t next_t = clock();
-        if(frameCount) {
-            double elapsed_sec = double(next_t - t)/CLOCKS_PER_SEC;
-            std::cout << "output fps " << 30./elapsed_sec  << std::endl;
-        }
-        t = next_t;
-    }
-    ++frameCount;*/
     return true;
 }
 

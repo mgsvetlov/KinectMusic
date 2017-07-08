@@ -14,6 +14,7 @@
 #include <queue>
 #include <sstream>
 #include <algorithm>
+#include <ctime>
 
 #include "types.h"
 #include "visualization/visualization.h"
@@ -41,7 +42,7 @@ int w = 640, h = 480;
 uint16_t * const depthAnalyze = new uint16_t[w*h];
 
 int MAX_KINECT_VALUE;
-int MAX_KINECT_DEPTH = 1800;
+int MAX_KINECT_DEPTH = 2000;
 int MIN_KINECT_DEPTH = 1000;
 int BLOBS_RESIZE_POW  = 3;
 int BLOB_MIN_SIZE = (w >> BLOBS_RESIZE_POW)  * 0.15625;
@@ -62,6 +63,19 @@ void *analyze_threadfunc(void *arg) {
             usleep(100);
             continue;
         }
+        
+        static std::clock_t t = clock();
+        if(frameNum != 0){
+            std::clock_t next_t = clock();
+            double elapsed_sec = double(next_t - t)/CLOCKS_PER_SEC;
+            std::stringstream ss;
+            ss << "output fps " << (frameNum- frameNum_analyze)/elapsed_sec;
+            if(frameNum - frameNum_analyze > 1)
+                ss << ", missed " << frameNum - frameNum_analyze - 1 << " frames";
+            t = next_t;
+            Logs::writeLog("gestures", ss.str());
+        }
+        
         frameNum_analyze = frameNum;
         cv::Mat mat16(h, w, CV_16U, depthAnalyze);
         pthread_mutex_unlock(&depth_mutex);

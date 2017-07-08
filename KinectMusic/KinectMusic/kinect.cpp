@@ -31,16 +31,7 @@ int got_rgb = 0;
 void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 {
     static std::clock_t t = clock();
-    /*if(frameNum % 30 == 0){
-        std::clock_t next_t = clock();
-        if(frameNum) {
-            double elapsed_sec = double(next_t - t)/CLOCKS_PER_SEC;
-            std::cout << "kinect fps " <<30./elapsed_sec << std::endl;
-        }
-        t = next_t;
-    }*/
-    //std::cout << "kinect frameNum " << frameNum << std::endl;
-    
+
     pthread_mutex_lock(&depth_mutex);
     ++frameNum;
     uint16_t *p_depth1 = (uint16_t*)v_depth;

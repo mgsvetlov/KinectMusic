@@ -15,7 +15,9 @@
 #include "blob.h"
 #include "../../log/logs.h"
 #include "../analyze.h"
-#include  "../pcl/pcl.hpp"
+#include  "../pcl/pclplane.hpp"
+#include  "../pcl/pcldownsample.hpp"
+#include "../pcl/pclnormals.hpp"
 
 
 Blob::Blob() :
@@ -363,7 +365,10 @@ void Blob::originalData(cv::Mat originalMat){
             }
         }
     }
-    
+    Blob blobFiltered;
+    PclDownsample::downsample(*this, blobFiltered);
+    *this = std::move(blobFiltered);
+    PclNormals::estimateNormals(*this);
 }
 
 void Blob::computeAngle(){
@@ -372,7 +377,7 @@ void Blob::computeAngle(){
         return;
     }
     float x(0.0), y(0.0), z(0.0), w(0.0);
-    Pcl::fitPlane(*this, x, y, z, w);
+    PclPlane::fitPlane(*this, x, y, z, w);
     float angle = std::abs(z);
     float norm = sqrt(y*y + z*z);
     if( norm != 0.0f)

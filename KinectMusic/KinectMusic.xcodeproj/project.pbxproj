@@ -56,7 +56,7 @@
 		7282333C1F0D4B2400B6E4D4 /* libpcl_segmentation.1.7.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233301F0D4B2400B6E4D4 /* libpcl_segmentation.1.7.2.dylib */; };
 		7282333D1F0D4B2400B6E4D4 /* libpcl_surface.1.7.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233311F0D4B2400B6E4D4 /* libpcl_surface.1.7.2.dylib */; };
 		7282333E1F0D4B2400B6E4D4 /* libpcl_tracking.1.7.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233321F0D4B2400B6E4D4 /* libpcl_tracking.1.7.2.dylib */; };
-		728233421F0D4FFD00B6E4D4 /* pcl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233401F0D4FFD00B6E4D4 /* pcl.cpp */; };
+		728233421F0D4FFD00B6E4D4 /* pclplane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233401F0D4FFD00B6E4D4 /* pclplane.cpp */; };
 		7282337C1F0D534500B6E4D4 /* libboost_atomic-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233431F0D534400B6E4D4 /* libboost_atomic-mt.dylib */; };
 		7282337D1F0D534500B6E4D4 /* libboost_chrono-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233441F0D534400B6E4D4 /* libboost_chrono-mt.dylib */; };
 		7282337E1F0D534500B6E4D4 /* libboost_chrono.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233451F0D534400B6E4D4 /* libboost_chrono.dylib */; };
@@ -117,6 +117,10 @@
 		728233B81F0D568000B6E4D4 /* libpcl_common.1.7.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233B51F0D568000B6E4D4 /* libpcl_common.1.7.2.dylib */; };
 		728233B91F0D568000B6E4D4 /* libpcl_features.1.7.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233B61F0D568000B6E4D4 /* libpcl_features.1.7.2.dylib */; };
 		728233BA1F0D568000B6E4D4 /* libpcl_filters.1.7.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233B71F0D568000B6E4D4 /* libpcl_filters.1.7.2.dylib */; };
+		728233BD1F11390400B6E4D4 /* pcldownsample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233BB1F11390400B6E4D4 /* pcldownsample.cpp */; };
+		728233C01F114CC200B6E4D4 /* pclutility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233BE1F114CC200B6E4D4 /* pclutility.cpp */; };
+		728233C31F11525700B6E4D4 /* pclsegmentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233C11F11525700B6E4D4 /* pclsegmentation.cpp */; };
+		728233C61F1153B100B6E4D4 /* pclnormals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233C41F1153B100B6E4D4 /* pclnormals.cpp */; };
 		7298B7271D8D85840093134C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7298B7261D8D85840093134C /* main.cpp */; };
 		72AFE5E41E7B583000143CA7 /* libusb-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 72AFE5E31E7B583000143CA7 /* libusb-1.0.a */; };
 		72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72B332AD1BAF0733003DA9DA /* kinect.cpp */; };
@@ -228,8 +232,8 @@
 		728233301F0D4B2400B6E4D4 /* libpcl_segmentation.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_segmentation.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_segmentation.1.7.2.dylib; sourceTree = "<group>"; };
 		728233311F0D4B2400B6E4D4 /* libpcl_surface.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_surface.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_surface.1.7.2.dylib; sourceTree = "<group>"; };
 		728233321F0D4B2400B6E4D4 /* libpcl_tracking.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_tracking.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_tracking.1.7.2.dylib; sourceTree = "<group>"; };
-		728233401F0D4FFD00B6E4D4 /* pcl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pcl.cpp; path = gestureExtraction/pcl/pcl.cpp; sourceTree = "<group>"; };
-		728233411F0D4FFD00B6E4D4 /* pcl.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pcl.hpp; path = gestureExtraction/pcl/pcl.hpp; sourceTree = "<group>"; };
+		728233401F0D4FFD00B6E4D4 /* pclplane.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclplane.cpp; path = gestureExtraction/pcl/pclplane.cpp; sourceTree = "<group>"; };
+		728233411F0D4FFD00B6E4D4 /* pclplane.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclplane.hpp; path = gestureExtraction/pcl/pclplane.hpp; sourceTree = "<group>"; };
 		728233431F0D534400B6E4D4 /* libboost_atomic-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_atomic-mt.dylib"; path = "../../../../../../../usr/local/lib/libboost_atomic-mt.dylib"; sourceTree = "<group>"; };
 		728233441F0D534400B6E4D4 /* libboost_chrono-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_chrono-mt.dylib"; path = "../../../../../../../usr/local/lib/libboost_chrono-mt.dylib"; sourceTree = "<group>"; };
 		728233451F0D534400B6E4D4 /* libboost_chrono.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_chrono.dylib; path = ../../../../../../../usr/local/lib/libboost_chrono.dylib; sourceTree = "<group>"; };
@@ -290,6 +294,14 @@
 		728233B51F0D568000B6E4D4 /* libpcl_common.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_common.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_common.1.7.2.dylib; sourceTree = "<group>"; };
 		728233B61F0D568000B6E4D4 /* libpcl_features.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_features.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_features.1.7.2.dylib; sourceTree = "<group>"; };
 		728233B71F0D568000B6E4D4 /* libpcl_filters.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_filters.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_filters.1.7.2.dylib; sourceTree = "<group>"; };
+		728233BB1F11390400B6E4D4 /* pcldownsample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pcldownsample.cpp; path = gestureExtraction/pcl/pcldownsample.cpp; sourceTree = "<group>"; };
+		728233BC1F11390400B6E4D4 /* pcldownsample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pcldownsample.hpp; path = gestureExtraction/pcl/pcldownsample.hpp; sourceTree = "<group>"; };
+		728233BE1F114CC200B6E4D4 /* pclutility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclutility.cpp; path = gestureExtraction/pcl/pclutility.cpp; sourceTree = "<group>"; };
+		728233BF1F114CC200B6E4D4 /* pclutility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclutility.hpp; path = gestureExtraction/pcl/pclutility.hpp; sourceTree = "<group>"; };
+		728233C11F11525700B6E4D4 /* pclsegmentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclsegmentation.cpp; path = gestureExtraction/pcl/pclsegmentation.cpp; sourceTree = "<group>"; };
+		728233C21F11525700B6E4D4 /* pclsegmentation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclsegmentation.hpp; path = gestureExtraction/pcl/pclsegmentation.hpp; sourceTree = "<group>"; };
+		728233C41F1153B100B6E4D4 /* pclnormals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclnormals.cpp; path = gestureExtraction/pcl/pclnormals.cpp; sourceTree = "<group>"; };
+		728233C51F1153B100B6E4D4 /* pclnormals.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclnormals.hpp; path = gestureExtraction/pcl/pclnormals.hpp; sourceTree = "<group>"; };
 		7298B7261D8D85840093134C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		72AFE5E31E7B583000143CA7 /* libusb-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libusb-1.0.a"; path = "lib/libusb-1.0.a"; sourceTree = "<group>"; };
 		72B332AD1BAF0733003DA9DA /* kinect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = kinect.cpp; sourceTree = "<group>"; };
@@ -648,8 +660,16 @@
 		7282333F1F0D4FC700B6E4D4 /* pcl */ = {
 			isa = PBXGroup;
 			children = (
-				728233401F0D4FFD00B6E4D4 /* pcl.cpp */,
-				728233411F0D4FFD00B6E4D4 /* pcl.hpp */,
+				728233401F0D4FFD00B6E4D4 /* pclplane.cpp */,
+				728233411F0D4FFD00B6E4D4 /* pclplane.hpp */,
+				728233BB1F11390400B6E4D4 /* pcldownsample.cpp */,
+				728233BC1F11390400B6E4D4 /* pcldownsample.hpp */,
+				728233BE1F114CC200B6E4D4 /* pclutility.cpp */,
+				728233BF1F114CC200B6E4D4 /* pclutility.hpp */,
+				728233C11F11525700B6E4D4 /* pclsegmentation.cpp */,
+				728233C21F11525700B6E4D4 /* pclsegmentation.hpp */,
+				728233C41F1153B100B6E4D4 /* pclnormals.cpp */,
+				728233C51F1153B100B6E4D4 /* pclnormals.hpp */,
 			);
 			name = pcl;
 			sourceTree = "<group>";
@@ -733,11 +753,13 @@
 				728233261F07952400B6E4D4 /* handsextractor.cpp in Sources */,
 				720164C11A6C058B00BC721A /* usb_libusb10.c in Sources */,
 				720164BC1A6C058B00BC721A /* core.c in Sources */,
+				728233BD1F11390400B6E4D4 /* pcldownsample.cpp in Sources */,
 				725B1B9D1ED18A800028AE34 /* gesturefabrique.cpp in Sources */,
 				720C22951DF4236A0066104B /* gesture.cpp in Sources */,
+				728233C61F1153B100B6E4D4 /* pclnormals.cpp in Sources */,
 				720C228E1DE990F90066104B /* hand.cpp in Sources */,
 				720A04F31EE5B80400731552 /* config.cpp in Sources */,
-				728233421F0D4FFD00B6E4D4 /* pcl.cpp in Sources */,
+				728233421F0D4FFD00B6E4D4 /* pclplane.cpp in Sources */,
 				720C22921DF2EED10066104B /* tracking.cpp in Sources */,
 				720164BA1A6C058B00BC721A /* audio.c in Sources */,
 				720164BF1A6C058B00BC721A /* registration.c in Sources */,
@@ -746,7 +768,9 @@
 				720164BE1A6C058B00BC721A /* loader.c in Sources */,
 				725B1BA01ED768A60028AE34 /* gestureStop.cpp in Sources */,
 				720164BD1A6C058B00BC721A /* flags.c in Sources */,
+				728233C31F11525700B6E4D4 /* pclsegmentation.cpp in Sources */,
 				72799BA71DC61E5800BAC3DC /* analyze.cpp in Sources */,
+				728233C01F114CC200B6E4D4 /* pclutility.cpp in Sources */,
 				7207E6351EE2F5CC0021824C /* gestureAll.cpp in Sources */,
 				72048F8F1EDAD808006381E9 /* logs.cpp in Sources */,
 				72B332B21BAF1050003DA9DA /* opengl_.c in Sources */,
