@@ -43,9 +43,9 @@ uint16_t * const depthAnalyze = new uint16_t[w*h];
 int MAX_KINECT_VALUE;
 int MAX_KINECT_DEPTH = 1800;
 int MIN_KINECT_DEPTH = 1000;
-int BLOBS_RESIZE_POW  = 2;
-int BLOB_MIN_SIZE = 25;
-int BLOB_MIN_SIZE_LAST = 3000;
+int BLOBS_RESIZE_POW  = 3;
+int BLOB_MIN_SIZE = (w >> BLOBS_RESIZE_POW)  * 0.15625;
+int BLOB_MIN_SIZE_LAST = (w >> BLOBS_RESIZE_POW)  * 18.75;
 int MAX_NEIGHB_DIFF_COARSE  = 4;
 int MAX_NEIGHB_DIFF_FINE  = 1;
 
@@ -86,7 +86,7 @@ void *analyze_threadfunc(void *arg) {
         cv::Mat matBlobs = Blob::blobs2mat(lBlobs, mat16_resized.size());
         
         //extract hands
-        static int filt_size(8), filt_depth(15), core_half_size(2);
+        static int filt_size(mat16_resized.cols / 20), filt_depth(mat16_resized.cols / 10), core_half_size(2);
         cv::Mat matDst = HandsExtractor::extractHands(matBlobs, filt_size, filt_depth, core_half_size);
        
         std::list<Blob> lBlobs1;
@@ -94,7 +94,7 @@ void *analyze_threadfunc(void *arg) {
         Blob::findBlobs(matDst, lBlobs1, mode);
         
         std::list<Blob> lBlobsClust;
-        int xyThresh(20), depthThresh(100);
+        int xyThresh(mat16_resized.cols / 8), depthThresh(100);
         Blob::blobsClustering(lBlobs1, lBlobsClust, xyThresh, depthThresh);
         
         if(!lBlobsClust.empty()){

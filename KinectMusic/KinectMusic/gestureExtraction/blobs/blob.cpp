@@ -97,7 +97,8 @@ int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
             if(minVal == MAX_KINECT_VALUE)
                 break;
             Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0]);
-            if(nearestBlob.getLCells().size() > 10)
+            int minSize = mat16_clone.cols / 16;
+            if(nearestBlob.getLCells().size() > minSize)
                 lBlobs.push_back(nearestBlob);
             continue;
         }
@@ -319,7 +320,7 @@ void Blob::originalData(cv::Mat originalMat){
     int y = (ind-x) /this->matSize.width;
     x <<= BLOBS_RESIZE_POW;
     y <<= BLOBS_RESIZE_POW;
-    static constexpr int halfSize(60);
+    static const int halfSize(originalMat.cols * 0.09375);
     static constexpr int depthThresh(150);
     static constexpr int depthThresh2(depthThresh * depthThresh * 0.8);
     int minX(x - halfSize), minY(y - halfSize), maxX(x + halfSize), maxY(y + halfSize);
