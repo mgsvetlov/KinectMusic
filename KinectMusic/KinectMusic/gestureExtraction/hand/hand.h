@@ -13,15 +13,17 @@
 class Hand {
 public:
     Hand(){}
-    Hand(const Blob& blob, const cv::Size& matSize);
+    Hand(Blob& blob, const cv::Size& matSize);
 
     const cv::Point3i& getKeyPoint() const {return keyPoint;}
     int getAngle() const { return angle;}
+    Blob* getP_blob()  {return p_blob; }
 private:
     double dist2hand(const Hand& hand) const;
 private:
     cv::Point3i keyPoint;
     int angle;
+    Blob* p_blob = nullptr;
     
     friend class Visualization;
     friend class Track;

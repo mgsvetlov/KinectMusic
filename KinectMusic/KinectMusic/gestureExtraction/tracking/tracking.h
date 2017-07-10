@@ -21,7 +21,9 @@ public:
     Track(const Hand& hand);
     static void analyzeFrame(const std::list<Hand>& lBlobs);
     static const std::vector<Track>& getTracksConst() {return tracks;}
-    const std::list<Hand>& getLHands() const { return lHands;}
+    std::list<Hand>& getLHands()  { return lHands;}
+    const std::list<Hand>& getLHandsConst() const { return lHands;}
+    const bool getIsTrackFound() const  {return isHandFound;}
 private:
     double dist2hand(const Hand& hand);
     void addHandData(const Hand& hand);

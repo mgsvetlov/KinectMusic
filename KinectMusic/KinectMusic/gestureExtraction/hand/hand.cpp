@@ -8,7 +8,7 @@
 
 #include "hand.h"
 
-Hand::Hand(const Blob& blob, const cv::Size& matSize){
+Hand::Hand(Blob& blob, const cv::Size& matSize){
     auto centralCell = blob.getCentralCell();
     int ind = centralCell.ind;
     int w = matSize.width;
@@ -17,6 +17,7 @@ Hand::Hand(const Blob& blob, const cv::Size& matSize){
     int z = centralCell.val;
     keyPoint = cv::Point3i(x,y,z);
     angle = blob.angle;
+    p_blob = &blob;
 }
 
 double Hand::dist2hand(const Hand& hand) const{

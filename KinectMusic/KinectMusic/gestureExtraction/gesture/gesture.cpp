@@ -14,7 +14,7 @@
 size_t Gesture::threshUnrecogn = 2;
 
 void Gesture::addData(const Track& track){
-    const std::list<Hand>& lHands = track.getLHands();
+    const std::list<Hand>& lHands = track.getLHandsConst();
     if(lHands.empty()){
         handsData.push_back(HandData(cv::Point3i(NO_DATA_VALUE,NO_DATA_VALUE,NO_DATA_VALUE), NO_DATA_VALUE, NO_DATA_VALUE));
     }

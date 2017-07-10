@@ -15,8 +15,11 @@
 struct Cell {
     Cell(){}
     Cell(int ind, int val): ind(ind), val(val){}
+    Cell(int ind, int val, int dist): ind(ind), val(val), dist(dist){}
     int ind;
     int val = NO_DATA_VALUE;
+    int dist = 0;
+    cv::Vec4f normal = cv::Vec4f(0.f, 0.f, 0.f);
 };
 
 class Blob {
@@ -31,15 +34,14 @@ public:
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
     static bool blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh);
     
-    static void sort(std::list<Blob>& lBlobs);
-    static void filterNearBody(std::list<Blob>& lBlobs, int bodyDepth, int minDistToBody);
     
     const Cell& getCentralCell() const {return centralCell;}
     void setCentralCell(const Cell cc) {centralCell = cc;}
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
-    void originalData(cv::Mat originalMat);
-    void computeAngle();
+    
+    bool filterLargeBlobs(cv::Mat originalMat);
+    void analyzeHand(cv::Mat originalMat);
     
 private:
     void addCell(int ind, int val);
@@ -48,7 +50,9 @@ private:
     int computeAverageValue();
     bool computeCentralNearCell(double med);
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
-
+    void createCellsTree(cv::Mat originalMat);
+    void computeAngle();
+    
 private:
     const Cell* p_maxValCell = nullptr;
     const Cell* p_minValCell = nullptr;

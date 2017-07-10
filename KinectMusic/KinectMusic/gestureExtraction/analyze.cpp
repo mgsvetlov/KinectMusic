@@ -111,25 +111,36 @@ void *analyze_threadfunc(void *arg) {
         int xyThresh(mat16_resized.cols / 8), depthThresh(100);
         Blob::blobsClustering(lBlobs1, lBlobsClust, xyThresh, depthThresh);
         
-        if(!lBlobsClust.empty()){
-            int minDistToBody(200);
-            Blob::filterNearBody(lBlobsClust,  body_depth, minDistToBody);
-            Blob::sort(lBlobsClust);
-        }
-
         std::list<Hand> lHands;
         if(!lBlobsClust.empty()){
-            for(auto& blob : lBlobsClust){
-                blob.originalData(mat16_filt);
-                blob.computeAngle();
-                lHands.push_back(Hand(blob, mat16_filt.size()));
+            auto it = lBlobsClust.begin();
+            while(it != lBlobsClust.end()){
+                auto& blob = *it;
+                if(blob.filterLargeBlobs(mat16_filt)){
+                    lHands.push_back(Hand(blob, mat16_filt.size()));
+                    ++it;
+                    continue;
+                }
+                auto itErase = it;
+                ++it;
+                lBlobsClust.erase(itErase);
             }
         }
         
         //tracking hands
         Track::analyzeFrame(lHands);
         std::vector<Track> vTracks = Track::getTracksConst();
-       
+        std::vector<Blob*> vp_Blobs;
+        for(auto& track : vTracks){
+            if(track.getIsTrackFound())
+            vp_Blobs.push_back(track.getLHands().back().getP_blob());
+        }
+        
+        //analyze hand
+        for(auto p_Blob : vp_Blobs){
+            p_Blob->analyzeHand(mat16_filt);
+        }
+        
         //create and analyze hands tracked stream data
         FrameData frameData = GestureFabrique::extractGestures(vTracks);
         frameData.bodyDepth = body_depth;
@@ -146,7 +157,8 @@ void *analyze_threadfunc(void *arg) {
         if(Config::instance()->getIsVisualisation()){
             cv::Mat img;
             Visualization::mat2img(mat16, img);
-            Visualization::blobs2img( lBlobsClust, img, false);
+            //Visualization::blobs2img( lBlobsClust, img, false);
+            Visualization::blobs2img( vp_Blobs, img, false);
             Visualization::gestures2img(GestureFabrique::getGestures(), img);
             
             pthread_mutex_lock(&visualisation_mutex);

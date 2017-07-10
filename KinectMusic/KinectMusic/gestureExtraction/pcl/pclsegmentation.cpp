@@ -20,6 +20,10 @@ std::list<Blob> PclSegmentation::segmentation(Blob& blob){
     
     auto lClouds = segmentation(cloud);
     std::list<Blob> lBlobs; //cloud2blob!
+    for(auto& cloud : lClouds) {
+        PclUtility::cloud2blob(cloud, blob);
+        lBlobs.push_back(blob);
+    }
     return lBlobs;
 }
 
@@ -31,8 +35,8 @@ std::list<pcl::PointCloud<pcl::PointXYZ>::Ptr> PclSegmentation::segmentation(pcl
     
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance (40); // 2cm
-    ec.setMinClusterSize (100);
+    ec.setClusterTolerance (50); // 2cm
+    ec.setMinClusterSize (1);
     ec.setMaxClusterSize (25000);
     ec.setSearchMethod (tree);
     ec.setInputCloud (cloud);

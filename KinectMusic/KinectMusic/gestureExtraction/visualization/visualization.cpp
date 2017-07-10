@@ -13,6 +13,7 @@
 #include "../analyze.h"
 #include "../hand/hand.h"
 #include "../gesture/gesturefabrique.h"
+#include "../../log/logs.h"
 
 Visualization* Visualization::p_vis = nullptr;
 cv::Mat Visualization::matImage;
@@ -78,10 +79,9 @@ void Visualization::mat2img(cv::Mat mat, cv::Mat& matImg) {
 }
 
 void Visualization::blobs2img(const std::list<Blob>& lBlobs, cv::Mat& matImg, bool drawKeyPoints ){
-    int count(0);
     for(const auto& blob : lBlobs){
         cv::Scalar color = blob.angle > 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
-        blob2img(blob, matImg, color);
+        blob2img(blob, matImg, color, true);
         if(drawKeyPoints) {
             int ind = blob.centralCell.ind;
             int x = ind % matImg.cols;
@@ -89,13 +89,26 @@ void Visualization::blobs2img(const std::list<Blob>& lBlobs, cv::Mat& matImg, bo
             int z = blob.centralCell.val;
             keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 127, 127), 10);
         }
-        count++;
+    }
+}
+
+void Visualization::blobs2img(const std::vector<Blob*>& lBlobs, cv::Mat& matImg, bool drawKeyPoints ){
+    for(const auto& blob : lBlobs){
+        cv::Scalar color = blob->angle > 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
+        blob2img(*blob, matImg, color, true);
+        if(drawKeyPoints) {
+            int ind = blob->centralCell.ind;
+            int x = ind % matImg.cols;
+            int y = (ind-x) /matImg.cols;
+            int z = blob->centralCell.val;
+            keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 127, 127), 10);
+        }
     }
 }
 
 void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg, size_t length){
     int pointSize(5);
-    cv::Scalar color = gesture->handInd == 0 ? cv::Scalar(0,0,255) : cv::Scalar(255,255, 0);
+    cv::Scalar color = gesture->handInd == 0 ? cv::Scalar(0,255,255) : cv::Scalar(255,255, 0);
     auto rit = gesture->handsData.crbegin();
     if(length == 0 || gesture->handsData.size() < length)
         length = gesture->handsData.size();
@@ -115,10 +128,20 @@ void Visualization::gestures2img(const std::vector<std::shared_ptr<Gesture>>& ge
 }
 
 
-void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar& color){
+void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar& color, bool colorFromNormal){
+    std::stringstream ss;
     for(auto& cell : blob.lCells){
         unsigned int col = 255 - cell.val * 255. / MAX_KINECT_VALUE;
-        cv::Scalar colorPoint = color;
+        /*cv::Scalar colorPoint = color;
+        if(colorFromNormal){
+            const auto& normal = cell.normal;
+            if(!std::isnan(normal[1])){
+                float coeff = -(normal[2]);
+                colorPoint = cv::Scalar(coeff,coeff,1.f - coeff);
+            }
+        }*/
+        float coeff = cell.dist/60.0;
+        cv::Scalar colorPoint = cv::Scalar(coeff,1.f - coeff, 0.0f);
         for(int i = 0; i < 3; i++)
             colorPoint[i] *= col;
         int ind = cell.ind;

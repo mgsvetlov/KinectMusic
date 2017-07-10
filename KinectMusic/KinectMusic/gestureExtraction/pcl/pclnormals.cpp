@@ -8,11 +8,19 @@
 #include <pcl/features/normal_3d.h>
 #include "pclnormals.hpp"
 #include "pclutility.hpp"
+#include "../../log/logs.h"
 
 void PclNormals::estimateNormals(Blob& blob){
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     PclUtility::blob2cloud(blob, cloud);
-    auto cloud_normals = estimateNormals(cloud);
+    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals = estimateNormals(cloud);
+    auto& lCells = blob.getLCells();
+    auto it = lCells.begin();
+    
+    for(auto& normal : *cloud_normals){
+        it->normal = cv::Vec4f(normal.normal_x, normal.normal_y, normal.normal_z, normal.curvature);
+        ++it;
+    }    
 }
 
 pcl::PointCloud<pcl::Normal>::Ptr  PclNormals::estimateNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
@@ -29,7 +37,7 @@ pcl::PointCloud<pcl::Normal>::Ptr  PclNormals::estimateNormals(pcl::PointCloud<p
     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
     
     // Use all neighbors in a sphere of radius 3cm
-    ne.setRadiusSearch (10);
+    ne.setRadiusSearch (20);
     
     // Compute the features
     ne.compute (*cloud_normals);
