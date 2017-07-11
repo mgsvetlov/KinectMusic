@@ -28,7 +28,7 @@ private:
     void addDataToGestures(const std::vector<Track>& tracks);
     FrameData extractGestures();
 public:
-    static const double spaceCoeff;
+    //static const double spaceCoeff;
 
     
 private:

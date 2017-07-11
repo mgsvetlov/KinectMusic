@@ -11,7 +11,7 @@
 #include "../tracking/tracking.h"
 #include "../analyze.h"
 
-double GestureStop::speedThreshStart (8e3 * GestureFabrique::spaceCoeff),  GestureStop::speedThreshEnd(2e3 * GestureFabrique::spaceCoeff);
+double GestureStop::speedThreshStart (8e3 * 9./6400),  GestureStop::speedThreshEnd(2e3 * 9./6400);
 int GestureStop::endIterationsCount = 1;
 
 bool GestureStop::extract(){

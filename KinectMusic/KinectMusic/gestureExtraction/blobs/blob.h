@@ -15,10 +15,10 @@
 struct Cell {
     Cell(){}
     Cell(int ind, int val): ind(ind), val(val){}
-    Cell(int ind, int val, int dist): ind(ind), val(val), dist(dist){}
+    Cell(int ind, int val, float dist): ind(ind), val(val), dist(dist){}
     int ind;
     int val = NO_DATA_VALUE;
-    int dist = 0;
+    float dist = 0;
     cv::Vec4f normal = cv::Vec4f(0.f, 0.f, 0.f);
 };
 
@@ -33,7 +33,7 @@ public:
     const std::list<Cell>& getLCellsConst() const {return lCells;}
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
     static bool blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh);
-    
+    float distance (int ind1, int val1, int ind2, int val2);
     
     const Cell& getCentralCell() const {return centralCell;}
     void setCentralCell(const Cell cc) {centralCell = cc;}
@@ -48,9 +48,9 @@ private:
     void mergeBlob(const Blob& blob);
     bool computeCentralCell();
     int computeAverageValue();
-    bool computeCentralNearCell(double med);
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
     void createCellsTree(cv::Mat originalMat);
+    void findRoot();
     void computeAngle();
     
 private:
@@ -58,6 +58,7 @@ private:
     const Cell* p_minValCell = nullptr;
     std::list<Cell> lCells;
     Cell centralCell;
+    const Cell* rootCell = nullptr;
     int angle;
     cv::Size matSize;
     

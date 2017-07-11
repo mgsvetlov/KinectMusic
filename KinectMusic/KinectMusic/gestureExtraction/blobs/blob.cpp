@@ -141,42 +141,6 @@ int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
     return body_depth;
 }
 
-bool Blob::computeCentralNearCell(double med){
-    if(lCells.empty())
-        return false;
-    
-    std::vector<Cell> vCells(lCells.begin(), lCells.end());
-    std::sort(vCells.begin(), vCells.end(),
-         [](const Cell& c1, const Cell& c2) -> bool
-         {
-             return c1.val < c2.val;
-         }
-         );
-    
-    int indLim = vCells.size() * med;
-    
-    double  ySum(0), xSum(0), valSum(0);
-    int count(0);
-    for( auto& cell: vCells){
-        int ind = cell.ind;
-        int x = ind % this->matSize.width;
-        int y = (ind-x) /this->matSize.width;
-        xSum += x;
-        ySum += y;
-        valSum += cell.val;
-        count ++;
-        if(count == indLim)
-            break;
-    }
-    int x = xSum / indLim;
-    int y = ySum /indLim;
-    int val = valSum / indLim;
-    int ind = this->matSize.width * y + x;
-    this->centralCell.ind = ind;
-    this->centralCell.val = val;
-    return true;
-}
-
 bool Blob::computeCentralCell(){
     if(lCells.empty())
         return false;
@@ -294,48 +258,6 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
     return true;
 }
 
-void Blob::createCellsTree(cv::Mat originalMat){
-    cv::Mat matMask = cv::Mat_<unsigned char>::zeros(originalMat.size());
-    int w =  originalMat.cols;
-    int h = originalMat.rows;
-    uint16_t* p_originalMat = (uint16_t*)(originalMat.data);
-     unsigned char* p_matMask  = (unsigned char*)(matMask.data);
-    centralCell.dist = 0;
-    lCells.push_back(centralCell);
-    *(p_matMask + centralCell.ind) = 255;
-    auto it = lCells.begin();
-    while(it != lCells.end()){
-        const int dist = it->dist;
-        if(dist <= 50 ){
-            const int ind = it->ind;
-            const uint16_t val =  it->val;
-            
-            int x_ = ind % w;
-            int y_ = (ind - x_)/ w;
-            
-            for(int yNeighb = y_ - 1; yNeighb <= y_ + 1; yNeighb++){
-                if(yNeighb < 0 || yNeighb >= h)
-                    continue;
-                for(int xNeighb = x_-1; xNeighb <= x_ + 1; xNeighb++){
-                    if(xNeighb < 0 || xNeighb >= w)
-                        continue;
-                    int indNeighb = yNeighb * w + xNeighb;
-                    if(*(p_matMask + indNeighb)==255)
-                        continue;
-                    uint16_t valNeighb =  *(p_originalMat + indNeighb);
-                    if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0)
-                        continue;
-                    if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
-                        lCells.emplace_back(Cell(indNeighb, valNeighb, dist + 1));
-                        *(p_matMask + indNeighb) = 255;
-                    }
-                }
-            }
-        }
-        ++it;
-    }
-}
-
 bool Blob::filterLargeBlobs(cv::Mat originalMat){
     int ind = centralCell.ind;
     int x = ind % this->matSize.width;
@@ -344,7 +266,7 @@ bool Blob::filterLargeBlobs(cv::Mat originalMat){
     y <<= BLOBS_RESIZE_POW;
     
     static const int halfSize(originalMat.cols * 0.09375);
-
+    
     int minX(x - halfSize), minY(y - halfSize), maxX(x + halfSize), maxY(y + halfSize);
     if(minX < 0)
         minX = 0;
@@ -386,9 +308,74 @@ bool Blob::filterLargeBlobs(cv::Mat originalMat){
     return true;
 }
 
+float Blob::distance (int ind1, int val1, int ind2, int val2){
+    static constexpr float spaceCoeff(9./6400);
+    int w (this->matSize.width);
+    float x1 = (ind1 % w) * val1 * spaceCoeff;
+    float y1 = (ind1-x1)/w * val1 * spaceCoeff;
+    float x2 = (ind2 % w) * val2 * spaceCoeff;
+    float  y2 = (ind2-x2)/w * val2 * spaceCoeff;
+    float dx = x1 - x2;
+    float dy = y1 - y2;
+    int dz = val1 - val2;
+    return sqrt(dx*dx + dy*dy + dz*dz);
+}
+
+void Blob::createCellsTree(cv::Mat originalMat){
+    cv::Mat matMask = cv::Mat_<unsigned char>::zeros(originalMat.size());
+    int w =  originalMat.cols;
+    int h = originalMat.rows;
+    uint16_t* p_originalMat = (uint16_t*)(originalMat.data);
+     unsigned char* p_matMask  = (unsigned char*)(matMask.data);
+    centralCell.dist = 0.f;
+    lCells.push_back(centralCell);
+    *(p_matMask + centralCell.ind) = 255;
+    auto it = lCells.begin();
+    while(it != lCells.end()){
+        const int dist = it->dist;
+        if(dist <= 250 ){
+            const int ind = it->ind;
+            const uint16_t val =  it->val;
+            
+            int x_ = ind % w;
+            int y_ = (ind - x_)/ w;
+            
+            for(int yNeighb = y_ - 1; yNeighb <= y_ + 1; yNeighb++){
+                if(yNeighb < 0 || yNeighb >= h)
+                    continue;
+                for(int xNeighb = x_-1; xNeighb <= x_ + 1; xNeighb++){
+                    if(xNeighb < 0 || xNeighb >= w)
+                        continue;
+                    int indNeighb = yNeighb * w + xNeighb;
+                    if(*(p_matMask + indNeighb)==255)
+                        continue;
+                    uint16_t valNeighb =  *(p_originalMat + indNeighb);
+                    if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0)
+                        continue;
+                    if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
+                        lCells.emplace_back(Cell(indNeighb, valNeighb, dist + distance(it->ind, it->val,indNeighb, valNeighb)));
+                        *(p_matMask + indNeighb) = 255;
+                    }
+                }
+            }
+        }
+        ++it;
+    }
+}
+
+void Blob::findRoot(){
+    float maxDist(0.0f);
+    for(const auto& cell : lCells){
+        if(cell.dist > maxDist){
+            maxDist = cell.dist;
+            rootCell = &cell;
+        }
+    }
+}
+
 void Blob::analyzeHand(cv::Mat originalMat){
     createCellsTree(originalMat);
-    
+    findRoot();
     //Blob blobFiltered;
     //PclDownsample::downsample(*this, blobFiltered);
     //*this = std::move(blobFiltered);

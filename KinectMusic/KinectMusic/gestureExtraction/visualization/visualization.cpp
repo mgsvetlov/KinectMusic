@@ -140,7 +140,7 @@ void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar
                 colorPoint = cv::Scalar(coeff,coeff,1.f - coeff);
             }
         }*/
-        float coeff = cell.dist/60.0;
+        float coeff = cell.dist/250.0;
         cv::Scalar colorPoint = cv::Scalar(coeff,1.f - coeff, 0.0f);
         for(int i = 0; i < 3; i++)
             colorPoint[i] *= col;
@@ -148,6 +148,12 @@ void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar
         int x = ind % matImg.cols;
         int y = (ind-x) /matImg.cols;
         cv::circle(matImg, cv::Point(x, y), 4,  colorPoint, -1);
+    }
+    if(blob.rootCell != nullptr){
+        int ind = blob.rootCell->ind;
+        int x = ind % matImg.cols;
+        int y = (ind-x) /matImg.cols;
+        cv::circle(matImg, cv::Point(x, y), 4,  cv::Scalar(0,0,255), -1);
     }
 }
 

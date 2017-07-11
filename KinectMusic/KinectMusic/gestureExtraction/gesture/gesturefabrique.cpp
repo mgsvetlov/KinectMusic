@@ -16,7 +16,7 @@
 GestureFabrique* GestureFabrique::gestureFabriquePtr (nullptr)
 ;
 
-const double GestureFabrique::spaceCoeff(9./6400);
+//const double GestureFabrique::spaceCoeff(9./6400);
 
 
 FrameData GestureFabrique::extractGestures(const std::vector<Track>& tracks){
