@@ -90,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/analyze.cpp"
-            timestampString = "521398339.796257"
+            timestampString = "521489312.307293"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "133"
-            endingLineNumber = "133"
+            startingLineNumber = "143"
+            endingLineNumber = "143"
             landmarkName = "analyze_threadfunc(void *arg)"
             landmarkType = "7">
          </BreakpointContent>
@@ -232,11 +232,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/visualization/visualization.cpp"
-            timestampString = "521398339.796257"
+            timestampString = "521489312.307293"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "101"
-            endingLineNumber = "101"
+            startingLineNumber = "113"
+            endingLineNumber = "113"
             landmarkName = "Visualization::gesture2img(const std::shared_ptr&lt;Gesture&gt;&amp; gesture, cv::Mat&amp; matImg, size_t length)"
             landmarkType = "5">
          </BreakpointContent>
@@ -264,11 +264,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/analyze.cpp"
-            timestampString = "521398339.796257"
+            timestampString = "521489312.307293"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "165"
-            endingLineNumber = "165"
+            startingLineNumber = "176"
+            endingLineNumber = "176"
             landmarkName = "operator &lt;&lt; (std::ostream&amp; os, const FrameData&amp; frameData)"
             landmarkType = "7">
          </BreakpointContent>

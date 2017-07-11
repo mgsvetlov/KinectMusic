@@ -138,7 +138,9 @@ void *analyze_threadfunc(void *arg) {
         
         //analyze hand
         for(auto p_Blob : vp_Blobs){
-            p_Blob->analyzeHand(mat16_filt);
+            if(p_Blob->analyzeHand(mat16_filt)){
+                
+            }
         }
         
         //create and analyze hands tracked stream data
@@ -159,7 +161,7 @@ void *analyze_threadfunc(void *arg) {
             Visualization::mat2img(mat16, img);
             //Visualization::blobs2img( lBlobsClust, img, false);
             Visualization::blobs2img( vp_Blobs, img, false);
-            Visualization::gestures2img(GestureFabrique::getGestures(), img);
+            //Visualization::gestures2img(GestureFabrique::getGestures(), img);
             
             pthread_mutex_lock(&visualisation_mutex);
             Visualization::setMatImage(img);

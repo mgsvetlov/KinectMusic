@@ -9,7 +9,7 @@
 #ifndef blob_h
 #define blob_h
 
-#include <stdio.h>
+#include <limits>
 #include "../types.h"
 
 struct Cell {
@@ -41,7 +41,7 @@ public:
     void setMatSize(cv::Size size) {this->matSize = size;}
     
     bool filterLargeBlobs(cv::Mat originalMat);
-    void analyzeHand(cv::Mat originalMat);
+    bool analyzeHand(cv::Mat originalMat);
     
 private:
     void addCell(int ind, int val);
@@ -49,8 +49,8 @@ private:
     bool computeCentralCell();
     int computeAverageValue();
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
-    void createCellsTree(cv::Mat originalMat);
-    void findRoot();
+    void createCellsTree(cv::Mat mat, int ind, int val, float distThresh = std::numeric_limits<float>::max());
+    cv::Mat blob2mat();
     void computeAngle();
     
 private:
