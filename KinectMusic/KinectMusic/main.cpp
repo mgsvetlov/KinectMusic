@@ -113,13 +113,8 @@ int main(int argc, char **argv)
     
     while(true) {
         if(config->getIsVisualisation()){
-            if(Visualization::getIsNeedRedraw()){
-                if(!Visualization::showImage())
-                    break;
-            }
-            else {
-                usleep(10);
-            }
+            if(!Visualization::showImage())
+                break;
         }
         else {
             std::string s;

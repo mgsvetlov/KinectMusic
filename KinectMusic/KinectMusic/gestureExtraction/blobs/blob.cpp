@@ -427,18 +427,33 @@ bool Blob::analyzeHand(cv::Mat originalMat){
     lCells.clear();
     createCellsTree(mat, rootInd, rootVal);
     rootCell = &lCells.front();
+    std::vector<Cell> vCells(lCells.begin(), lCells.end());
+    std::sort(vCells.begin(), vCells.end(), [](const Cell& cell1, const Cell& cell2) {return cell1.dist < cell2.dist;});
+    lCells = std::list<Cell>(vCells.begin(), vCells.end());
+    static const int subBlobSize = 360;//matSize.width * 9 / 16;
+    int count(0);
+    for(auto& cell : lCells){
+        if(count == 0){
+            subBlobs.push_back(std::vector<Cell*>());
+        }
+        subBlobs.back().push_back(&cell);
+        ++count;
+        if(count == subBlobSize)
+            count = 0;
+    }
+    
     //create distance matrix and find local maximums
-    cv::Mat matDist = cv::Mat_<uint16_t>::zeros(this->matSize);
+    /*cv::Mat matDist = cv::Mat_<uint16_t>::zeros(this->matSize);
     for(auto& cell : lCells) {
         int ind = cell.ind;
         uint16_t* p_mat = (uint16_t*)(matDist.data) + ind;
         *p_mat = static_cast<uint16_t>(cell.dist * 100.);
     }
-    findLocalMaximums(matDist);
-    return true;
-    //Blob blobFiltered;
-    //PclDownsample::downsample(*this, blobFiltered);
-    //*this = std::move(blobFiltered);
+    findLocalMaximums(matDist);*/
+    
+    /*Blob blobFiltered;
+    PclDownsample::downsample(*this, blobFiltered);
+    *this = std::move(blobFiltered);*/
     
     /*std::list<Blob> lBlobsSegm = PclSegmentation::segmentation(*this);
      if(lBlobsSegm.empty())
@@ -462,6 +477,7 @@ bool Blob::analyzeHand(cv::Mat originalMat){
     
     //PclNormals::estimateNormals(*this);
     //computeAngle();
+    return true;
 }
 
 void Blob::computeAngle(){

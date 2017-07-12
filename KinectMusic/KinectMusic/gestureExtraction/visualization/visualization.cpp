@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 01/10/16.
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
-
+#include <unistd.h>
 #include <stdio.h>
 #include "visualization.h"
 #include "../blobs/blob.h"
@@ -28,6 +28,11 @@ Visualization::Visualization() {
 
 bool Visualization::showImage() {
     pthread_mutex_lock(&visualisation_mutex);
+    if(!getIsNeedRedraw()){
+        pthread_mutex_unlock(&visualisation_mutex);
+        usleep(10);
+        return true;
+    }
     isNeedRedraw = false;
     if(p_vis == nullptr){
         Visualization();
@@ -129,42 +134,57 @@ void Visualization::gestures2img(const std::vector<std::shared_ptr<Gesture>>& ge
 
 
 void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar& color, bool colorFromNormal){
-    std::stringstream ss;
-    for(auto& cell : blob.lCells){
-        if(cell.isLocalMaximum)
-            continue;
-        unsigned int col = 255 - cell.val * 255. / MAX_KINECT_VALUE;
-        /*cv::Scalar colorPoint = color;
-        if(colorFromNormal){
+    const std::vector<std::vector<Cell*>>& subBlobs  = blob.getSubBlobs();
+    int minVal = blob.getCentralCell().val;
+    for(int j = 0; j < subBlobs.size(); ++j){
+        int c = j % 3;
+        cv::Scalar colorPoint = c == 0 ? cv::Scalar(1.0f,0.0f, 0.0f) : c == 1 ? cv::Scalar(0.0f,1.0f, 0.0f) : cv::Scalar(0.0f,0.0f, 1.0f);
+        for(const auto& p_cell : subBlobs[j]){
+            const Cell& cell = *p_cell;
+            int col = 255 - (cell.val - minVal);
+            if(col < 0)
+                col = 0;
+            cv::Scalar colorPoint1 = colorPoint;
+            for(int i = 0; i < 3; i++)
+                colorPoint1[i] *= col;
+            int ind = cell.ind;
+            int x = ind % matImg.cols;
+            int y = (ind-x) /matImg.cols;
+            cv::circle(matImg, cv::Point(x, y), 1, colorPoint1, -1);
+        }
+    }
+    //for(auto& cell : blob.lCells){
+        //if(cell.isLocalMaximum)
+            //continue;
+        //unsigned int col = 255 - cell.val * 255. / MAX_KINECT_VALUE;
+        //cv::Scalar colorPoint = color;
+        /*if(cell.normal[3] != 0.f){
             const auto& normal = cell.normal;
-            if(!std::isnan(normal[1])){
+            if(!std::isnan(normal[2])){
                 float coeff = -(normal[2]);
                 colorPoint = cv::Scalar(coeff,coeff,1.f - coeff);
             }
+        }
+        else {
+            float coeff = cell.dist/250.0;
+            colorPoint = cv::Scalar(coeff,1.f - coeff, 0.0f);
         }*/
+        /*int dist = static_cast<int>(float(cell.dist));
+        int c = static_cast<int>(float(dist / 30.)) % 3;
+        colorPoint = c == 0 ? cv::Scalar(1.0f,0.0f, 0.0f) : c == 1 ? cv::Scalar(0.0f,1.0f, 0.0f) : cv::Scalar(0.0f,0.0f, 1.0f);
         
-        float coeff = cell.dist/250.0;
-        cv::Scalar colorPoint = cv::Scalar(coeff,1.f - coeff, 0.0f);
-   
+      
         for(int i = 0; i < 3; i++)
             colorPoint[i] *= col;
         int ind = cell.ind;
         int x = ind % matImg.cols;
         int y = (ind-x) /matImg.cols;
-        cv::circle(matImg, cv::Point(x, y), 1,  colorPoint, -1);
-    }
-    for(auto& cell : blob.lCells){
+        cv::circle(matImg, cv::Point(x, y), 1,  colorPoint, -1);*/
+    //}
+    /*for(auto& cell : blob.lCells){
         if(!cell.isLocalMaximum)
             continue;
         unsigned int col = 255 - cell.val * 255. / MAX_KINECT_VALUE;
-        /*cv::Scalar colorPoint = color;
-         if(colorFromNormal){
-         const auto& normal = cell.normal;
-         if(!std::isnan(normal[1])){
-         float coeff = -(normal[2]);
-         colorPoint = cv::Scalar(coeff,coeff,1.f - coeff);
-         }
-         }*/
         cv::Scalar colorPoint = cv::Scalar(0.f,0.f, 1.0f);
         for(int i = 0; i < 3; i++)
             colorPoint[i] *= col;
@@ -172,7 +192,7 @@ void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar
         int x = ind % matImg.cols;
         int y = (ind-x) /matImg.cols;
         cv::circle(matImg, cv::Point(x, y), 1,  colorPoint, -1);
-    }
+    }*/
     /*if(blob.rootCell != nullptr){
         int ind = blob.rootCell->ind;
         int x = ind % matImg.cols;

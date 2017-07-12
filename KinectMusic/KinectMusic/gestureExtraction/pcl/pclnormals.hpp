@@ -18,7 +18,7 @@ public:
     static void estimateNormals(Blob& blob);
     
 private:
-    static pcl::PointCloud<pcl::Normal>::Ptr  estimateNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+    static pcl::PointCloud<pcl::Normal>::Ptr  estimateNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, const std::vector<int>& indices);
 };
 
 #endif /* pclnormals_hpp */
