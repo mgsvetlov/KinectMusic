@@ -19,6 +19,7 @@ struct Cell {
     int ind;
     int val = NO_DATA_VALUE;
     float dist = 0;
+    bool isLocalMaximum = false;
     cv::Vec4f normal = cv::Vec4f(0.f, 0.f, 0.f);
 };
 
@@ -51,6 +52,7 @@ private:
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
     void createCellsTree(cv::Mat mat, int ind, int val, float distThresh = std::numeric_limits<float>::max());
     cv::Mat blob2mat();
+    void findLocalMaximums(cv::Mat mat);
     void computeAngle();
     
 private:

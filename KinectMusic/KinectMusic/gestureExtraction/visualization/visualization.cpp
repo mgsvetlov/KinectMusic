@@ -131,6 +131,8 @@ void Visualization::gestures2img(const std::vector<std::shared_ptr<Gesture>>& ge
 void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar& color, bool colorFromNormal){
     std::stringstream ss;
     for(auto& cell : blob.lCells){
+        if(cell.isLocalMaximum)
+            continue;
         unsigned int col = 255 - cell.val * 255. / MAX_KINECT_VALUE;
         /*cv::Scalar colorPoint = color;
         if(colorFromNormal){
@@ -140,21 +142,43 @@ void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar
                 colorPoint = cv::Scalar(coeff,coeff,1.f - coeff);
             }
         }*/
+        
         float coeff = cell.dist/250.0;
         cv::Scalar colorPoint = cv::Scalar(coeff,1.f - coeff, 0.0f);
+   
         for(int i = 0; i < 3; i++)
             colorPoint[i] *= col;
         int ind = cell.ind;
         int x = ind % matImg.cols;
         int y = (ind-x) /matImg.cols;
-        cv::circle(matImg, cv::Point(x, y), 4,  colorPoint, -1);
+        cv::circle(matImg, cv::Point(x, y), 1,  colorPoint, -1);
     }
-    if(blob.rootCell != nullptr){
+    for(auto& cell : blob.lCells){
+        if(!cell.isLocalMaximum)
+            continue;
+        unsigned int col = 255 - cell.val * 255. / MAX_KINECT_VALUE;
+        /*cv::Scalar colorPoint = color;
+         if(colorFromNormal){
+         const auto& normal = cell.normal;
+         if(!std::isnan(normal[1])){
+         float coeff = -(normal[2]);
+         colorPoint = cv::Scalar(coeff,coeff,1.f - coeff);
+         }
+         }*/
+        cv::Scalar colorPoint = cv::Scalar(0.f,0.f, 1.0f);
+        for(int i = 0; i < 3; i++)
+            colorPoint[i] *= col;
+        int ind = cell.ind;
+        int x = ind % matImg.cols;
+        int y = (ind-x) /matImg.cols;
+        cv::circle(matImg, cv::Point(x, y), 1,  colorPoint, -1);
+    }
+    /*if(blob.rootCell != nullptr){
         int ind = blob.rootCell->ind;
         int x = ind % matImg.cols;
         int y = (ind-x) /matImg.cols;
         cv::circle(matImg, cv::Point(x, y), 4,  cv::Scalar(0,0,255), -1);
-    }
+    }*/
 }
 
 void Visualization::keyPoint2img(const cv::Point3i& keyPoint, cv::Mat& matImg, const cv::Scalar& color, int size) {
