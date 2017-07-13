@@ -12,6 +12,8 @@
 #include <limits>
 #include "../types.h"
 
+class SubBlob;
+
 struct Cell {
     Cell(){}
     Cell(int ind, int val): ind(ind), val(val){}
@@ -19,8 +21,23 @@ struct Cell {
     int ind;
     int val = NO_DATA_VALUE;
     float dist = 0;
-    bool isLocalMaximum = false;
+    Cell* parent = nullptr;
+    Cell* child = nullptr;
+    SubBlob* subBlob = nullptr;
     cv::Vec4f normal = cv::Vec4f(0.f, 0.f, 0.f);
+};
+
+struct Border {
+    std::list<Cell*> borderCells = std::list<Cell*>();
+    Border* parent = nullptr;
+    std::list<Border*> childs = std::list<Border*>();
+};
+
+class SubBlob {
+private:
+    std::vector<Cell*> vpCells;
+    friend class Blob;
+    friend class Visualization;
 };
 
 class Blob {
@@ -40,7 +57,7 @@ public:
     void setCentralCell(const Cell cc) {centralCell = cc;}
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
-    const std::vector<std::vector<Cell*>>& getSubBlobs() const {return subBlobs;}
+    const std::vector<SubBlob>& getSubBlobs() const {return subBlobs;}
     
     bool filterLargeBlobs(cv::Mat originalMat);
     bool analyzeHand(cv::Mat originalMat);
@@ -51,16 +68,15 @@ private:
     bool computeCentralCell();
     int computeAverageValue();
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
-    void createCellsTree(cv::Mat mat, int ind, int val, float distThresh = std::numeric_limits<float>::max());
+    void createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, float distThresh = std::numeric_limits<float>::max());
     cv::Mat blob2mat();
-    void findLocalMaximums(cv::Mat mat);
     void computeAngle();
     
 private:
     const Cell* p_maxValCell = nullptr;
     const Cell* p_minValCell = nullptr;
     std::list<Cell> lCells;
-    std::vector<std::vector<Cell*>> subBlobs;
+    std::vector<SubBlob> subBlobs;
     Cell centralCell;
     const Cell* rootCell = nullptr;
     int angle;

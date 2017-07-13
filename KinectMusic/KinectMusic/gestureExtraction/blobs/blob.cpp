@@ -20,6 +20,7 @@
 #include "../pcl/pclnormals.hpp"
 #include "../pcl/pclsegmentation.hpp"
 
+
 Blob::Blob() :
 lCells(std::list<Cell>()),
 p_maxValCell(nullptr),
@@ -321,7 +322,7 @@ float Blob::distance (int ind1, int val1, int ind2, int val2){
     return sqrt(dx*dx + dy*dy + dz*dz);
 }
 
-void Blob::createCellsTree(cv::Mat mat, int ind, int val, float distThresh){
+void Blob::createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, float distThresh){
     cv::Mat matMask = cv::Mat_<unsigned char>::zeros(mat.size());
     int w =  mat.cols;
     int h = mat.rows;
@@ -344,14 +345,19 @@ void Blob::createCellsTree(cv::Mat mat, int ind, int val, float distThresh){
                     if(xNeighb < 0 || xNeighb >= w)
                         continue;
                     int indNeighb = yNeighb * w + xNeighb;
-                    if(*(p_matMask + indNeighb)==255)
+                    if(*(p_matMask + indNeighb) != 0) {
                         continue;
+                    }
                     uint16_t valNeighb =  *(p_mat + indNeighb);
                     if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0)
                         continue;
                     if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
                         lCells.emplace_back(Cell(indNeighb, valNeighb, dist + distance(it->ind, it->val,indNeighb, valNeighb)));
                         *(p_matMask + indNeighb) = 255;
+                        if(connectivity){
+                            it->child = &lCells.back();
+                            lCells.back().parent = &(*it);
+                        }
                     }
                 }
             }
@@ -360,48 +366,10 @@ void Blob::createCellsTree(cv::Mat mat, int ind, int val, float distThresh){
     }
 }
 
-void Blob::findLocalMaximums(cv::Mat mat){
-    cv::Mat matResults = cv::Mat_<unsigned char>::zeros(mat.size());
-    unsigned char* p_matResults  = (unsigned char*)(matResults.data);
-    int w =  mat.cols;
-    int h = mat.rows;
-    const uint16_t* const p_mat = (uint16_t*)(mat.data);
-    int ind(0);
-    for( ; ind != mat.total(); ++ind){
-        int val = *(p_mat + ind);
-        if(val != 0){
-            bool isLocalMaximum(true);
-            int x_ = ind % w;
-            int y_ = (ind - x_)/ w;
-            for(int yNeighb = y_ - 1; yNeighb <= y_ + 1; yNeighb++){
-                if(!isLocalMaximum)
-                    break;
-                if(yNeighb < 0 || yNeighb >= h)
-                    continue;
-                for(int xNeighb = x_-1; xNeighb <= x_ + 1; xNeighb++){
-                    if(xNeighb < 0 || xNeighb >= w)
-                        continue;
-                    int indNeighb = yNeighb * w + xNeighb;
-                    if(*(p_mat + indNeighb) > val){
-                        isLocalMaximum = false;
-                        break;
-                    }
-                }
-            }
-            if(isLocalMaximum)
-                *(p_matResults + ind) = 255;
-        }
-    }
-    for(auto& cell : lCells){
-        if(*(p_matResults + cell.ind) == 255)
-            cell.isLocalMaximum = true;
-    }
-}
-
 bool Blob::analyzeHand(cv::Mat originalMat){
     //create tree from front
     static const float distThresh(350.0f);
-    createCellsTree(originalMat, centralCell.ind, centralCell.val, distThresh);
+    createCellsTree(originalMat, centralCell.ind, centralCell.val, false, distThresh);
     //find root
     /*float maxDist(0.0f);
     for(const auto& cell : lCells){
@@ -425,18 +393,19 @@ bool Blob::analyzeHand(cv::Mat originalMat){
     int rootVal = rootCell->val;
     rootCell = nullptr;
     lCells.clear();
-    createCellsTree(mat, rootInd, rootVal);
+    createCellsTree(mat, rootInd, rootVal, true);
     rootCell = &lCells.front();
-    std::vector<Cell> vCells(lCells.begin(), lCells.end());
+    /*std::vector<Cell> vCells(lCells.begin(), lCells.end());
     std::sort(vCells.begin(), vCells.end(), [](const Cell& cell1, const Cell& cell2) {return cell1.dist < cell2.dist;});
-    lCells = std::list<Cell>(vCells.begin(), vCells.end());
-    static const int subBlobSize = 360;//matSize.width * 9 / 16;
+    lCells = std::list<Cell>(vCells.begin(), vCells.end());*/
+    static const int subBlobSize = matSize.width * 9 / 16;
     int count(0);
     for(auto& cell : lCells){
         if(count == 0){
-            subBlobs.push_back(std::vector<Cell*>());
+            subBlobs.push_back(SubBlob());
         }
-        subBlobs.back().push_back(&cell);
+        cell.subBlob = &subBlobs.back();
+        subBlobs.back().vpCells.push_back(&cell);
         ++count;
         if(count == subBlobSize)
             count = 0;
