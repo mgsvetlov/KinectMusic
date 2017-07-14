@@ -29,8 +29,9 @@ struct Cell {
 
 struct Border {
     std::list<Cell*> borderCells = std::list<Cell*>();
-    Border* parent = nullptr;
-    std::list<Border*> childs = std::list<Border*>();
+    int level = -1;
+    /*Border* parent = nullptr;
+    std::list<Border*> children = std::list<Border*>();*/
 };
 
 class SubBlob {
@@ -57,7 +58,6 @@ public:
     void setCentralCell(const Cell cc) {centralCell = cc;}
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
-    const std::vector<SubBlob>& getSubBlobs() const {return subBlobs;}
     
     bool filterLargeBlobs(cv::Mat originalMat);
     bool analyzeHand(cv::Mat originalMat);
@@ -69,6 +69,8 @@ private:
     int computeAverageValue();
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
     void createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, float distThresh = std::numeric_limits<float>::max());
+    void createSubBlobs();
+    void createBorders();
     cv::Mat blob2mat();
     void computeAngle();
     
@@ -76,9 +78,10 @@ private:
     const Cell* p_maxValCell = nullptr;
     const Cell* p_minValCell = nullptr;
     std::list<Cell> lCells;
-    std::vector<SubBlob> subBlobs;
+    std::list<SubBlob> subBlobs;
+    std::list<Border> borders;
     Cell centralCell;
-    const Cell* rootCell = nullptr;
+    Cell* rootCell = nullptr;
     int angle;
     cv::Size matSize;
     

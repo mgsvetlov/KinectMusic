@@ -134,8 +134,30 @@ void Visualization::gestures2img(const std::vector<std::shared_ptr<Gesture>>& ge
 
 
 void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar& color, bool colorFromNormal){
-    const std::vector<SubBlob>& subBlobs  = blob.getSubBlobs();
     int minVal = blob.getCentralCell().val;
+    for(auto& cell : blob.lCells){
+        int ind = cell.ind;
+        int x = ind % matImg.cols;
+        int y = (ind-x) /matImg.cols;
+        int col = 255 - (cell.val - minVal);
+        if(col < 0)
+            col = 0;
+        cv::circle(matImg, cv::Point(x, y), 1, cv::Scalar (0.0f, col, col), -1);
+    }
+    int j(0);
+    for(auto& border : blob.borders){
+        int c = j % 3;
+        cv::Scalar colorPoint = c == 0 ? cv::Scalar(255,0.0f, 0.0f) : c == 1 ? cv::Scalar(0.0f,255, 0.0f) : cv::Scalar(0.0f,0.0f, 255);
+        ++j;
+        for(auto& cell : border.borderCells){
+            int ind = cell->ind;
+            int x = ind % matImg.cols;
+            int y = (ind-x) /matImg.cols;
+            cv::circle(matImg, cv::Point(x, y), 1, colorPoint, -1);
+        }
+
+    }
+    /*const auto& subBlobs  = blob.getSubBlobs();
     for(int j = 0; j < subBlobs.size(); ++j){
         int c = j % 3;
         cv::Scalar colorPoint = c == 0 ? cv::Scalar(1.0f,0.0f, 0.0f) : c == 1 ? cv::Scalar(0.0f,1.0f, 0.0f) : cv::Scalar(0.0f,0.0f, 1.0f);
@@ -154,7 +176,7 @@ void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar
             int y = (ind-x) /matImg.cols;
             cv::circle(matImg, cv::Point(x, y), 1, colorPoint1, -1);
         }
-    }
+    }*/
     //for(auto& cell : blob.lCells){
         //unsigned int col = 255 - cell.val * 255. / MAX_KINECT_VALUE;
         //cv::Scalar colorPoint = color;
