@@ -121,7 +121,6 @@
 		728233C01F114CC200B6E4D4 /* pclutility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233BE1F114CC200B6E4D4 /* pclutility.cpp */; };
 		728233C31F11525700B6E4D4 /* pclsegmentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233C11F11525700B6E4D4 /* pclsegmentation.cpp */; };
 		728233C61F1153B100B6E4D4 /* pclnormals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233C41F1153B100B6E4D4 /* pclnormals.cpp */; };
-		728233C91F19F40700B6E4D4 /* cells.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233C71F19F40700B6E4D4 /* cells.cpp */; };
 		7298B7271D8D85840093134C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7298B7261D8D85840093134C /* main.cpp */; };
 		72AFE5E41E7B583000143CA7 /* libusb-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 72AFE5E31E7B583000143CA7 /* libusb-1.0.a */; };
 		72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72B332AD1BAF0733003DA9DA /* kinect.cpp */; };
@@ -303,7 +302,6 @@
 		728233C21F11525700B6E4D4 /* pclsegmentation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclsegmentation.hpp; path = gestureExtraction/pcl/pclsegmentation.hpp; sourceTree = "<group>"; };
 		728233C41F1153B100B6E4D4 /* pclnormals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclnormals.cpp; path = gestureExtraction/pcl/pclnormals.cpp; sourceTree = "<group>"; };
 		728233C51F1153B100B6E4D4 /* pclnormals.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclnormals.hpp; path = gestureExtraction/pcl/pclnormals.hpp; sourceTree = "<group>"; };
-		728233C71F19F40700B6E4D4 /* cells.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cells.cpp; path = gestureExtraction/blobs/cells.cpp; sourceTree = "<group>"; };
 		728233C81F19F40700B6E4D4 /* cells.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = cells.hpp; path = gestureExtraction/blobs/cells.hpp; sourceTree = "<group>"; };
 		7298B7261D8D85840093134C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		72AFE5E31E7B583000143CA7 /* libusb-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libusb-1.0.a"; path = "lib/libusb-1.0.a"; sourceTree = "<group>"; };
@@ -637,7 +635,6 @@
 			children = (
 				72799BA81DC61E6D00BAC3DC /* blob.cpp */,
 				72799BA91DC61E6D00BAC3DC /* blob.h */,
-				728233C71F19F40700B6E4D4 /* cells.cpp */,
 				728233C81F19F40700B6E4D4 /* cells.hpp */,
 			);
 			name = blolbs;
@@ -773,7 +770,6 @@
 				720164BE1A6C058B00BC721A /* loader.c in Sources */,
 				725B1BA01ED768A60028AE34 /* gestureStop.cpp in Sources */,
 				720164BD1A6C058B00BC721A /* flags.c in Sources */,
-				728233C91F19F40700B6E4D4 /* cells.cpp in Sources */,
 				728233C31F11525700B6E4D4 /* pclsegmentation.cpp in Sources */,
 				72799BA71DC61E5800BAC3DC /* analyze.cpp in Sources */,
 				728233C01F114CC200B6E4D4 /* pclutility.cpp in Sources */,

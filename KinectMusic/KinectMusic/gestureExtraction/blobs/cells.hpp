@@ -30,6 +30,7 @@ struct Cell {
 template<typename T> class Cells {
 public:
     void AddCell(const T& cell);
+    void AddCell(int ind, int val, int dist = 0);
     void Clear();
     std::list<T>& All();
     const std::list<T>& AllConst() const;
@@ -42,6 +43,8 @@ private:
     void CheckBackMinMax();
     int Value(const T&, std::false_type) const;
     int Value(const T&, std::true_type) const;
+    void AddCell(int ind, int val, int dist, std::false_type);
+    void AddCell(int ind, int val, int dist, std::true_type);
 private:
     std::list<T> cells;
     T* p_maxValCell = nullptr;
@@ -52,6 +55,19 @@ private:
 template<typename T> void Cells<T>::AddCell(const T& cell){
     cells.push_back(cell);
     CheckBackMinMax();
+}
+
+template<typename T> void Cells<T>::AddCell(int ind, int val, int dist){
+    AddCell(ind, val, dist, std::is_pointer<T>());
+}
+
+template<typename T> void Cells<T>::AddCell(int ind, int val, int dist, std::false_type){
+    cells.emplace_back(Cell(ind, val, dist));
+    CheckBackMinMax();
+}
+
+template<typename T> void Cells<T>::AddCell(int ind, int val, int dist, std::true_type){
+    
 }
 
 template<typename T> void Cells<T>::Clear(){

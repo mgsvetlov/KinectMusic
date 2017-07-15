@@ -48,10 +48,7 @@ public:
     bool analyzeHand(cv::Mat originalMat);
     
 private:
-    void addCell(int ind, int val);
-    //void mergeBlob(const Blob& blob);
     bool computeCentralCell();
-    //int computeAverageValue();
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
     void createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, float distThresh = std::numeric_limits<float>::max());
     void createSubBlobs();
@@ -60,8 +57,6 @@ private:
     void computeAngle();
     
 private:
-    //const Cell* p_maxValCell = nullptr;
-    //const Cell* p_minValCell = nullptr;
     Cells<Cell> cells;
     std::list<SubBlob> subBlobs;
     std::list<Border> borders;

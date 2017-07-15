@@ -23,31 +23,24 @@
 
 Blob::Blob() :
 cells(Cells<Cell>()),
-//p_maxValCell(nullptr),
-//p_minValCell(nullptr),
 centralCell(NO_DATA_VALUE, NO_DATA_VALUE)
 {}
 
 Blob::Blob(cv::Mat mat16, int x, int y) :
 cells(Cells<Cell>()),
-//p_maxValCell(nullptr),
-//p_minValCell(nullptr),
 centralCell(NO_DATA_VALUE, NO_DATA_VALUE),
 matSize(mat16.size())
 {
     int w = mat16.cols;
     int h = mat16.rows;
     uint16_t* p_mat16 = (uint16_t*)(mat16.data);
-    std::queue<int> q;
     int indStart = y*w + x;
-    addCell(indStart, *(p_mat16 + indStart));
-    //p_minValCell = p_maxValCell = &cells.front();
-    q.push(indStart);
-    while(!q.empty()){
-        const int ind = q.front();
-        uint16_t val =  *(p_mat16 + ind);
-        *(p_mat16 + ind) = MAX_KINECT_VALUE;
-        q.pop();
+    cells.AddCell(indStart, *(p_mat16 + indStart));
+    *(p_mat16 + indStart) = MAX_KINECT_VALUE;
+    auto it = cells.All().begin();
+    while(it != cells.All().end()){
+        const int ind = it->ind;
+        uint16_t val =  it->val;
         int x_ = ind % w;
         int y_ = (ind - x_)/ w;
         
@@ -55,26 +48,20 @@ matSize(mat16.size())
             if(yNeighb < 0 || yNeighb >= h)
                 continue;
             for(int xNeighb = x_-1; xNeighb <= x_ + 1; xNeighb++){
-                if(xNeighb < 0 || xNeighb >= w)
+                if((yNeighb == y_ && xNeighb == x_) || xNeighb < 0 || xNeighb >= w)
                     continue;
                 int indNeighb = yNeighb * w + xNeighb;
                 uint16_t valNeighb =  *(p_mat16 + indNeighb);
                 if(valNeighb >= MAX_KINECT_VALUE || valNeighb == 0)
                     continue;
                 if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
-                    addCell(indNeighb, *(p_mat16 + indNeighb));
-                    q.push(indNeighb);
+                    cells.AddCell(indNeighb, valNeighb);
+                    *(p_mat16 + indNeighb) = MAX_KINECT_VALUE;
                 }
             }
         }
+        ++it;
     }
-}
-
-void Blob::addCell(int ind, int val){
-    cells.AddCell(Cell(ind, val));
-    /*cells.emplace_back(Cell(ind, val));
-    if(!p_maxValCell || p_maxValCell->val < val)
-        p_maxValCell = &cells.back();*/
 }
 
 int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
@@ -129,7 +116,7 @@ int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
         
     }
     
-    //compute bode_depth
+    //compute body_depth
     if(mode == 0 && !lBlobs.empty()){
         auto it = lBlobs.begin();
         Blob& largestBlob = *it++;
@@ -328,7 +315,7 @@ void Blob::createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, flo
                 if(yNeighb < 0 || yNeighb >= h)
                     continue;
                 for(int xNeighb = x_-1; xNeighb <= x_ + 1; xNeighb++){
-                    if(xNeighb < 0 || xNeighb >= w)
+                    if((yNeighb == y_ && xNeighb == x_) || xNeighb < 0 || xNeighb >= w)
                         continue;
                     int indNeighb = yNeighb * w + xNeighb;
                     if(*(p_matMask + indNeighb) != 0) {
@@ -338,7 +325,7 @@ void Blob::createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, flo
                     if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0)
                         continue;
                     if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
-                        cells.All().emplace_back(Cell(indNeighb, valNeighb, dist + distance(it->ind, it->val,indNeighb, valNeighb)));
+                        cells.AddCell(indNeighb, valNeighb, dist + distance(it->ind, it->val,indNeighb, valNeighb));
                         *(p_matMask + indNeighb) = 255;
                         if(connectivity){
                             it->child = &cells.All().back();
