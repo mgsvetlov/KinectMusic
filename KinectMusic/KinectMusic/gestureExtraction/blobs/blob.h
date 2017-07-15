@@ -10,22 +10,7 @@
 #define blob_h
 
 #include <limits>
-#include "../types.h"
-
-class SubBlob;
-
-struct Cell {
-    Cell(){}
-    Cell(int ind, int val): ind(ind), val(val){}
-    Cell(int ind, int val, float dist): ind(ind), val(val), dist(dist){}
-    int ind;
-    int val = NO_DATA_VALUE;
-    float dist = 0;
-    Cell* parent = nullptr;
-    Cell* child = nullptr;
-    SubBlob* subBlob = nullptr;
-    cv::Vec4f normal = cv::Vec4f(0.f, 0.f, 0.f);
-};
+#include "cells.hpp"
 
 struct Border {
     std::list<Cell*> borderCells = std::list<Cell*>();
@@ -48,8 +33,8 @@ private:
     Blob(cv::Mat mat16, int x, int y);
 public:
     static int findBlobs(cv::Mat mat16, std::list<Blob>& lvBlobs, int mode = 0);
-    std::list<Cell>& getLCells() {return lCells;}
-    const std::list<Cell>& getLCellsConst() const {return lCells;}
+    std::list<Cell>& getCells() {return cells.All();}
+    const std::list<Cell>& getCellsConst() const {return cells.AllConst();}
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
     static bool blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh);
     float distance (int ind1, int val1, int ind2, int val2);
@@ -64,9 +49,9 @@ public:
     
 private:
     void addCell(int ind, int val);
-    void mergeBlob(const Blob& blob);
+    //void mergeBlob(const Blob& blob);
     bool computeCentralCell();
-    int computeAverageValue();
+    //int computeAverageValue();
     bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
     void createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, float distThresh = std::numeric_limits<float>::max());
     void createSubBlobs();
@@ -75,13 +60,12 @@ private:
     void computeAngle();
     
 private:
-    const Cell* p_maxValCell = nullptr;
-    const Cell* p_minValCell = nullptr;
-    std::list<Cell> lCells;
+    //const Cell* p_maxValCell = nullptr;
+    //const Cell* p_minValCell = nullptr;
+    Cells<Cell> cells;
     std::list<SubBlob> subBlobs;
     std::list<Border> borders;
     Cell centralCell;
-    Cell* rootCell = nullptr;
     int angle;
     cv::Size matSize;
     

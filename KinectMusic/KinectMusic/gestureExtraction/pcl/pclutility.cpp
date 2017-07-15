@@ -11,13 +11,13 @@
 
 void PclUtility::blob2cloud(Blob& blob,  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
     // populate our PointCloud with points
-    auto& lCells = blob.getLCells();
-    cloud->width    = static_cast<unsigned int>(lCells.size());
+    auto& cells = blob.getCells();
+    cloud->width    = static_cast<unsigned int>(cells.size());
     cloud->height   = 1;
     cloud->is_dense = false;
     cloud->points.resize (cloud->width * cloud->height);
     
-    auto it = lCells.begin();
+    auto it = cells.begin();
     int w(blob.getMatSize().width);
     for (size_t i = 0; i < cloud->points.size (); ++i, ++it) {
         int ind = it->ind;
@@ -28,10 +28,10 @@ void PclUtility::blob2cloud(Blob& blob,  pcl::PointCloud<pcl::PointXYZ>::Ptr clo
 }
 
 void PclUtility::cloud2blob(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, Blob& blob){
-    auto& lCells = blob.getLCells();
-    lCells.clear();
+    auto& cells = blob.getCells();
+    cells.clear();
     int w(blob.getMatSize().width);
     for (size_t i = 0; i < cloud->points.size (); ++i){
-        lCells.emplace_back(Cell(w * static_cast<int>(cloud->points[i].y) + cloud->points[i].x, cloud->points[i].z));
+        cells.emplace_back(Cell(w * static_cast<int>(cloud->points[i].y) + cloud->points[i].x, cloud->points[i].z));
     }
 }

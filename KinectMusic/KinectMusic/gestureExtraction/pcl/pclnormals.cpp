@@ -18,10 +18,10 @@ void PclNormals::estimateNormals(Blob& blob){
     std::vector<int> indices (floor (cloud->points.size () / coeff));
     for (int i = 0; i < indices.size (); ++i) indices[i] = i * coeff;
     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals = estimateNormals(cloud, indices);
-    auto& lCells = blob.getLCells();
+    auto& cells = blob.getCells();
     auto itInd = indices.begin();
     for(auto& normal : *cloud_normals){
-        next(lCells.begin(), *itInd)->normal = cv::Vec4f(normal.normal_x, normal.normal_y, normal.normal_z, normal.curvature);
+        next(cells.begin(), *itInd)->normal = cv::Vec4f(normal.normal_x, normal.normal_y, normal.normal_z, normal.curvature);
         ++itInd;
     }    
 }
