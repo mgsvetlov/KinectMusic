@@ -22,7 +22,7 @@ std::list<Blob> PclSegmentation::segmentation(Blob& blob){
     std::list<Blob> lBlobs; //cloud2blob!
     for(auto& cloud : lClouds) {
         PclUtility::cloud2blob(cloud, blob);
-        lBlobs.push_back(blob);
+        lBlobs.push_back(std::move(blob));
     }
     return lBlobs;
 }

@@ -21,7 +21,7 @@ void PclNormals::estimateNormals(Blob& blob){
     auto& cells = blob.getCells();
     auto itInd = indices.begin();
     for(auto& normal : *cloud_normals){
-        next(cells.begin(), *itInd)->normal = cv::Vec4f(normal.normal_x, normal.normal_y, normal.normal_z, normal.curvature);
+        next(cells.All().begin(), *itInd)->normal = cv::Vec4f(normal.normal_x, normal.normal_y, normal.normal_z, normal.curvature);
         ++itInd;
     }    
 }

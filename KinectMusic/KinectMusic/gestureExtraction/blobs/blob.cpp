@@ -21,12 +21,10 @@
 #include "../pcl/pclsegmentation.hpp"
 
 
-Blob::Blob() :
-centralCell(NO_DATA_VALUE, NO_DATA_VALUE)
+Blob::Blob()
 {}
 
 Blob::Blob(cv::Mat mat16, int x, int y) :
-centralCell(NO_DATA_VALUE, NO_DATA_VALUE),
 matSize(mat16.size())
 {
     int w = mat16.cols;
@@ -85,11 +83,7 @@ int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
         if(mode == 1){ //hands head segmentation
             if(minVal == MAX_KINECT_VALUE)
                 break;
-            Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0]);
-            int minSize = mat16_clone.cols / 16;
-            if(nearestBlob.getCells().size() > minSize){
-                lBlobs.push_back(std::move(nearestBlob));
-            }
+            lBlobs.emplace_back(Blob (mat16_clone, minIdx[1], minIdx[0]));
             continue;
         }
         
@@ -98,7 +92,7 @@ int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
 
         Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0]);
         
-        if(nearestBlob.getCells().size() < BLOB_MIN_SIZE)
+        if(nearestBlob.cells.Size() < BLOB_MIN_SIZE)
             continue;
         
         if(largeBlobMaxVal != -1 && nearestBlob.cells.MinValCell() && nearestBlob.cells.MinValCell()->val > largeBlobMaxVal){
@@ -129,32 +123,17 @@ int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
     return body_depth;
 }
 
-bool Blob::computeCentralCell(){
-    if(cells.Size() == 0)
-        return false;
-    int ind(0), val(MAX_KINECT_DEPTH);
-    for( const auto& cell: cells.AllConst()){
-        if(cell.val < val){
-            ind = cell.ind;
-            val = cell.val;
-        }
-    }
-    this->centralCell.ind = ind;
-    this->centralCell.val = val;
-
-    return true;
-}
 
 bool Blob::isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh)
 {
-    if(this->cells.Size() == 0 || blob.cells.Size() == 0)
+    if(!this->cells.MinValCell()|| !blob.cells.MinValCell())
         return false;
-    if(abs(this->centralCell.val - blob.centralCell.val) > depthThresh)
+    if(abs(this->cells.MinValCell()->val - blob.cells.MinValCell()->val) > depthThresh)
         return false;
-    int ind = this->centralCell.ind;
+    int ind = this->cells.MinValCell()->ind;
     int x = ind % this->matSize.width;
     int y = (ind-x) /this->matSize.width;
-    int indBlob = blob.centralCell.ind;
+    int indBlob = blob.cells.MinValCell()->ind;
     int xBlob = indBlob % blob.matSize.width;
     int yBlob = (indBlob-xBlob) /blob.matSize.width;
     int dx = x - xBlob;
@@ -169,7 +148,6 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
         return false;
     
     for(auto& blob : lBlobs) {
-        blob.computeCentralCell();
         bool isMerged(false);
         for(auto& blobClust : lBlobsClustered){
             if(blobClust.isBlobNear(blob, xyThresh, depthThresh)){
@@ -209,7 +187,6 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
             it = lBlobsClustered.erase(it);
             continue;
         }
-        it->computeCentralCell();
         it++;
     }
     
@@ -217,7 +194,7 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
 }
 
 bool Blob::filterLargeBlobs(cv::Mat originalMat){
-    int ind = centralCell.ind;
+    int ind = cells.MinValCell()->ind;
     int x = ind % this->matSize.width;
     int y = (ind-x) /this->matSize.width;
     x <<= BLOBS_RESIZE_POW;
@@ -235,18 +212,8 @@ bool Blob::filterLargeBlobs(cv::Mat originalMat){
     if(maxY >= originalMat.rows)
         maxY = originalMat.rows - 1;
     
-    /*uint16_t* p_nearest = (uint16_t*)(originalMat.data) + originalMat.cols * minY + minX;
-    for(int y = minY; y <= maxY; ++y){
-        uint16_t* p = (uint16_t*)(originalMat.data) + originalMat.cols * y + minX;
-        for(int x = minX; x <= maxX; ++x, ++p){
-            if((*p>0) &&   ((*p_nearest) == 0 || *p < *p_nearest))
-                p_nearest = p;
-        }
-    }*/
-    
-
     matSize = originalMat.size();
-    int closest_z = centralCell.val;
+    int closest_z = cells.MinValCell()->val;
     cells.Clear();
     
     static constexpr int depthThresh(150);
@@ -260,9 +227,8 @@ bool Blob::filterLargeBlobs(cv::Mat originalMat){
         }
     }
     
-    if(cells.Size() > originalMat.cols * 6.25)
+    if(cells.Size() > originalMat.cols * 6.25 || cells.Size() == 0)
         return false;
-    computeCentralCell();
 
     return true;
 }
@@ -287,7 +253,7 @@ void Blob::createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, flo
     uint16_t* p_mat = (uint16_t*)(mat.data);
      unsigned char* p_matMask  = (unsigned char*)(matMask.data);
     cells.AddCell(Cell(ind, val, 0.0f));
-    *(p_matMask + centralCell.ind) = 255;
+    *(p_matMask + ind) = 255;
     auto it = cells.All().begin();
     while(it != cells.All().end()){
         const int dist = it->dist;
@@ -357,7 +323,7 @@ void Blob::createBorders(){
 bool Blob::analyzeHand(cv::Mat originalMat){
     //create tree from front
     static const float distThresh(500.0f);
-    createCellsTree(originalMat, centralCell.ind, centralCell.val, true, distThresh);
+    createCellsTree(originalMat, cells.MinValCell()->ind, cells.MinValCell()->val, true, distThresh);
 
     createSubBlobs();
     
@@ -398,7 +364,7 @@ cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
     cv::Mat mat = cv::Mat_<uint16_t>::zeros(size);
     
     for(auto& blob : lBlobs) {
-        for(auto& cell : blob.getCellsConst()) {
+        for(auto& cell : blob.getCellsConst().AllConst()) {
             int ind = cell.ind;
             uint16_t* p_mat = (uint16_t*)(mat.data) + ind;
             *p_mat = cell.val;

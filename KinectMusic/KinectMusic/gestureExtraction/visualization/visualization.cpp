@@ -88,10 +88,10 @@ void Visualization::blobs2img(const std::list<Blob>& lBlobs, cv::Mat& matImg, bo
         cv::Scalar color = blob.angle > 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
         blob2img(blob, matImg, color, true);
         if(drawKeyPoints) {
-            int ind = blob.centralCell.ind;
+            int ind = blob.cells.MinValCell()->ind;
             int x = ind % matImg.cols;
             int y = (ind-x) /matImg.cols;
-            int z = blob.centralCell.val;
+            int z = blob.cells.MinValCell()->val;
             keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 127, 127), 10);
         }
     }
@@ -102,10 +102,10 @@ void Visualization::blobs2img(const std::vector<Blob*>& lBlobs, cv::Mat& matImg,
         cv::Scalar color = blob->angle > 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
         blob2img(*blob, matImg, color, true);
         if(drawKeyPoints) {
-            int ind = blob->centralCell.ind;
+            int ind = blob->cells.MinValCell()->ind;
             int x = ind % matImg.cols;
             int y = (ind-x) /matImg.cols;
-            int z = blob->centralCell.val;
+            int z = blob->cells.MinValCell()->val;
             keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 127, 127), 10);
         }
     }
@@ -134,7 +134,7 @@ void Visualization::gestures2img(const std::vector<std::shared_ptr<Gesture>>& ge
 
 
 void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar& color, bool colorFromNormal){
-    int minVal = blob.getCentralCell().val;
+    int minVal = blob.cells.MinValCell()->val;
     for(auto& cell : blob.cells.AllConst()){
         int ind = cell.ind;
         int x = ind % matImg.cols;

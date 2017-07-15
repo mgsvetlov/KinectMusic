@@ -9,12 +9,11 @@
 #include "hand.h"
 
 Hand::Hand(Blob& blob, const cv::Size& matSize){
-    auto centralCell = blob.getCentralCell();
-    int ind = centralCell.ind;
+    int ind = blob.cells.MinValCell()->ind;
     int w = matSize.width;
     int x = ind % w;
     int y = (ind-x) / w;
-    int z = centralCell.val;
+    int z = blob.cells.MinValCell()->val;
     keyPoint = cv::Point3i(x,y,z);
     angle = blob.angle;
     p_blob = &blob;

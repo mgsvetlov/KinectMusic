@@ -21,7 +21,6 @@ void PclDownsample::downsample(Blob& blob, Blob& blob_filtered){
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
     fromPCLPointCloud2 (*cloud2_filtered, *cloud_filtered);
     blob_filtered.setMatSize(blob.getMatSize());
-    blob_filtered.setCentralCell(blob.getCentralCell());
     PclUtility::cloud2blob(cloud_filtered, blob_filtered);
     
 }

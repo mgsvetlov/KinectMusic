@@ -30,7 +30,7 @@ struct Cell {
 template<typename T> class Cells {
 public:
     Cells(){}
-    Cells(const Cells&);
+    Cells(const Cells&) = delete;
     Cells(Cells&&);
     void AddCell(const T& cell);
     void AddCell(int ind, int val, int dist = 0);
@@ -54,15 +54,24 @@ private:
     T* p_minValCell = nullptr;
 };
 
-template<typename T> Cells<T>::Cells(const Cells& other){
-    for(const auto& cell : other.cells)
-        AddCell(cell);
-}
-
 template<typename T> Cells<T>::Cells(Cells&& other){
+    if(!other.p_maxValCell && !other.p_minValCell)
+        return;
+    int minNum (-1), maxNum (-1);
+    int count (0);
+    for(const auto& cell : other.cells){
+        if(other.p_minValCell == &cell)
+            minNum = count;
+        if(other.p_maxValCell == &cell)
+            maxNum = count;
+        ++count;
+    }
+    
     std::move(other.cells.begin(), other.cells.end(), std::back_inserter(cells));
-    p_maxValCell = other.p_maxValCell;
-    p_minValCell = other.p_minValCell;
+    
+    p_minValCell = &(*next(cells.begin(), minNum));
+    p_maxValCell = &(*next(cells.begin(), maxNum));
+    
     other.Clear();
 }
 
