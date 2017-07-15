@@ -22,12 +22,10 @@
 
 
 Blob::Blob() :
-cells(Cells<Cell>()),
 centralCell(NO_DATA_VALUE, NO_DATA_VALUE)
 {}
 
 Blob::Blob(cv::Mat mat16, int x, int y) :
-cells(Cells<Cell>()),
 centralCell(NO_DATA_VALUE, NO_DATA_VALUE),
 matSize(mat16.size())
 {
@@ -89,8 +87,9 @@ int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
                 break;
             Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0]);
             int minSize = mat16_clone.cols / 16;
-            if(nearestBlob.getCells().size() > minSize)
-                lBlobs.push_back(nearestBlob);
+            if(nearestBlob.getCells().size() > minSize){
+                lBlobs.push_back(std::move(nearestBlob));
+            }
             continue;
         }
         
@@ -108,10 +107,10 @@ int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
         
         if(nearestBlob.cells.Size() > BLOB_MIN_SIZE_LAST && nearestBlob.cells.MaxValCell()){
             largeBlobMaxVal = nearestBlob.cells.MaxValCell()->val;
-            lBlobs.push_front(nearestBlob);
+            lBlobs.push_front(std::move(nearestBlob));
         }
         else {
-            lBlobs.push_back(nearestBlob);
+            lBlobs.push_back(std::move(nearestBlob));
         }
         
     }
@@ -119,12 +118,12 @@ int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
     //compute body_depth
     if(mode == 0 && !lBlobs.empty()){
         auto it = lBlobs.begin();
-        Blob& largestBlob = *it++;
+        Blob* largestBlob = &(*it++);
         for(; it != lBlobs.end(); ++it){
-            if(it->cells.Size() > largestBlob.cells.Size())
-                largestBlob = *it;
+            if(it->cells.Size() > largestBlob->cells.Size())
+                largestBlob = &(*it);
         }
-        body_depth = largestBlob.cells.AverageValue();
+        body_depth = largestBlob->cells.AverageValue();
     }
     
     return body_depth;
@@ -146,17 +145,9 @@ bool Blob::computeCentralCell(){
     return true;
 }
 
-/*int Blob::computeAverageValue(){
-    int sum (0);
-    for( auto& cell: cells){
-        sum += cell.val;
-    }
-    return sum / cells.size();
-}*/
-
 bool Blob::isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh)
 {
-    if(this->centralCell.ind == -1 || blob.centralCell.ind == -1)
+    if(this->cells.Size() == 0 || blob.cells.Size() == 0)
         return false;
     if(abs(this->centralCell.val - blob.centralCell.val) > depthThresh)
         return false;
@@ -173,12 +164,6 @@ bool Blob::isBlobNear(const Blob& blob, const int xyThresh, const int depthThres
     return true;
 }
 
-/*void Blob::mergeBlob(const Blob& blob){
-    this->cells.insert(this->cells.end(), blob.cells.begin(), blob.cells.end());
-    
-    this->computeCentralCell();
-}*/
-
 bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh) {
     if(lBlobs.empty())
         return false;
@@ -193,8 +178,9 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
                 break;
             }
         }
-        if(!isMerged)
-            lBlobsClustered.push_back(blob);
+        if(!isMerged){
+            lBlobsClustered.push_back(std::move(blob));
+        }
     }
     
     bool merge (true);
@@ -223,7 +209,6 @@ bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClust
             it = lBlobsClustered.erase(it);
             continue;
         }
-        //it->computeCentralNearCell(0.25);
         it->computeCentralCell();
         it++;
     }
@@ -250,22 +235,22 @@ bool Blob::filterLargeBlobs(cv::Mat originalMat){
     if(maxY >= originalMat.rows)
         maxY = originalMat.rows - 1;
     
-    uint16_t* p_nearest = (uint16_t*)(originalMat.data) + originalMat.cols * minY + minX;
+    /*uint16_t* p_nearest = (uint16_t*)(originalMat.data) + originalMat.cols * minY + minX;
     for(int y = minY; y <= maxY; ++y){
         uint16_t* p = (uint16_t*)(originalMat.data) + originalMat.cols * y + minX;
         for(int x = minX; x <= maxX; ++x, ++p){
             if((*p>0) &&   ((*p_nearest) == 0 || *p < *p_nearest))
                 p_nearest = p;
         }
-    }
+    }*/
     
-    //centralCell = Cell(static_cast<int>(p_nearest - (uint16_t*)(originalMat.data)), *p_nearest);
+
     matSize = originalMat.size();
-    //p_maxValCell = p_minValCell = nullptr;
-    
-    cells.Clear();
-    static constexpr int depthThresh(150);
     int closest_z = centralCell.val;
+    cells.Clear();
+    
+    static constexpr int depthThresh(150);
+    
     for(int y = minY; y <= maxY; ++y){
         uint16_t* p = (uint16_t*)(originalMat.data) + originalMat.cols * y + minX;
         for(int x = minX; x <= maxX; ++x, ++p){
@@ -278,7 +263,7 @@ bool Blob::filterLargeBlobs(cv::Mat originalMat){
     if(cells.Size() > originalMat.cols * 6.25)
         return false;
     computeCentralCell();
-    //cells.clear();
+
     return true;
 }
 
@@ -371,7 +356,7 @@ void Blob::createBorders(){
 
 bool Blob::analyzeHand(cv::Mat originalMat){
     //create tree from front
-    static const float distThresh(700.0f);
+    static const float distThresh(500.0f);
     createCellsTree(originalMat, centralCell.ind, centralCell.val, true, distThresh);
 
     createSubBlobs();

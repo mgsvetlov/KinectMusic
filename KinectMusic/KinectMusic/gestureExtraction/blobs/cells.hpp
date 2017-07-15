@@ -29,6 +29,9 @@ struct Cell {
 
 template<typename T> class Cells {
 public:
+    Cells(){}
+    Cells(const Cells&);
+    Cells(Cells&&);
     void AddCell(const T& cell);
     void AddCell(int ind, int val, int dist = 0);
     void Clear();
@@ -38,7 +41,7 @@ public:
     const T* const MinValCell() const;
     int AverageValue() const;
     int Size() const;
-    void Merge(const Cells<T> cells1);
+    void Merge(const Cells<T>& cells1);
 private:
     void CheckBackMinMax();
     int Value(const T&, std::false_type) const;
@@ -51,6 +54,17 @@ private:
     T* p_minValCell = nullptr;
 };
 
+template<typename T> Cells<T>::Cells(const Cells& other){
+    for(const auto& cell : other.cells)
+        AddCell(cell);
+}
+
+template<typename T> Cells<T>::Cells(Cells&& other){
+    std::move(other.cells.begin(), other.cells.end(), std::back_inserter(cells));
+    p_maxValCell = other.p_maxValCell;
+    p_minValCell = other.p_minValCell;
+    other.Clear();
+}
 
 template<typename T> void Cells<T>::AddCell(const T& cell){
     cells.push_back(cell);
@@ -103,7 +117,7 @@ template<typename T> int Cells<T>::Size() const {
     return static_cast<int>(cells.size());
 }
 
-template<typename T> void Cells<T>::Merge(const Cells<T> cells1){
+template<typename T> void Cells<T>::Merge(const Cells<T>& cells1){
     for(auto& cell : cells1.AllConst()){
         cells.push_back(cell);
         CheckBackMinMax();
