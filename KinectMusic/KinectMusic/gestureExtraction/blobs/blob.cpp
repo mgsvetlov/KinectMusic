@@ -26,15 +26,16 @@
 Blob::Blob()
 {}
 
-Blob::Blob(cv::Mat mat16, int x, int y) :
+Blob::Blob(cv::Mat mat16, int ind) :
 matSize(mat16.size())
 {
     int w = mat16.cols;
     int h = mat16.rows;
     uint16_t* p_mat16 = (uint16_t*)(mat16.data);
-    int indStart = y*w + x;
-    cells.AddCell(x, y, indStart, *(p_mat16 + indStart));
-    *(p_mat16 + indStart) = MAX_KINECT_VALUE;
+    int x = ind % w;
+    int y = (ind -x) / w;
+    cells.AddCell(x, y, ind, *(p_mat16 + ind));
+    *(p_mat16 + ind) = MAX_KINECT_VALUE;
     auto it = cells.All().begin();
     while(it != cells.All().end()){
         uint16_t val =  it->val;
@@ -60,70 +61,6 @@ matSize(mat16.size())
         ++it;
     }
 }
-
-int Blob::findBlobs(cv::Mat mat16, std::list<Blob>& lBlobs, int mode ){
-    
-    int body_depth = -1;
-    
-    cv::Mat mat16_clone = mat16.clone();
-    int largeBlobMaxVal(-1);
-    while(true){
-        double minVal = MAX_KINECT_VALUE;
-        int minIdx[mat16.dims];
-        uint16_t* p_mat16_clone = (uint16_t*)(mat16_clone.data);
-        for(int y = 0; y < mat16_clone.rows; y++)
-        for(int x = 0 ; x < mat16_clone.cols; x++){
-            uint16_t val = *p_mat16_clone++;
-            if(val && val < minVal){
-                minVal = val;
-                minIdx[1] = x;
-                minIdx[0] = y;
-            }
-        }
-        
-        if(mode == 1){ //hands head segmentation
-            if(minVal == MAX_KINECT_VALUE)
-                break;
-            lBlobs.emplace_back(Blob (mat16_clone, minIdx[1], minIdx[0]));
-            continue;
-        }
-        
-        if(minVal >= MAX_KINECT_VALUE)
-            break;
-
-        Blob nearestBlob(mat16_clone, minIdx[1], minIdx[0]);
-        
-        if(nearestBlob.cells.Size() < BLOB_MIN_SIZE)
-            continue;
-        
-        if(largeBlobMaxVal != -1 && nearestBlob.cells.MinValCell() && nearestBlob.cells.MinValCell()->val > largeBlobMaxVal){
-            break;
-        }
-        
-        if(nearestBlob.cells.Size() > BLOB_MIN_SIZE_LAST && nearestBlob.cells.MaxValCell()){
-            largeBlobMaxVal = nearestBlob.cells.MaxValCell()->val;
-            lBlobs.push_front(std::move(nearestBlob));
-        }
-        else {
-            lBlobs.push_back(std::move(nearestBlob));
-        }
-        
-    }
-    
-    //compute body_depth
-    if(mode == 0 && !lBlobs.empty()){
-        auto it = lBlobs.begin();
-        Blob* largestBlob = &(*it++);
-        for(; it != lBlobs.end(); ++it){
-            if(it->cells.Size() > largestBlob->cells.Size())
-                largestBlob = &(*it);
-        }
-        body_depth = largestBlob->cells.AverageValue();
-    }
-    
-    return body_depth;
-}
-
 
 bool Blob::isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh)
 {
@@ -234,19 +171,6 @@ bool Blob::filterLargeBlobs(cv::Mat originalMat){
     return true;
 }
 
-/*float Blob::distance (int ind1, int val1, int ind2, int val2){
-    static constexpr float spaceCoeff(9./6400);
-    int w (this->matSize.width);
-    float x1 = (ind1 % w) * val1 * spaceCoeff;
-    float y1 = (ind1-x1)/w * val1 * spaceCoeff;
-    float x2 = (ind2 % w) * val2 * spaceCoeff;
-    float  y2 = (ind2-x2)/w * val2 * spaceCoeff;
-    float dx = x1 - x2;
-    float dy = y1 - y2;
-    int dz = val1 - val2;
-    return sqrt(dx*dx + dy*dy + dz*dz);
-}*/
-
 void Blob::createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, float distThresh){
     cv::Mat matMask = cv::Mat_<unsigned char>::zeros(mat.size());
     int w =  mat.cols;
@@ -278,7 +202,7 @@ void Blob::createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, flo
                     if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0)
                         continue;
                     if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
-                        cells.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it/*dist + distance(it->ind, it->val,indNeighb, valNeighb)*/);
+                        cells.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
                         *(p_matMask + indNeighb) = 255;
                         if(connectivity){
                             it->child = &cells.All().back();

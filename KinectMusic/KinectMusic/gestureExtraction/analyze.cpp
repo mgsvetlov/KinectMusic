@@ -19,7 +19,7 @@
 #include "types.h"
 #include "visualization/visualization.h"
 #include "analyze.h"
-#include "blobs/blob.h"
+#include "blobs/blobsfabrique.hpp"
 #include "handsExtractor/handsextractor.h"
 #include "hand/hand.h"
 #include "tracking/tracking.h"
@@ -94,8 +94,8 @@ void *analyze_threadfunc(void *arg) {
         cv::resize(mat16_filt, mat16_resized, cv::Size(w>>BLOBS_RESIZE_POW, h>>BLOBS_RESIZE_POW));
         
         //extract person
-        std::list<Blob> lBlobs;
-        int body_depth = Blob::findBlobs(mat16_resized, lBlobs);
+        BlobsFabrique blobsFabrique(mat16_resized);
+        std::list<Blob>& lBlobs = blobsFabrique.getBlobs();
         
         cv::Mat matBlobs = Blob::blobs2mat(lBlobs, mat16_resized.size());
         
@@ -103,9 +103,8 @@ void *analyze_threadfunc(void *arg) {
         static int filt_size(mat16_resized.cols / 20), filt_depth(mat16_resized.cols / 10), core_half_size(2);
         cv::Mat matDst = HandsExtractor::extractHands(matBlobs, filt_size, filt_depth, core_half_size);
        
-        std::list<Blob> lBlobs1;
-        int mode (1);
-        Blob::findBlobs(matDst, lBlobs1, mode);
+        BlobsFabrique blobsFabrique1(matDst, 1);
+        std::list<Blob>& lBlobs1 = blobsFabrique1.getBlobs();
         
         std::list<Blob> lBlobsClust;
         int xyThresh(mat16_resized.cols / 8), depthThresh(100);
@@ -145,7 +144,7 @@ void *analyze_threadfunc(void *arg) {
         
         //create and analyze hands tracked stream data
         FrameData frameData = GestureFabrique::extractGestures(vTracks);
-        frameData.bodyDepth = body_depth;
+        frameData.bodyDepth = blobsFabrique.getBodyDepth();// body_depth;
         
         if(Config::instance()->getIsCsound()){
             if(!Share::share(frameData)){

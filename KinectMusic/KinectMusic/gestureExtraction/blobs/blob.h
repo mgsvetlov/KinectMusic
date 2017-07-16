@@ -30,14 +30,12 @@ class Blob {
 public:
     Blob();
 private:
-    Blob(cv::Mat mat16, int x, int y);
+    Blob(cv::Mat mat16, int ind);
 public:
-    static int findBlobs(cv::Mat mat16, std::list<Blob>& lvBlobs, int mode = 0);
     Cells<Cell>& getCells() {return cells;}
     const Cells<Cell>& getCellsConst() const {return cells;}
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
     static bool blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh);
-    //float distance (int ind1, int val1, int ind2, int val2);
     
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
@@ -60,6 +58,7 @@ private:
     int angle;
     cv::Size matSize;
     
+    friend class BlobsFabrique;
     friend class Hand;
     friend class Visualization;
     friend std::ostream& operator << (std::ostream& os, const Blob& blob);
