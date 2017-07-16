@@ -37,8 +37,8 @@ public:
     void Clear();
     std::list<T>& All();
     const std::list<T>& AllConst() const;
-    const T* const MaxValCell() const;
     const T* const MinValCell() const;
+    const T* const MaxValCell() const;
     int AverageValue() const;
     int Size() const;
     void Merge(const Cells<T>& cells1);
@@ -50,27 +50,18 @@ private:
     void AddCell(int ind, int val, int dist, std::true_type);
 private:
     std::list<T> cells;
-    T* p_maxValCell = nullptr;
-    T* p_minValCell = nullptr;
+    typename std::list<T>::const_iterator it_minValCell = cells.cend();
+    typename std::list<T>::const_iterator it_maxValCell = cells.cend();
 };
 
 template<typename T> Cells<T>::Cells(Cells&& other){
-    if(!other.p_maxValCell && !other.p_minValCell)
-        return;
-    int minNum (-1), maxNum (-1);
-    int count (0);
-    for(const auto& cell : other.cells){
-        if(other.p_minValCell == &cell)
-            minNum = count;
-        if(other.p_maxValCell == &cell)
-            maxNum = count;
-        ++count;
-    }
+    size_t minNum = distance(other.cells.cbegin(), other.it_minValCell);
+    size_t maxNum = distance(other.cells.cbegin(), other.it_maxValCell);
     
     std::move(other.cells.begin(), other.cells.end(), std::back_inserter(cells));
     
-    p_minValCell = &(*next(cells.begin(), minNum));
-    p_maxValCell = &(*next(cells.begin(), maxNum));
+    it_minValCell = next(cells.cbegin(), minNum);
+    it_maxValCell = next(cells.cbegin(), maxNum);
     
     other.Clear();
 }
@@ -94,8 +85,8 @@ template<typename T> void Cells<T>::AddCell(int ind, int val, int dist, std::tru
 }
 
 template<typename T> void Cells<T>::Clear(){
-    p_maxValCell = p_minValCell= nullptr;
     cells.clear();
+    it_minValCell = it_maxValCell = cells.cend();
 }
 
 template<typename T> std::list<T>& Cells<T>::All() {
@@ -106,12 +97,16 @@ template<typename T> const std::list<T>& Cells<T>::AllConst() const {
     return cells;
 }
 
-template<typename T> const T* const Cells<T>::MaxValCell() const{
-    return p_maxValCell;
+template<typename T> const T* const Cells<T>::MinValCell() const{
+    if(it_minValCell == cells.cend())
+       return nullptr;
+    return(&(*it_minValCell));
 }
 
-template<typename T> const T* const Cells<T>::MinValCell() const{
-    return p_minValCell;
+template<typename T> const T* const Cells<T>::MaxValCell() const{
+    if(it_maxValCell == cells.cend())
+        return nullptr;
+    return(&(*it_maxValCell));
 }
 
 template<typename T> int Cells<T>::AverageValue() const{
@@ -135,10 +130,11 @@ template<typename T> void Cells<T>::Merge(const Cells<T>& cells1){
 
 template<typename T> void Cells<T>::CheckBackMinMax(){
     auto val = Value(cells.back(), std::is_pointer<T>());
-    if(!p_minValCell || val < Value(*p_minValCell, std::is_pointer<T>()))
-        p_minValCell = &cells.back();
-    if(!p_maxValCell || val > Value(*p_maxValCell, std::is_pointer<T>()))
-        p_maxValCell = &cells.back();
+    
+    if(it_minValCell == cells.cend() || val < Value(*it_minValCell, std::is_pointer<T>()))
+        it_minValCell-- = cells.cend();
+    if(it_maxValCell == cells.cend() || val > Value(*it_maxValCell, std::is_pointer<T>()))
+        it_maxValCell-- = cells.cend();
 }
 
 template<typename T> int Cells<T>::Value(const T& cell, std::false_type) const{
