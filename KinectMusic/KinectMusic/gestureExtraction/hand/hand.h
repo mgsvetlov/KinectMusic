@@ -13,7 +13,7 @@
 class Hand {
 public:
     Hand(){}
-    Hand(Blob& blob, const cv::Size& matSize);
+    Hand(Blob& blob);
 
     const cv::Point3i& getKeyPoint() const {return keyPoint;}
     int getAngle() const { return angle;}

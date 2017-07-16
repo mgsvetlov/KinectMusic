@@ -35,6 +35,8 @@ extern volatile int die_gesture;
 #define INSIDE_GESTURE_VALUE -100
 #define END_GESTURE_VALUE -1000
 
+//#define USE_CELL_NORMAL
+
 struct HandData {
     cv::Point3i point;
     int phase = NO_DATA_VALUE;

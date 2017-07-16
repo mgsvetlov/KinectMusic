@@ -5,8 +5,12 @@
 //  Created by Mikhail Svetlov on 08/07/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
-#include <pcl/features/normal_3d.h>
+
+
 #include "pclnormals.hpp"
+#ifdef USE_CELL_NORMAL
+
+#include <pcl/features/normal_3d.h>
 #include "pclutility.hpp"
 #include "../../log/logs.h"
 
@@ -54,3 +58,5 @@ pcl::PointCloud<pcl::Normal>::Ptr  PclNormals::estimateNormals(pcl::PointCloud<p
     
     return cloud_normals;
 }
+
+#endif //USE_CELL_NORMAL

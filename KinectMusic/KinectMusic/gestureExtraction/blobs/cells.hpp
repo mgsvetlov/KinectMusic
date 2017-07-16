@@ -10,22 +10,7 @@
 #define cells_hpp
 
 #include <type_traits>
-#include "../types.h"
-
-class SubBlob;
-
-struct Cell {
-    Cell(){}
-    Cell(int ind, int val): ind(ind), val(val){}
-    Cell(int ind, int val, float dist): ind(ind), val(val), dist(dist){}
-    int ind = NO_DATA_VALUE;
-    int val = NO_DATA_VALUE;
-    float dist = 0;
-    Cell* parent = nullptr;
-    Cell* child = nullptr;
-    SubBlob* subBlob = nullptr;
-    cv::Vec4f normal = cv::Vec4f(0.f, 0.f, 0.f);
-};
+#include "cell.hpp"
 
 template<typename T> class Cells {
 public:
@@ -33,7 +18,8 @@ public:
     Cells(const Cells&) = delete;
     Cells(Cells&&);
     void AddCell(const T& cell);
-    void AddCell(int ind, int val, int dist = 0);
+    void AddCell(uint16_t x, uint16_t y, int ind, int val);
+    void AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell);
     void Clear();
     std::list<T>& All();
     const std::list<T>& AllConst() const;
@@ -46,8 +32,10 @@ private:
     void CheckBackMinMax();
     int Value(const T&, std::false_type) const;
     int Value(const T&, std::true_type) const;
-    void AddCell(int ind, int val, int dist, std::false_type);
-    void AddCell(int ind, int val, int dist, std::true_type);
+    void AddCell(uint16_t x, uint16_t y, int ind, int val, std::false_type);
+    void AddCell(uint16_t x, uint16_t y, int ind, int val, std::true_type);
+    void AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::false_type);
+    void AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::true_type);
 private:
     std::list<T> cells;
     typename std::list<T>::const_iterator it_minValCell = cells.cend();
@@ -71,16 +59,29 @@ template<typename T> void Cells<T>::AddCell(const T& cell){
     CheckBackMinMax();
 }
 
-template<typename T> void Cells<T>::AddCell(int ind, int val, int dist){
-    AddCell(ind, val, dist, std::is_pointer<T>());
+template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val){
+    AddCell(x, y, ind, val,  std::is_pointer<T>());
 }
 
-template<typename T> void Cells<T>::AddCell(int ind, int val, int dist, std::false_type){
-    cells.emplace_back(Cell(ind, val, dist));
+template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val,  std::false_type){
+    cells.emplace_back(Cell(x, y, ind, val));
     CheckBackMinMax();
 }
 
-template<typename T> void Cells<T>::AddCell(int ind, int val, int dist, std::true_type){
+template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val, std::true_type){
+    
+}
+
+template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell){
+    AddCell(x, y, ind, val, cell,  std::is_pointer<T>());
+}
+
+template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::false_type){
+    cells.emplace_back(Cell(x, y, ind, val, cell));
+    CheckBackMinMax();
+}
+
+template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::true_type){
     
 }
 
@@ -98,13 +99,13 @@ template<typename T> const std::list<T>& Cells<T>::AllConst() const {
 }
 
 template<typename T> const T* const Cells<T>::MinValCell() const{
-    if(it_minValCell == cells.cend())
+    if(cells.empty())
        return nullptr;
     return(&(*it_minValCell));
 }
 
 template<typename T> const T* const Cells<T>::MaxValCell() const{
-    if(it_maxValCell == cells.cend())
+    if(cells.empty())
         return nullptr;
     return(&(*it_maxValCell));
 }
@@ -131,9 +132,9 @@ template<typename T> void Cells<T>::Merge(const Cells<T>& cells1){
 template<typename T> void Cells<T>::CheckBackMinMax(){
     auto val = Value(cells.back(), std::is_pointer<T>());
     
-    if(it_minValCell == cells.cend() || val < Value(*it_minValCell, std::is_pointer<T>()))
+    if(cells.empty()  || val < Value(*it_minValCell, std::is_pointer<T>()))
         it_minValCell-- = cells.cend();
-    if(it_maxValCell == cells.cend() || val > Value(*it_maxValCell, std::is_pointer<T>()))
+    if(cells.empty()  || val > Value(*it_maxValCell, std::is_pointer<T>()))
         it_maxValCell-- = cells.cend();
 }
 

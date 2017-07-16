@@ -17,7 +17,9 @@
 #include "../analyze.h"
 #include  "../pcl/pclplane.hpp"
 #include  "../pcl/pcldownsample.hpp"
+#ifdef USE_CELL_NORMAL
 #include "../pcl/pclnormals.hpp"
+#endif //USE_CELL_NORMAL
 #include "../pcl/pclsegmentation.hpp"
 
 
@@ -31,14 +33,13 @@ matSize(mat16.size())
     int h = mat16.rows;
     uint16_t* p_mat16 = (uint16_t*)(mat16.data);
     int indStart = y*w + x;
-    cells.AddCell(indStart, *(p_mat16 + indStart));
+    cells.AddCell(x, y, indStart, *(p_mat16 + indStart));
     *(p_mat16 + indStart) = MAX_KINECT_VALUE;
     auto it = cells.All().begin();
     while(it != cells.All().end()){
-        const int ind = it->ind;
         uint16_t val =  it->val;
-        int x_ = ind % w;
-        int y_ = (ind - x_)/ w;
+        int x_ = it->x;
+        int y_ = it->y;
         
         for(int yNeighb = y_ - 1; yNeighb <= y_ + 1; yNeighb++){
             if(yNeighb < 0 || yNeighb >= h)
@@ -51,7 +52,7 @@ matSize(mat16.size())
                 if(valNeighb >= MAX_KINECT_VALUE || valNeighb == 0)
                     continue;
                 if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
-                    cells.AddCell(indNeighb, valNeighb);
+                    cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
                     *(p_mat16 + indNeighb) = MAX_KINECT_VALUE;
                 }
             }
@@ -222,7 +223,7 @@ bool Blob::filterLargeBlobs(cv::Mat originalMat){
         uint16_t* p = (uint16_t*)(originalMat.data) + originalMat.cols * y + minX;
         for(int x = minX; x <= maxX; ++x, ++p){
             if((*p>0) &&   *p - closest_z < depthThresh){
-                cells.AddCell(Cell(static_cast<int>(p - (uint16_t*)(originalMat.data)), *p));
+                cells.AddCell(Cell(x, y, static_cast<int>(p - (uint16_t*)(originalMat.data)), *p));
             }
         }
     }
@@ -233,7 +234,7 @@ bool Blob::filterLargeBlobs(cv::Mat originalMat){
     return true;
 }
 
-float Blob::distance (int ind1, int val1, int ind2, int val2){
+/*float Blob::distance (int ind1, int val1, int ind2, int val2){
     static constexpr float spaceCoeff(9./6400);
     int w (this->matSize.width);
     float x1 = (ind1 % w) * val1 * spaceCoeff;
@@ -244,7 +245,7 @@ float Blob::distance (int ind1, int val1, int ind2, int val2){
     float dy = y1 - y2;
     int dz = val1 - val2;
     return sqrt(dx*dx + dy*dy + dz*dz);
-}
+}*/
 
 void Blob::createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, float distThresh){
     cv::Mat matMask = cv::Mat_<unsigned char>::zeros(mat.size());
@@ -252,16 +253,17 @@ void Blob::createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, flo
     int h = mat.rows;
     uint16_t* p_mat = (uint16_t*)(mat.data);
      unsigned char* p_matMask  = (unsigned char*)(matMask.data);
-    cells.AddCell(Cell(ind, val, 0.0f));
+    int x = ind % w;
+    int y = (ind - x)/ w;
+    cells.AddCell(Cell(x, y, ind, val));
     *(p_matMask + ind) = 255;
     auto it = cells.All().begin();
     while(it != cells.All().end()){
         const int dist = it->dist;
         if(dist <= distThresh ){
-            const int ind = it->ind;
             const uint16_t val =  it->val;
-            int x_ = ind % w;
-            int y_ = (ind - x_)/ w;
+            int x_ = it->x;
+            int y_ = it->y;
             for(int yNeighb = y_ - 1; yNeighb <= y_ + 1; yNeighb++){
                 if(yNeighb < 0 || yNeighb >= h)
                     continue;
@@ -276,7 +278,7 @@ void Blob::createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, flo
                     if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0)
                         continue;
                     if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
-                        cells.AddCell(indNeighb, valNeighb, dist + distance(it->ind, it->val,indNeighb, valNeighb));
+                        cells.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it/*dist + distance(it->ind, it->val,indNeighb, valNeighb)*/);
                         *(p_matMask + indNeighb) = 255;
                         if(connectivity){
                             it->child = &cells.All().back();

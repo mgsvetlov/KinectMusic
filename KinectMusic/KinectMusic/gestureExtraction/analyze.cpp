@@ -117,7 +117,7 @@ void *analyze_threadfunc(void *arg) {
             while(it != lBlobsClust.end()){
                 auto& blob = *it;
                 if(blob.filterLargeBlobs(mat16_filt)){
-                    lHands.push_back(Hand(blob, mat16_filt.size()));
+                    lHands.push_back(Hand(blob));
                     ++it;
                     continue;
                 }

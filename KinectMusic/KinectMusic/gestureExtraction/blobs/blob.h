@@ -37,7 +37,7 @@ public:
     const Cells<Cell>& getCellsConst() const {return cells;}
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
     static bool blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh);
-    float distance (int ind1, int val1, int ind2, int val2);
+    //float distance (int ind1, int val1, int ind2, int val2);
     
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}

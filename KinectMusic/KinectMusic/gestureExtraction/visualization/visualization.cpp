@@ -88,9 +88,8 @@ void Visualization::blobs2img(const std::list<Blob>& lBlobs, cv::Mat& matImg, bo
         cv::Scalar color = blob.angle > 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
         blob2img(blob, matImg, color, true);
         if(drawKeyPoints) {
-            int ind = blob.cells.MinValCell()->ind;
-            int x = ind % matImg.cols;
-            int y = (ind-x) /matImg.cols;
+            int x = blob.cells.MinValCell()->x;
+            int y = blob.cells.MinValCell()->y;
             int z = blob.cells.MinValCell()->val;
             keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 127, 127), 10);
         }
@@ -102,9 +101,8 @@ void Visualization::blobs2img(const std::vector<Blob*>& lBlobs, cv::Mat& matImg,
         cv::Scalar color = blob->angle > 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
         blob2img(*blob, matImg, color, true);
         if(drawKeyPoints) {
-            int ind = blob->cells.MinValCell()->ind;
-            int x = ind % matImg.cols;
-            int y = (ind-x) /matImg.cols;
+            int x = blob->cells.MinValCell()->x;
+            int y = blob->cells.MinValCell()->y;
             int z = blob->cells.MinValCell()->val;
             keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 127, 127), 10);
         }
@@ -136,13 +134,10 @@ void Visualization::gestures2img(const std::vector<std::shared_ptr<Gesture>>& ge
 void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar& color, bool colorFromNormal){
     int minVal = blob.cells.MinValCell()->val;
     for(auto& cell : blob.cells.AllConst()){
-        int ind = cell.ind;
-        int x = ind % matImg.cols;
-        int y = (ind-x) /matImg.cols;
         int col = 255 - (cell.val - minVal);
         if(col < 0)
             col = 0;
-        cv::circle(matImg, cv::Point(x, y), 1, cv::Scalar (0.0f, col, col), -1);
+        cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, col, col), -1);
     }
     int j(0);
     for(auto& border : blob.borders){
@@ -150,10 +145,7 @@ void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar
         cv::Scalar colorPoint = c == 0 ? cv::Scalar(255,0.0f, 0.0f) : c == 1 ? cv::Scalar(0.0f,255, 0.0f) : cv::Scalar(0.0f,0.0f, 255);
         ++j;
         for(auto& cell : border.borderCells){
-            int ind = cell->ind;
-            int x = ind % matImg.cols;
-            int y = (ind-x) /matImg.cols;
-            cv::circle(matImg, cv::Point(x, y), 1, colorPoint, -1);
+            cv::circle(matImg, cv::Point(cell->x, cell->y), 1, colorPoint, -1);
         }
     }
 }

@@ -8,11 +8,9 @@
 
 #include "hand.h"
 
-Hand::Hand(Blob& blob, const cv::Size& matSize){
-    int ind = blob.cells.MinValCell()->ind;
-    int w = matSize.width;
-    int x = ind % w;
-    int y = (ind-x) / w;
+Hand::Hand(Blob& blob){
+    int x = blob.cells.MinValCell()->x;
+    int y = blob.cells.MinValCell()->y;
     int z = blob.cells.MinValCell()->val;
     keyPoint = cv::Point3i(x,y,z);
     angle = blob.angle;

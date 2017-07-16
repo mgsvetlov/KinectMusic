@@ -9,6 +9,8 @@
 #ifndef pclnormals_hpp
 #define pclnormals_hpp
 
+#ifdef USE_CELL_NORMAL
+
 #include <pcl/point_types.h>
 #include <pcl/filters/extract_indices.h>
 #include "../blobs/blob.h"
@@ -20,5 +22,7 @@ public:
 private:
     static pcl::PointCloud<pcl::Normal>::Ptr  estimateNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, const std::vector<int>& indices);
 };
+
+#endif //USE_CELL_NORMAL
 
 #endif /* pclnormals_hpp */

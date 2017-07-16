@@ -121,6 +121,7 @@
 		728233C01F114CC200B6E4D4 /* pclutility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233BE1F114CC200B6E4D4 /* pclutility.cpp */; };
 		728233C31F11525700B6E4D4 /* pclsegmentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233C11F11525700B6E4D4 /* pclsegmentation.cpp */; };
 		728233C61F1153B100B6E4D4 /* pclnormals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233C41F1153B100B6E4D4 /* pclnormals.cpp */; };
+		728233CC1F1B5EDB00B6E4D4 /* cell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233CB1F1B5EDA00B6E4D4 /* cell.cpp */; };
 		7298B7271D8D85840093134C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7298B7261D8D85840093134C /* main.cpp */; };
 		72AFE5E41E7B583000143CA7 /* libusb-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 72AFE5E31E7B583000143CA7 /* libusb-1.0.a */; };
 		72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72B332AD1BAF0733003DA9DA /* kinect.cpp */; };
@@ -303,6 +304,8 @@
 		728233C41F1153B100B6E4D4 /* pclnormals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclnormals.cpp; path = gestureExtraction/pcl/pclnormals.cpp; sourceTree = "<group>"; };
 		728233C51F1153B100B6E4D4 /* pclnormals.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclnormals.hpp; path = gestureExtraction/pcl/pclnormals.hpp; sourceTree = "<group>"; };
 		728233C81F19F40700B6E4D4 /* cells.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = cells.hpp; path = gestureExtraction/blobs/cells.hpp; sourceTree = "<group>"; };
+		728233CA1F1B546700B6E4D4 /* cell.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = cell.hpp; path = gestureExtraction/blobs/cell.hpp; sourceTree = "<group>"; };
+		728233CB1F1B5EDA00B6E4D4 /* cell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cell.cpp; path = gestureExtraction/blobs/cell.cpp; sourceTree = "<group>"; };
 		7298B7261D8D85840093134C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		72AFE5E31E7B583000143CA7 /* libusb-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libusb-1.0.a"; path = "lib/libusb-1.0.a"; sourceTree = "<group>"; };
 		72B332AD1BAF0733003DA9DA /* kinect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = kinect.cpp; sourceTree = "<group>"; };
@@ -636,6 +639,8 @@
 				72799BA81DC61E6D00BAC3DC /* blob.cpp */,
 				72799BA91DC61E6D00BAC3DC /* blob.h */,
 				728233C81F19F40700B6E4D4 /* cells.hpp */,
+				728233CA1F1B546700B6E4D4 /* cell.hpp */,
+				728233CB1F1B5EDA00B6E4D4 /* cell.cpp */,
 			);
 			name = blolbs;
 			sourceTree = "<group>";
@@ -685,9 +690,9 @@
 				72048F6F1EDA00BE006381E9 /* share.h */,
 				72799BA61DC61E5800BAC3DC /* types.h */,
 				722141A51D9FC2BD00B697E8 /* blolbs */,
-				7282333F1F0D4FC700B6E4D4 /* pcl */,
 				728233201F07950D00B6E4D4 /* handsExtractor */,
 				720C228C1DE990C10066104B /* hand */,
+				7282333F1F0D4FC700B6E4D4 /* pcl */,
 				720C228F1DF2EE820066104B /* tracking */,
 				720C22961DF4238A0066104B /* gesture */,
 				7221419E1D9FB91400B697E8 /* visualization */,
@@ -754,6 +759,7 @@
 				72799BAA1DC61E6D00BAC3DC /* blob.cpp in Sources */,
 				728233261F07952400B6E4D4 /* handsextractor.cpp in Sources */,
 				720164C11A6C058B00BC721A /* usb_libusb10.c in Sources */,
+				728233CC1F1B5EDB00B6E4D4 /* cell.cpp in Sources */,
 				720164BC1A6C058B00BC721A /* core.c in Sources */,
 				728233BD1F11390400B6E4D4 /* pcldownsample.cpp in Sources */,
 				725B1B9D1ED18A800028AE34 /* gesturefabrique.cpp in Sources */,
