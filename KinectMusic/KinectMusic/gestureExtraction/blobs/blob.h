@@ -35,7 +35,6 @@ public:
     Cells<Cell>& getCells() {return cells;}
     const Cells<Cell>& getCellsConst() const {return cells;}
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
-    static bool blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh);
     
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
@@ -44,7 +43,6 @@ public:
     bool analyzeHand(cv::Mat originalMat);
     
 private:
-    bool isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh);
     void createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, float distThresh = std::numeric_limits<float>::max());
     void createSubBlobs();
     void createBorders();
@@ -59,9 +57,9 @@ private:
     cv::Size matSize;
     
     friend class BlobsFabrique;
+    friend class BlobsClust;
     friend class Hand;
     friend class Visualization;
-    friend std::ostream& operator << (std::ostream& os, const Blob& blob);
 };
 
 #endif /* blob_h */

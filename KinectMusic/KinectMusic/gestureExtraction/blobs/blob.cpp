@@ -62,75 +62,6 @@ matSize(mat16.size())
     }
 }
 
-bool Blob::isBlobNear(const Blob& blob, const int xyThresh, const int depthThresh)
-{
-    if(!this->cells.MinValCell()|| !blob.cells.MinValCell())
-        return false;
-    if(abs(this->cells.MinValCell()->val - blob.cells.MinValCell()->val) > depthThresh)
-        return false;
-    int ind = this->cells.MinValCell()->ind;
-    int x = ind % this->matSize.width;
-    int y = (ind-x) /this->matSize.width;
-    int indBlob = blob.cells.MinValCell()->ind;
-    int xBlob = indBlob % blob.matSize.width;
-    int yBlob = (indBlob-xBlob) /blob.matSize.width;
-    int dx = x - xBlob;
-    int dy = y - yBlob;
-    if(dx * dx + dy * dy > xyThresh * xyThresh)
-        return false;
-    return true;
-}
-
-bool Blob::blobsClustering(std::list<Blob>& lBlobs, std::list<Blob>& lBlobsClustered, int xyThresh, int depthThresh) {
-    if(lBlobs.empty())
-        return false;
-    
-    for(auto& blob : lBlobs) {
-        bool isMerged(false);
-        for(auto& blobClust : lBlobsClustered){
-            if(blobClust.isBlobNear(blob, xyThresh, depthThresh)){
-                blobClust.cells.Merge(blob.cells);
-                isMerged = true;
-                break;
-            }
-        }
-        if(!isMerged){
-            lBlobsClustered.push_back(std::move(blob));
-        }
-    }
-    
-    bool merge (true);
-    while(merge) {
-        merge = false;
-        auto it = lBlobsClustered.begin();
-        while(it != lBlobsClustered.end()){
-            auto it1 = it;
-            it1++;
-            while(it1 != lBlobsClustered.end()){
-                if(it->isBlobNear(*it1, xyThresh, depthThresh )) {
-                    it->cells.Merge(it1->cells);
-                    it1 = lBlobsClustered.erase(it1);
-                    merge = true;
-                    continue;
-                }
-                it1++;
-            }
-            it++;
-        }
-    }
-    
-    auto it = lBlobsClustered.begin();
-    while(it != lBlobsClustered.end()){
-        if(it->cells.Size() < 5){
-            it = lBlobsClustered.erase(it);
-            continue;
-        }
-        it++;
-    }
-    
-    return true;
-}
-
 bool Blob::filterLargeBlobs(cv::Mat originalMat){
     int ind = cells.MinValCell()->ind;
     int x = ind % this->matSize.width;
@@ -299,5 +230,3 @@ cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
     
     return mat;
 }
-
-

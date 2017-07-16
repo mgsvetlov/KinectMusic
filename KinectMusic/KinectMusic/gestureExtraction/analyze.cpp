@@ -20,6 +20,7 @@
 #include "visualization/visualization.h"
 #include "analyze.h"
 #include "blobs/blobsfabrique.hpp"
+#include "blobs/blobsclust.hpp"
 #include "handsExtractor/handsextractor.h"
 #include "hand/hand.h"
 #include "tracking/tracking.h"
@@ -106,9 +107,9 @@ void *analyze_threadfunc(void *arg) {
         BlobsFabrique blobsFabrique1(matDst, 1);
         std::list<Blob>& lBlobs1 = blobsFabrique1.getBlobs();
         
-        std::list<Blob> lBlobsClust;
         int xyThresh(mat16_resized.cols / 8), depthThresh(100);
-        Blob::blobsClustering(lBlobs1, lBlobsClust, xyThresh, depthThresh);
+        BlobsClust blobsClust(lBlobs1, xyThresh, depthThresh);
+        std::list<Blob>& lBlobsClust = blobsClust.getBlobsClust();
         
         std::list<Hand> lHands;
         if(!lBlobsClust.empty()){
