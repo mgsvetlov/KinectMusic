@@ -13,8 +13,10 @@
 
 class BlobsFabrique {
 public:
-    BlobsFabrique(cv::Mat mat, int mode = 0);
+    BlobsFabrique(int mode, cv::Mat mat, const std::list<int>& inds = std::list<int>());
+    void constructBlobsExt(cv::Mat origMat);
     std::list<Blob>& getBlobs();
+    std::list<Blob>& getBlobsExt();
     int getBodyDepth();
 private:
     void blobsFabrique0();
@@ -25,6 +27,7 @@ private:
     cv::Mat mat;
     int mode = 0;
     std::list<Blob> blobs;
+    std::list<Blob> blobsExt;
     int bodyDepth = -1;
 };
 

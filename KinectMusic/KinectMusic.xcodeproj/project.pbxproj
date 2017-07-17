@@ -40,10 +40,10 @@
 		7262274B1D90737D00644016 /* libopencv_superres.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7262273D1D90737D00644016 /* libopencv_superres.2.4.9.dylib */; };
 		7262274C1D90737D00644016 /* libopencv_video.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7262273E1D90737D00644016 /* libopencv_video.2.4.9.dylib */; };
 		7262274D1D90737D00644016 /* libopencv_videostab.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7262273F1D90737D00644016 /* libopencv_videostab.2.4.9.dylib */; };
+		7274B8BB1F1CEA5300F1D30D /* convex3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7274B8B91F1CEA5300F1D30D /* convex3d.cpp */; };
 		72799BA71DC61E5800BAC3DC /* analyze.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72799BA41DC61E5800BAC3DC /* analyze.cpp */; };
 		72799BAA1DC61E6D00BAC3DC /* blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72799BA81DC61E6D00BAC3DC /* blob.cpp */; };
 		72799BB31DC61EAE00BAC3DC /* visualization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72799BB11DC61EAE00BAC3DC /* visualization.cpp */; };
-		728233261F07952400B6E4D4 /* handsextractor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233231F07952400B6E4D4 /* handsextractor.cpp */; };
 		728233331F0D4B2400B6E4D4 /* libpcl_io_ply.1.7.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233271F0D4B2400B6E4D4 /* libpcl_io_ply.1.7.2.dylib */; };
 		728233341F0D4B2400B6E4D4 /* libpcl_io.1.7.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233281F0D4B2400B6E4D4 /* libpcl_io.1.7.2.dylib */; };
 		728233351F0D4B2400B6E4D4 /* libpcl_kdtree.1.7.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233291F0D4B2400B6E4D4 /* libpcl_kdtree.1.7.2.dylib */; };
@@ -214,6 +214,8 @@
 		7262273D1D90737D00644016 /* libopencv_superres.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_superres.2.4.9.dylib; path = opencv/lib/libopencv_superres.2.4.9.dylib; sourceTree = "<group>"; };
 		7262273E1D90737D00644016 /* libopencv_video.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_video.2.4.9.dylib; path = opencv/lib/libopencv_video.2.4.9.dylib; sourceTree = "<group>"; };
 		7262273F1D90737D00644016 /* libopencv_videostab.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_videostab.2.4.9.dylib; path = opencv/lib/libopencv_videostab.2.4.9.dylib; sourceTree = "<group>"; };
+		7274B8B91F1CEA5300F1D30D /* convex3d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = convex3d.cpp; path = gestureExtraction/convex3d/convex3d.cpp; sourceTree = "<group>"; };
+		7274B8BA1F1CEA5300F1D30D /* convex3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = convex3d.h; path = gestureExtraction/convex3d/convex3d.h; sourceTree = "<group>"; };
 		72799BA41DC61E5800BAC3DC /* analyze.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = analyze.cpp; path = gestureExtraction/analyze.cpp; sourceTree = "<group>"; };
 		72799BA51DC61E5800BAC3DC /* analyze.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = analyze.h; path = gestureExtraction/analyze.h; sourceTree = "<group>"; };
 		72799BA61DC61E5800BAC3DC /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = gestureExtraction/types.h; sourceTree = "<group>"; };
@@ -221,8 +223,6 @@
 		72799BA91DC61E6D00BAC3DC /* blob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blob.h; path = gestureExtraction/blobs/blob.h; sourceTree = "<group>"; };
 		72799BB11DC61EAE00BAC3DC /* visualization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = visualization.cpp; path = gestureExtraction/visualization/visualization.cpp; sourceTree = "<group>"; };
 		72799BB21DC61EAE00BAC3DC /* visualization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = visualization.h; path = gestureExtraction/visualization/visualization.h; sourceTree = "<group>"; };
-		728233231F07952400B6E4D4 /* handsextractor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = handsextractor.cpp; path = gestureExtraction/handsExtractor/handsextractor.cpp; sourceTree = "<group>"; };
-		728233241F07952400B6E4D4 /* handsextractor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = handsextractor.h; path = gestureExtraction/handsExtractor/handsextractor.h; sourceTree = "<group>"; };
 		728233271F0D4B2400B6E4D4 /* libpcl_io_ply.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_io_ply.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_io_ply.1.7.2.dylib; sourceTree = "<group>"; };
 		728233281F0D4B2400B6E4D4 /* libpcl_io.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_io.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_io.1.7.2.dylib; sourceTree = "<group>"; };
 		728233291F0D4B2400B6E4D4 /* libpcl_kdtree.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_kdtree.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_kdtree.1.7.2.dylib; sourceTree = "<group>"; };
@@ -665,13 +665,13 @@
 			path = include;
 			sourceTree = SOURCE_ROOT;
 		};
-		728233201F07950D00B6E4D4 /* handsExtractor */ = {
+		728233201F07950D00B6E4D4 /* convex3d */ = {
 			isa = PBXGroup;
 			children = (
-				728233231F07952400B6E4D4 /* handsextractor.cpp */,
-				728233241F07952400B6E4D4 /* handsextractor.h */,
+				7274B8B91F1CEA5300F1D30D /* convex3d.cpp */,
+				7274B8BA1F1CEA5300F1D30D /* convex3d.h */,
 			);
-			name = handsExtractor;
+			name = convex3d;
 			sourceTree = "<group>";
 		};
 		7282333F1F0D4FC700B6E4D4 /* pcl */ = {
@@ -700,7 +700,7 @@
 				72048F6F1EDA00BE006381E9 /* share.h */,
 				72799BA61DC61E5800BAC3DC /* types.h */,
 				722141A51D9FC2BD00B697E8 /* blolbs */,
-				728233201F07950D00B6E4D4 /* handsExtractor */,
+				728233201F07950D00B6E4D4 /* convex3d */,
 				720C228C1DE990C10066104B /* hand */,
 				7282333F1F0D4FC700B6E4D4 /* pcl */,
 				720C228F1DF2EE820066104B /* tracking */,
@@ -768,9 +768,9 @@
 				7298B7271D8D85840093134C /* main.cpp in Sources */,
 				72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */,
 				72799BAA1DC61E6D00BAC3DC /* blob.cpp in Sources */,
-				728233261F07952400B6E4D4 /* handsextractor.cpp in Sources */,
 				720164C11A6C058B00BC721A /* usb_libusb10.c in Sources */,
 				728233CC1F1B5EDB00B6E4D4 /* cell.cpp in Sources */,
+				7274B8BB1F1CEA5300F1D30D /* convex3d.cpp in Sources */,
 				720164BC1A6C058B00BC721A /* core.c in Sources */,
 				728233BD1F11390400B6E4D4 /* pcldownsample.cpp in Sources */,
 				725B1B9D1ED18A800028AE34 /* gesturefabrique.cpp in Sources */,

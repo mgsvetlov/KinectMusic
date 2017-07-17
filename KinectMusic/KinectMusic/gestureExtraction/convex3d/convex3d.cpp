@@ -6,9 +6,9 @@
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
 
-#include "handsextractor.h"
+#include "convex3d.h"
 
-cv::Mat HandsExtractor::extractHands(cv::Mat mat, int filt_size, int filt_depth, int core_half_size)
+cv::Mat Convex3d::extractConvexities(cv::Mat mat, int filt_size, int filt_depth, int core_half_size)
 {
     cv::Mat matDst = cv::Mat_<uint16_t>::zeros(mat.size());
     uint16_t* p_mat = (uint16_t*)(mat.data);
@@ -20,7 +20,7 @@ cv::Mat HandsExtractor::extractHands(cv::Mat mat, int filt_size, int filt_depth,
             if(!val)
                 continue;
             int filt_size_ = sqrt(static_cast<double>(MAX_KINECT_DEPTH) /val) * filt_size;
-            bool isFeature(true);
+            bool isConvexity(true);
             for(int m = -core_half_size; m <= core_half_size; m++){
                 int y_ = y + m * filt_size_;
                 if(y_ < 0)
@@ -37,14 +37,14 @@ cv::Mat HandsExtractor::extractHands(cv::Mat mat, int filt_size, int filt_depth,
                         break;
                     uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
                     if(val_ && val_ - val <= filt_depth * (m+n) * 0.5){
-                        isFeature= false;
+                        isConvexity= false;
                         break;
                     }
-                     if(!isFeature)
+                     if(!isConvexity)
                          break;
                 }
             }
-            if(isFeature)
+            if(isConvexity)
                 *p_matDst = val;
         }
     }

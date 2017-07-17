@@ -12,11 +12,9 @@
 #include <limits>
 #include "cells.hpp"
 
-struct Border {
+/*struct Border {
     std::list<Cell*> borderCells = std::list<Cell*>();
     int level = -1;
-    /*Border* parent = nullptr;
-    std::list<Border*> children = std::list<Border*>();*/
 };
 
 class SubBlob {
@@ -24,14 +22,15 @@ private:
     std::vector<Cell*> vpCells;
     friend class Blob;
     friend class Visualization;
-};
+};*/
 
 class Blob {
 public:
     Blob();
-    Blob(cv::Mat mat, int ind, bool connectivity, float distThresh, int sizeThresh = NO_DATA_VALUE);
+    
 private:
     Blob(cv::Mat mat, int ind);
+    Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh = NO_DATA_VALUE);
     
 public:
     Cells<Cell>& getCells() {return cells;}
@@ -45,15 +44,17 @@ public:
     bool analyzeHand(cv::Mat originalMat);
     
 private:
-    void createSubBlobs();
-    void createBorders();
+    //void createSubBlobs();
+    //void createBorders();
     cv::Mat blob2mat();
     void computeAngle();
     
 private:
     Cells<Cell> cells;
-    std::list<SubBlob> subBlobs;
-    std::list<Border> borders;
+    Cells<Cell> border1;
+    Cells<Cell> border2;
+    //std::list<SubBlob> subBlobs;
+    //std::list<Border> borders;
     int angle;
     cv::Size matSize;
     

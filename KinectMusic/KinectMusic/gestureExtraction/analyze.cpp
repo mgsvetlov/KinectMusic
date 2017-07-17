@@ -20,8 +20,7 @@
 #include "visualization/visualization.h"
 #include "analyze.h"
 #include "blobs/blobsfabrique.hpp"
-#include "blobs/blobsclust.hpp"
-#include "handsExtractor/handsextractor.h"
+#include "convex3d/convex3d.h"
 #include "hand/hand.h"
 #include "tracking/tracking.h"
 #include "gesture/gesturefabrique.h"
@@ -94,34 +93,17 @@ void *analyze_threadfunc(void *arg) {
         cv::Mat mat16_resized;
         cv::resize(mat16_filt, mat16_resized, cv::Size(w>>BLOBS_RESIZE_POW, h>>BLOBS_RESIZE_POW));
         
-        //extract person
-        BlobsFabrique blobsFabrique(mat16_resized);
+        //extract all the blobs up to person
+        BlobsFabrique blobsFabrique(0, mat16_resized);
         std::list<Blob>& blobs = blobsFabrique.getBlobs();
         
+        //extract 3d convexes
         cv::Mat matBlobs = Blob::blobs2mat(blobs, mat16_resized.size());
-        
-        //extract hands
         static int filt_size(mat16_resized.cols / 20), filt_depth(mat16_resized.cols / 10), core_half_size(2);
-        cv::Mat matDst = HandsExtractor::extractHands(matBlobs, filt_size, filt_depth, core_half_size);
-       
-        BlobsFabrique blobsFabrique1(matDst, 1);
-        std::list<Blob>& blobs1 = blobsFabrique1.getBlobs();
-        
-        int xyThresh(mat16_resized.cols / 8), depthThresh(100);
-        BlobsClust blobsClust(blobs1, xyThresh, depthThresh);
-        std::list<Blob>& blobsCl = blobsClust.getBlobsClust();
-        
-        std::list<Blob> blobsExt;
-        static const float distThresh(500.0f);
-        static const int sizeThresh(4000);
-        for(auto& blob  : blobsCl) {
-            int ind = blob.indOriginNearest(mat16_filt);
-            if(ind == NO_DATA_VALUE)
-                continue;
-            blobsExt.emplace_back(Blob(mat16_filt, ind, true, distThresh, sizeThresh));
-            if(blobsExt.back().getCellsConst().Size() == 1)
-                blobsExt.pop_back();
-        }
+        cv::Mat matDst = Convex3d::extractConvexities(matBlobs, filt_size, filt_depth, core_half_size);
+        BlobsFabrique blobsFabrique1(1, matDst);
+        blobsFabrique1.constructBlobsExt(mat16.clone());
+        std::list<Blob>& blobsExt = blobsFabrique1.getBlobsExt();
 
         //tracking hands
         /*Track::analyzeFrame(lHands);

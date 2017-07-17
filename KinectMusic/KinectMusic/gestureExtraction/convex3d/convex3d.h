@@ -6,15 +6,15 @@
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
 
-#ifndef handsextractor_h
-#define handsextractor_h
+#ifndef convex3d_h
+#define convex3d_h
 
 #include <stdio.h>
 #include "../types.h"
 
-class HandsExtractor {
+class Convex3d {
 public:
-    static cv::Mat extractHands(cv::Mat mat, int filt_size, int filt_depth, int core_half_size);
+    static cv::Mat extractConvexities(cv::Mat mat, int filt_size, int filt_depth, int core_half_size);
 };
 
-#endif /* handsextractor_h */
+#endif /* convex3d_h */

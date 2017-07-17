@@ -167,22 +167,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "KinectMusic/gestureExtraction/analyze.cpp"
-            timestampString = "521975207.513237"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "123"
-            endingLineNumber = "123"
-            landmarkName = "analyze_threadfunc(void *arg)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/gesture/gestureAll.cpp"
             timestampString = "520586004.656952"
             startingColumnNumber = "9223372036854775807"
@@ -232,12 +216,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/analyze.cpp"
-            timestampString = "521975207.513237"
+            timestampString = "521995995.737361"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "159"
-            endingLineNumber = "159"
-            landmarkName = "operator &lt;&lt; (std::ostream&amp; os, const FrameData&amp; frameData)"
+            startingLineNumber = "141"
+            endingLineNumber = "141"
+            landmarkName = "analyze_threadfunc(void *arg)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -328,11 +312,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/visualization/visualization.cpp"
-            timestampString = "521972233.167936"
+            timestampString = "521995995.737361"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "143"
-            endingLineNumber = "143"
+            startingLineNumber = "146"
+            endingLineNumber = "146"
             landmarkName = "Visualization::blob2img(const Blob&amp; blob, cv::Mat&amp; matImg, const cv::Scalar&amp; color, bool colorFromNormal)"
             landmarkType = "5">
             <Locations>
@@ -367,6 +351,22 @@
                   offsetFromSymbolStart = "1075">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KinectMusic/gestureExtraction/blobs/blob.cpp"
+            timestampString = "521995995.737361"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "108"
+            endingLineNumber = "108"
+            landmarkName = "Blob::Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh)"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

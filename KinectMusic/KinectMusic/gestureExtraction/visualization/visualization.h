@@ -32,7 +32,6 @@ public:
     static void mat2img(cv::Mat mat, cv::Mat& matImg);
 
     static void blobs2img(const std::list<Blob>& lBlobs, cv::Mat& matImg, bool drawKeyPoints = true);
-    static void blobs2img(const std::vector<Blob*>& lBlobs, cv::Mat& matImg, bool drawKeyPoints = true);
 
     static void gestures2img(const std::vector<std::shared_ptr<Gesture>>& handsTrackedStreams, cv::Mat& matImg, size_t length = 0);
 private:

@@ -7,8 +7,9 @@
 //
 
 #include "blobsfabrique.hpp"
+#include "blobsclust.hpp"
 
-BlobsFabrique::BlobsFabrique(cv::Mat m, int mode) :
+BlobsFabrique::BlobsFabrique(int mode, cv::Mat m, const std::list<int>& inds) :
 mat(m.clone()),
 mode(mode)
 {
@@ -69,11 +70,42 @@ void BlobsFabrique::blobsFabrique1(){
         blobs.emplace_back(Blob (mat, ind));
         continue;
     }
+    int xyThresh(mat.cols / 8), depthThresh(100);
+    BlobsClust blobsClust(blobs, xyThresh, depthThresh);
+    blobs = std::move(blobsClust.getBlobsClust());
+}
+
+void BlobsFabrique::constructBlobsExt(cv::Mat origMat){
+    static const float distThresh(400.0f);
+    static const int sizeThresh(4000);
+    std::vector<int> inds;
+    for(auto& blob  : blobs) {
+        int ind = blob.indOriginNearest(origMat);
+        if(ind != NO_DATA_VALUE)
+            inds.push_back(ind);
+    }
+    const uint16_t* const p_mat = (uint16_t*)(origMat.data);
+    std::sort(inds.begin(), inds.end(),
+              [p_mat](int ind1, int ind2)
+    {return *(p_mat + ind1) < *(p_mat + ind2);});
+    int blobInd(0);
+    for(auto& ind : inds) {
+        blobsExt.emplace_back(Blob(origMat, ind, blobInd++, true, distThresh, sizeThresh));
+        if(blobsExt.back().cells.Size() <= 1
+           || blobsExt.back().border1.Size() == 0
+           || blobsExt.back().border1.Size() < blobsExt.back().border2.Size())
+            blobsExt.pop_back();
+    }
 }
 
 std::list<Blob>& BlobsFabrique::getBlobs(){
     return blobs;
 }
+
+std::list<Blob>& BlobsFabrique::getBlobsExt(){
+    return blobsExt;
+}
+
 
 int BlobsFabrique::getBodyDepth(){
     return bodyDepth;

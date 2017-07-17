@@ -60,21 +60,25 @@ matSize(mat.size())
     }
 }
 
-Blob::Blob(cv::Mat mat, int ind, bool connectivity, float distThresh, int sizeThresh){
+//blob extended
+Blob::Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh){
     cells.Clear();
+    const uint16_t maskValue = 65535 - blobInd;
     int w =  mat.cols;
     int h = mat.rows;
     uint16_t* p_mat = (uint16_t*)(mat.data);
     int x = ind % w;
     int y = (ind - x)/ w;
     cells.AddCell(Cell(x, y, ind, *(p_mat + ind)));
-    *(p_mat + ind) = MAX_KINECT_DEPTH;
+    *(p_mat + ind) = maskValue;
+    
     auto it = cells.All().begin();
     for(;it != cells.All().end();++it){
-        if(sizeThresh != NO_DATA_VALUE && cells.Size() >= sizeThresh)
-            break;
-        if(connectivity && it->dist > distThresh )
-            continue;
+        bool isEndMode (false);
+        if((sizeThresh != NO_DATA_VALUE && cells.Size() >= sizeThresh)
+           || (connectivity && it->dist > distThresh )) {
+            isEndMode = true;
+        }
         const uint16_t val =  it->val;
         int x_ = it->x;
         int y_ = it->y;
@@ -86,19 +90,36 @@ Blob::Blob(cv::Mat mat, int ind, bool connectivity, float distThresh, int sizeTh
                     continue;
                 int indNeighb = yNeighb * w + xNeighb;
                 uint16_t valNeighb =  *(p_mat + indNeighb);
-                if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0)
-                    continue;
-                if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_FINE){
-                    if(connectivity)
-                        cells.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
-                    else
-                        cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
-                    *(p_mat + indNeighb) = MAX_KINECT_DEPTH;
-                    if(connectivity){
-                        it->child = &cells.All().back();
-                        cells.All().back().parent = &(*it);
+                if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0 || abs(valNeighb-val) >= MAX_NEIGHB_DIFF_COARSE){
+                    if(valNeighb > maskValue){
+                        cells.Clear();
+                        border1.Clear();
+                        border2.Clear();
+                        return;
                     }
+                    if(valNeighb != maskValue){
+                        *(p_mat + indNeighb) = maskValue;
+                        border1.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
+                        border1.All().back().parent = &(*it);
+                    }
+                    continue;
                 }
+                *(p_mat + indNeighb) = maskValue;
+                if(isEndMode){
+                    border2.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
+                    border2.All().back().parent = &(*it);
+                    continue;
+                }
+                
+                if(connectivity){
+                    cells.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
+                    it->child = &cells.All().back();
+                    cells.All().back().parent = &(*it);
+                }
+                else {
+                    cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
+                }
+                
             }
         }
     }
@@ -141,38 +162,8 @@ int Blob::indOriginNearest(cv::Mat originalMat) const{
 
 }
 
-void Blob::createSubBlobs(){
-    static const int subBlobSize = matSize.width * 9 / 16;
-    int count(0);
-    for(auto& cell : cells.All()){
-        if(count == 0){
-            subBlobs.push_back(SubBlob());
-        }
-        cell.subBlob = &subBlobs.back();
-        subBlobs.back().vpCells.push_back(&cell);
-        ++count;
-        if(count == subBlobSize)
-            count = 0;
-    }
-}
-
-void Blob::createBorders(){
-    auto it = subBlobs.begin();
-    for(int i = 0; i < subBlobs.size() - 1; ++i, ++it){
-        borders.emplace_back(Border());
-        auto& border = borders.back();
-        border.level = i;
-        auto& borderCells = border.borderCells;
-        SubBlob* cuurentSubBlob = &(*it);
-        for(const auto& cell : it->vpCells){
-            if(cell->child && cell->child->subBlob != cuurentSubBlob)
-                borderCells.push_back(cell);
-        }
-    }
-}
-
 bool Blob::analyzeHand(cv::Mat originalMat){
-    createSubBlobs();
+    //createSubBlobs();
     
     //createBorders();
     
@@ -220,3 +211,33 @@ cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
     
     return mat;
 }
+
+/*void Blob::createSubBlobs(){
+ static const int subBlobSize = matSize.width * 9 / 16;
+ int count(0);
+ for(auto& cell : cells.All()){
+ if(count == 0){
+ subBlobs.push_back(SubBlob());
+ }
+ cell.subBlob = &subBlobs.back();
+ subBlobs.back().vpCells.push_back(&cell);
+ ++count;
+ if(count == subBlobSize)
+ count = 0;
+ }
+ }
+ 
+ void Blob::createBorders(){
+ auto it = subBlobs.begin();
+ for(int i = 0; i < subBlobs.size() - 1; ++i, ++it){
+ borders.emplace_back(Border());
+ auto& border = borders.back();
+ border.level = i;
+ auto& borderCells = border.borderCells;
+ SubBlob* cuurentSubBlob = &(*it);
+ for(const auto& cell : it->vpCells){
+ if(cell->child && cell->child->subBlob != cuurentSubBlob)
+ borderCells.push_back(cell);
+ }
+ }
+ }*/

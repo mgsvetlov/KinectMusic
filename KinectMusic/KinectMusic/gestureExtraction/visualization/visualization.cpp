@@ -91,20 +91,7 @@ void Visualization::blobs2img(const std::list<Blob>& lBlobs, cv::Mat& matImg, bo
             int x = blob.cells.MinValCell()->x;
             int y = blob.cells.MinValCell()->y;
             int z = blob.cells.MinValCell()->val;
-            keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 127, 127), 10);
-        }
-    }
-}
-
-void Visualization::blobs2img(const std::vector<Blob*>& lBlobs, cv::Mat& matImg, bool drawKeyPoints ){
-    for(const auto& blob : lBlobs){
-        cv::Scalar color = blob->angle > 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
-        blob2img(*blob, matImg, color, true);
-        if(drawKeyPoints) {
-            int x = blob->cells.MinValCell()->x;
-            int y = blob->cells.MinValCell()->y;
-            int z = blob->cells.MinValCell()->val;
-            keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 127, 127), 10);
+            keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 0, 0), 3);
         }
     }
 }
@@ -138,6 +125,12 @@ void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar
         if(col < 0)
             col = 0;
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, col, col), -1);
+    }
+    for(auto& cell : blob.border1.AllConst()){
+        cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, 0.0f, 255), -1);
+    }
+    for(auto& cell : blob.border2.AllConst()){
+        cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (255, 0.0f, 0), -1);
     }
     /*int j(0);
     for(auto& item : blob.subBlobs){
