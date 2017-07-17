@@ -11,6 +11,7 @@
 
 #include <type_traits>
 #include "cell.hpp"
+#include "../../log/logs.h"
 
 template<typename T> class Cells {
 public:
@@ -64,7 +65,7 @@ template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int
 }
 
 template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val,  std::false_type){
-    cells.emplace_back(Cell(x, y, ind, val));
+    cells.emplace_back(x, y, ind, val);
     CheckBackMinMax();
 }
 
@@ -77,7 +78,7 @@ template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int
 }
 
 template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::false_type){
-    cells.emplace_back(Cell(x, y, ind, val, cell));
+    cells.emplace_back(x, y, ind, val, cell);
     CheckBackMinMax();
 }
 

@@ -12,29 +12,21 @@
 #include <limits>
 #include "cells.hpp"
 
-/*struct Border {
-    std::list<Cell*> borderCells = std::list<Cell*>();
-    int level = -1;
-};
-
-class SubBlob {
-private:
-    std::vector<Cell*> vpCells;
-    friend class Blob;
-    friend class Visualization;
-};*/
 
 class Blob {
 public:
     Blob();
     
-private:
+//private:
     Blob(cv::Mat mat, int ind);
     Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh = NO_DATA_VALUE);
     
 public:
     Cells<Cell>& getCells() {return cells;}
     const Cells<Cell>& getCellsConst() const {return cells;}
+    const Cells<Cell>& getBorder1Const() const {return border1;}
+    const Cells<Cell>& getBorder2Const() const {return border2;}
+    
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
     
     const cv::Size& getMatSize() const {return this->matSize;}
@@ -44,8 +36,7 @@ public:
     bool analyzeHand(cv::Mat originalMat);
     
 private:
-    //void createSubBlobs();
-    //void createBorders();
+
     cv::Mat blob2mat();
     void computeAngle();
     
@@ -53,8 +44,7 @@ private:
     Cells<Cell> cells;
     Cells<Cell> border1;
     Cells<Cell> border2;
-    //std::list<SubBlob> subBlobs;
-    //std::list<Border> borders;
+
     int angle;
     cv::Size matSize;
     

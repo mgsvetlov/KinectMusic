@@ -8,6 +8,7 @@
 
 #include "blobsfabrique.hpp"
 #include "blobsclust.hpp"
+#include "../../log/logs.h"
 
 BlobsFabrique::BlobsFabrique(int mode, cv::Mat m, const std::list<int>& inds) :
 mat(m.clone()),
@@ -67,7 +68,7 @@ void BlobsFabrique::blobsFabrique1(){
         int minVal = *((uint16_t*)(mat.data) + ind);
         if(minVal == MAX_KINECT_VALUE)
             return;
-        blobs.emplace_back(Blob (mat, ind));
+        blobs.emplace_back(mat, ind);
         continue;
     }
     int xyThresh(mat.cols / 8), depthThresh(100);
@@ -90,7 +91,7 @@ void BlobsFabrique::constructBlobsExt(cv::Mat origMat){
     {return *(p_mat + ind1) < *(p_mat + ind2);});
     int blobInd(0);
     for(auto& ind : inds) {
-        blobsExt.emplace_back(Blob(origMat, ind, blobInd++, true, distThresh, sizeThresh));
+        blobsExt.emplace_back(origMat, ind, blobInd++, true, distThresh, sizeThresh);
         if(blobsExt.back().cells.Size() <= 1
            || blobsExt.back().border1.Size() == 0
            || blobsExt.back().border1.Size() < blobsExt.back().border2.Size())

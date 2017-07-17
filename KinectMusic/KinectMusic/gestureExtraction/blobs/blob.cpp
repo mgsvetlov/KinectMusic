@@ -163,9 +163,6 @@ int Blob::indOriginNearest(cv::Mat originalMat) const{
 }
 
 bool Blob::analyzeHand(cv::Mat originalMat){
-    //createSubBlobs();
-    
-    //createBorders();
     
     //PclNormals::estimateNormals(*this);
     //computeAngle();
@@ -212,32 +209,3 @@ cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
     return mat;
 }
 
-/*void Blob::createSubBlobs(){
- static const int subBlobSize = matSize.width * 9 / 16;
- int count(0);
- for(auto& cell : cells.All()){
- if(count == 0){
- subBlobs.push_back(SubBlob());
- }
- cell.subBlob = &subBlobs.back();
- subBlobs.back().vpCells.push_back(&cell);
- ++count;
- if(count == subBlobSize)
- count = 0;
- }
- }
- 
- void Blob::createBorders(){
- auto it = subBlobs.begin();
- for(int i = 0; i < subBlobs.size() - 1; ++i, ++it){
- borders.emplace_back(Border());
- auto& border = borders.back();
- border.level = i;
- auto& borderCells = border.borderCells;
- SubBlob* cuurentSubBlob = &(*it);
- for(const auto& cell : it->vpCells){
- if(cell->child && cell->child->subBlob != cuurentSubBlob)
- borderCells.push_back(cell);
- }
- }
- }*/

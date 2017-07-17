@@ -49,15 +49,6 @@ depthThresh(depthThresh)
             it++;
         }
     }
-    
-    /*auto it = blobsClust.begin();
-    while(it != blobsClust.end()){
-        if(it->cells.Size() < 7){
-            it = blobsClust.erase(it);
-            continue;
-        }
-        it++;
-    }*/
 }
 
 std::list<Blob>& BlobsClust::getBlobsClust(){

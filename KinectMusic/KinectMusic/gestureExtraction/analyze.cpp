@@ -126,6 +126,7 @@ void *analyze_threadfunc(void *arg) {
         if(Config::instance()->getIsVisualisation()){
             cv::Mat img;
             Visualization::mat2img(mat16, img);
+            
             Visualization::blobs2img( blobsExt, img, true);
             
             //Visualization::gestures2img(GestureFabrique::getGestures(), img);

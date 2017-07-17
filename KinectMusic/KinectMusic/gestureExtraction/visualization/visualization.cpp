@@ -127,20 +127,15 @@ void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, col, col), -1);
     }
     for(auto& cell : blob.border1.AllConst()){
+        auto& parentCell = cell.parent;
+        cv::circle(matImg, cv::Point(parentCell->x, parentCell->y), 1, cv::Scalar (0.0f, 255.0f, 0), -1);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, 0.0f, 255), -1);
     }
     for(auto& cell : blob.border2.AllConst()){
+        auto& parentCell = cell.parent;
+        cv::circle(matImg, cv::Point(parentCell->x, parentCell->y), 1, cv::Scalar (255, 255.0f, 0), -1);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (255, 0.0f, 0), -1);
     }
-    /*int j(0);
-    for(auto& item : blob.subBlobs){
-        int c = j % 3;
-        cv::Scalar colorPoint = c == 0 ? cv::Scalar(255,0.0f, 0.0f) : c == 1 ? cv::Scalar(0.0f,255, 0.0f) : cv::Scalar(0.0f,0.0f, 255);
-        ++j;
-        for(auto& cell : item.vpCells){
-            cv::circle(matImg, cv::Point(cell->x, cell->y), 1, colorPoint, -1);
-        }
-    }*/
 }
 
 void Visualization::keyPoint2img(const cv::Point3i& keyPoint, cv::Mat& matImg, const cv::Scalar& color, int size) {

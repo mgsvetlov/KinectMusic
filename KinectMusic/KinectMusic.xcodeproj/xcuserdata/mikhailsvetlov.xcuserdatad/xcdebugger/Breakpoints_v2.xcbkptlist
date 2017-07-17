@@ -184,11 +184,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/visualization/visualization.cpp"
-            timestampString = "521883553.693686"
+            timestampString = "522000195.79164"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "120"
-            endingLineNumber = "120"
+            startingLineNumber = "107"
+            endingLineNumber = "107"
             landmarkName = "Visualization::gesture2img(const std::shared_ptr&lt;Gesture&gt;&amp; gesture, cv::Mat&amp; matImg, size_t length)"
             landmarkType = "5">
          </BreakpointContent>
@@ -216,11 +216,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/analyze.cpp"
-            timestampString = "521995995.737361"
+            timestampString = "522006584.485371"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "141"
-            endingLineNumber = "141"
+            startingLineNumber = "142"
+            endingLineNumber = "142"
             landmarkName = "analyze_threadfunc(void *arg)"
             landmarkType = "7">
          </BreakpointContent>
@@ -248,11 +248,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/blobs/cells.hpp"
-            timestampString = "521893982.221184"
+            timestampString = "522006584.485371"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
             landmarkName = "Cells(Cells&amp;&amp; other)"
             landmarkType = "7">
             <Locations>
@@ -296,61 +296,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/visualization/visualization.cpp"
-            timestampString = "521972126.952584"
+            timestampString = "522000195.79164"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "135"
-            endingLineNumber = "135"
+            startingLineNumber = "122"
+            endingLineNumber = "122"
             landmarkName = "Visualization::blob2img(const Blob&amp; blob, cv::Mat&amp; matImg, const cv::Scalar&amp; color, bool colorFromNormal)"
             landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KinectMusic/gestureExtraction/visualization/visualization.cpp"
-            timestampString = "521995995.737361"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "146"
-            endingLineNumber = "146"
-            landmarkName = "Visualization::blob2img(const Blob&amp; blob, cv::Mat&amp; matImg, const cv::Scalar&amp; color, bool colorFromNormal)"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Visualization::blob2img(Blob const&amp;, cv::Mat&amp;, cv::Scalar_&lt;double&gt; const&amp;, bool)"
-                  moduleName = "KinectMusic"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/visualization/visualization.cpp"
-                  timestampString = "521972233.172141"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "143"
-                  endingLineNumber = "143"
-                  offsetFromSymbolStart = "763">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Visualization::blob2img(Blob const&amp;, cv::Mat&amp;, cv::Scalar_&lt;double&gt; const&amp;, bool)"
-                  moduleName = "KinectMusic"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/visualization/visualization.cpp"
-                  timestampString = "521972233.172327"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "143"
-                  endingLineNumber = "143"
-                  offsetFromSymbolStart = "1075">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -360,13 +312,61 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/blobs/blob.cpp"
-            timestampString = "521995995.737361"
+            timestampString = "522006584.485371"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "108"
-            endingLineNumber = "108"
-            landmarkName = "Blob::Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh)"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
+            landmarkName = "Blob::indOriginNearest(cv::Mat originalMat)"
             landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KinectMusic/gestureExtraction/blobs/cells.hpp"
+            timestampString = "522006619.510953"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
+            landmarkName = "Cells(Cells&amp;&amp; other)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Cells&lt;Cell&gt;::AllConst() const"
+                  moduleName = "KinectMusic"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/visualization/../blobs/cells.hpp"
+                  timestampString = "522006619.551329"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "100"
+                  endingLineNumber = "100"
+                  offsetFromSymbolStart = "12">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Cells&lt;Cell&gt;::Cells(Cells&lt;Cell&gt;&amp;&amp;)"
+                  moduleName = "KinectMusic"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/blobs/cells.hpp"
+                  timestampString = "522006619.551551"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "56"
+                  endingLineNumber = "56"
+                  offsetFromSymbolStart = "3313">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
