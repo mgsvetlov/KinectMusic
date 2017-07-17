@@ -20,7 +20,7 @@ cv::Mat HandsExtractor::extractHands(cv::Mat mat, int filt_size, int filt_depth,
             if(!val)
                 continue;
             int filt_size_ = sqrt(static_cast<double>(MAX_KINECT_DEPTH) /val) * filt_size;
-            bool isValue(true);
+            bool isFeature(true);
             for(int m = -core_half_size; m <= core_half_size; m++){
                 int y_ = y + m * filt_size_;
                 if(y_ < 0)
@@ -37,14 +37,14 @@ cv::Mat HandsExtractor::extractHands(cv::Mat mat, int filt_size, int filt_depth,
                         break;
                     uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
                     if(val_ && val_ - val <= filt_depth * (m+n) * 0.5){
-                        isValue = false;
+                        isFeature= false;
                         break;
                     }
-                     if(!isValue)
+                     if(!isFeature)
                          break;
                 }
             }
-            if(isValue)
+            if(isFeature)
                 *p_matDst = val;
         }
     }

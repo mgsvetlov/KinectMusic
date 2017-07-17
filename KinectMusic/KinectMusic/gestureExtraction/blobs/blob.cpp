@@ -26,22 +26,21 @@
 Blob::Blob()
 {}
 
-Blob::Blob(cv::Mat mat16, int ind) :
-matSize(mat16.size())
+Blob::Blob(cv::Mat mat, int ind) :
+matSize(mat.size())
 {
-    int w = mat16.cols;
-    int h = mat16.rows;
-    uint16_t* p_mat16 = (uint16_t*)(mat16.data);
+    int w = mat.cols;
+    int h = mat.rows;
+    uint16_t* p_mat = (uint16_t*)(mat.data);
     int x = ind % w;
     int y = (ind -x) / w;
-    cells.AddCell(x, y, ind, *(p_mat16 + ind));
-    *(p_mat16 + ind) = MAX_KINECT_VALUE;
+    cells.AddCell(x, y, ind, *(p_mat + ind));
+    *(p_mat + ind) = MAX_KINECT_VALUE;
     auto it = cells.All().begin();
-    while(it != cells.All().end()){
-        uint16_t val =  it->val;
+    for( ;it != cells.All().end(); ++it){
+        const uint16_t val =  it->val;
         int x_ = it->x;
         int y_ = it->y;
-        
         for(int yNeighb = y_ - 1; yNeighb <= y_ + 1; yNeighb++){
             if(yNeighb < 0 || yNeighb >= h)
                 continue;
@@ -49,27 +48,70 @@ matSize(mat16.size())
                 if((yNeighb == y_ && xNeighb == x_) || xNeighb < 0 || xNeighb >= w)
                     continue;
                 int indNeighb = yNeighb * w + xNeighb;
-                uint16_t valNeighb =  *(p_mat16 + indNeighb);
+                uint16_t valNeighb =  *(p_mat + indNeighb);
                 if(valNeighb >= MAX_KINECT_VALUE || valNeighb == 0)
                     continue;
                 if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
                     cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
-                    *(p_mat16 + indNeighb) = MAX_KINECT_VALUE;
+                    *(p_mat + indNeighb) = MAX_KINECT_VALUE;
                 }
             }
         }
-        ++it;
     }
 }
 
-bool Blob::filterLargeBlobs(cv::Mat originalMat){
+Blob::Blob(cv::Mat mat, int ind, bool connectivity, float distThresh, int sizeThresh){
+    cells.Clear();
+    int w =  mat.cols;
+    int h = mat.rows;
+    uint16_t* p_mat = (uint16_t*)(mat.data);
+    int x = ind % w;
+    int y = (ind - x)/ w;
+    cells.AddCell(Cell(x, y, ind, *(p_mat + ind)));
+    *(p_mat + ind) = MAX_KINECT_DEPTH;
+    auto it = cells.All().begin();
+    for(;it != cells.All().end();++it){
+        if(sizeThresh != NO_DATA_VALUE && cells.Size() >= sizeThresh)
+            break;
+        if(connectivity && it->dist > distThresh )
+            continue;
+        const uint16_t val =  it->val;
+        int x_ = it->x;
+        int y_ = it->y;
+        for(int yNeighb = y_ - 1; yNeighb <= y_ + 1; yNeighb++){
+            if(yNeighb < 0 || yNeighb >= h)
+                continue;
+            for(int xNeighb = x_-1; xNeighb <= x_ + 1; xNeighb++){
+                if((yNeighb == y_ && xNeighb == x_) || xNeighb < 0 || xNeighb >= w)
+                    continue;
+                int indNeighb = yNeighb * w + xNeighb;
+                uint16_t valNeighb =  *(p_mat + indNeighb);
+                if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0)
+                    continue;
+                if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_FINE){
+                    if(connectivity)
+                        cells.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
+                    else
+                        cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
+                    *(p_mat + indNeighb) = MAX_KINECT_DEPTH;
+                    if(connectivity){
+                        it->child = &cells.All().back();
+                        cells.All().back().parent = &(*it);
+                    }
+                }
+            }
+        }
+    }
+}
+
+int Blob::indOriginNearest(cv::Mat originalMat) const{
     int ind = cells.MinValCell()->ind;
     int x = ind % this->matSize.width;
     int y = (ind-x) /this->matSize.width;
     x <<= BLOBS_RESIZE_POW;
     y <<= BLOBS_RESIZE_POW;
     
-    static const int halfSize(originalMat.cols * 0.09375);
+    static const int halfSize(1 << BLOBS_RESIZE_POW);
     
     int minX(x - halfSize), minY(y - halfSize), maxX(x + halfSize), maxY(y + halfSize);
     if(minX < 0)
@@ -81,70 +123,22 @@ bool Blob::filterLargeBlobs(cv::Mat originalMat){
     if(maxY >= originalMat.rows)
         maxY = originalMat.rows - 1;
     
-    matSize = originalMat.size();
-    int closest_z = cells.MinValCell()->val;
-    cells.Clear();
-    
-    static constexpr int depthThresh(150);
+    int indNearest (NO_DATA_VALUE);
+    int valNearest (MAX_KINECT_VALUE);
     
     for(int y = minY; y <= maxY; ++y){
         uint16_t* p = (uint16_t*)(originalMat.data) + originalMat.cols * y + minX;
         for(int x = minX; x <= maxX; ++x, ++p){
-            if((*p>0) &&   *p - closest_z < depthThresh){
-                cells.AddCell(Cell(x, y, static_cast<int>(p - (uint16_t*)(originalMat.data)), *p));
+            int val = *p;
+            if((val > 0) &&   val < valNearest){
+                indNearest = static_cast<int>(p - (uint16_t*)(originalMat.data));
+                valNearest = val;
             }
         }
     }
     
-    if(cells.Size() > originalMat.cols * 6.25 || cells.Size() == 0)
-        return false;
+    return indNearest;
 
-    return true;
-}
-
-void Blob::createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, float distThresh){
-    cv::Mat matMask = cv::Mat_<unsigned char>::zeros(mat.size());
-    int w =  mat.cols;
-    int h = mat.rows;
-    uint16_t* p_mat = (uint16_t*)(mat.data);
-     unsigned char* p_matMask  = (unsigned char*)(matMask.data);
-    int x = ind % w;
-    int y = (ind - x)/ w;
-    cells.AddCell(Cell(x, y, ind, val));
-    *(p_matMask + ind) = 255;
-    auto it = cells.All().begin();
-    while(it != cells.All().end()){
-        const int dist = it->dist;
-        if(dist <= distThresh ){
-            const uint16_t val =  it->val;
-            int x_ = it->x;
-            int y_ = it->y;
-            for(int yNeighb = y_ - 1; yNeighb <= y_ + 1; yNeighb++){
-                if(yNeighb < 0 || yNeighb >= h)
-                    continue;
-                for(int xNeighb = x_-1; xNeighb <= x_ + 1; xNeighb++){
-                    if((yNeighb == y_ && xNeighb == x_) || xNeighb < 0 || xNeighb >= w)
-                        continue;
-                    int indNeighb = yNeighb * w + xNeighb;
-                    if(*(p_matMask + indNeighb) != 0) {
-                        continue;
-                    }
-                    uint16_t valNeighb =  *(p_mat + indNeighb);
-                    if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0)
-                        continue;
-                    if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
-                        cells.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
-                        *(p_matMask + indNeighb) = 255;
-                        if(connectivity){
-                            it->child = &cells.All().back();
-                            cells.All().back().parent = &(*it);
-                        }
-                    }
-                }
-            }
-        }
-        ++it;
-    }
 }
 
 void Blob::createSubBlobs(){
@@ -178,13 +172,9 @@ void Blob::createBorders(){
 }
 
 bool Blob::analyzeHand(cv::Mat originalMat){
-    //create tree from front
-    static const float distThresh(500.0f);
-    createCellsTree(originalMat, cells.MinValCell()->ind, cells.MinValCell()->val, true, distThresh);
-
     createSubBlobs();
     
-    createBorders();
+    //createBorders();
     
     //PclNormals::estimateNormals(*this);
     //computeAngle();

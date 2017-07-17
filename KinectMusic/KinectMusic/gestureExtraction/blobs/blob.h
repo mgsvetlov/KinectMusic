@@ -29,8 +29,10 @@ private:
 class Blob {
 public:
     Blob();
+    Blob(cv::Mat mat, int ind, bool connectivity, float distThresh, int sizeThresh = NO_DATA_VALUE);
 private:
-    Blob(cv::Mat mat16, int ind);
+    Blob(cv::Mat mat, int ind);
+    
 public:
     Cells<Cell>& getCells() {return cells;}
     const Cells<Cell>& getCellsConst() const {return cells;}
@@ -39,11 +41,10 @@ public:
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
     
-    bool filterLargeBlobs(cv::Mat originalMat);
+    int indOriginNearest(cv::Mat originalMat) const;
     bool analyzeHand(cv::Mat originalMat);
     
 private:
-    void createCellsTree(cv::Mat mat, int ind, int val, bool connectivity, float distThresh = std::numeric_limits<float>::max());
     void createSubBlobs();
     void createBorders();
     cv::Mat blob2mat();

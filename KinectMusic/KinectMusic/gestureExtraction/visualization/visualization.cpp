@@ -21,7 +21,7 @@ bool Visualization::isNeedRedraw = false;
 
 Visualization::Visualization() {
     cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );
-    cv::moveWindow("Display window", 320, 10);
+    cv::moveWindow("Display window", 20, -1000);
     //cv::resizeWindow("Display window", 640, 480);
     p_vis = this;
 }
@@ -39,7 +39,7 @@ bool Visualization::showImage() {
     }
     cv::flip(matImage, matImage, 1);
     //cv::Mat matImageRes;
-    //cv::resize(matImage, matImageRes, cv::Size(matImage.cols >> BLOBS_RESIZE_POW, matImage.rows >> BLOBS_RESIZE_POW));
+    //cv::resize(matImage, matImageRes, cv::Size(matImage.cols << 1, matImage.rows << 1));
     cv::imshow( "Display window", matImage);
     pthread_mutex_unlock(&visualisation_mutex);
     
@@ -139,15 +139,15 @@ void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar
             col = 0;
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, col, col), -1);
     }
-    int j(0);
-    for(auto& border : blob.borders){
+    /*int j(0);
+    for(auto& item : blob.subBlobs){
         int c = j % 3;
         cv::Scalar colorPoint = c == 0 ? cv::Scalar(255,0.0f, 0.0f) : c == 1 ? cv::Scalar(0.0f,255, 0.0f) : cv::Scalar(0.0f,0.0f, 255);
         ++j;
-        for(auto& cell : border.borderCells){
+        for(auto& cell : item.vpCells){
             cv::circle(matImg, cv::Point(cell->x, cell->y), 1, colorPoint, -1);
         }
-    }
+    }*/
 }
 
 void Visualization::keyPoint2img(const cv::Point3i& keyPoint, cv::Mat& matImg, const cv::Scalar& color, int size) {

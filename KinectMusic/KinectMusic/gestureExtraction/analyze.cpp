@@ -96,52 +96,37 @@ void *analyze_threadfunc(void *arg) {
         
         //extract person
         BlobsFabrique blobsFabrique(mat16_resized);
-        std::list<Blob>& lBlobs = blobsFabrique.getBlobs();
+        std::list<Blob>& blobs = blobsFabrique.getBlobs();
         
-        cv::Mat matBlobs = Blob::blobs2mat(lBlobs, mat16_resized.size());
+        cv::Mat matBlobs = Blob::blobs2mat(blobs, mat16_resized.size());
         
         //extract hands
         static int filt_size(mat16_resized.cols / 20), filt_depth(mat16_resized.cols / 10), core_half_size(2);
         cv::Mat matDst = HandsExtractor::extractHands(matBlobs, filt_size, filt_depth, core_half_size);
        
         BlobsFabrique blobsFabrique1(matDst, 1);
-        std::list<Blob>& lBlobs1 = blobsFabrique1.getBlobs();
+        std::list<Blob>& blobs1 = blobsFabrique1.getBlobs();
         
         int xyThresh(mat16_resized.cols / 8), depthThresh(100);
-        BlobsClust blobsClust(lBlobs1, xyThresh, depthThresh);
-        std::list<Blob>& lBlobsClust = blobsClust.getBlobsClust();
+        BlobsClust blobsClust(blobs1, xyThresh, depthThresh);
+        std::list<Blob>& blobsCl = blobsClust.getBlobsClust();
         
-        std::list<Hand> lHands;
-        if(!lBlobsClust.empty()){
-            auto it = lBlobsClust.begin();
-            while(it != lBlobsClust.end()){
-                auto& blob = *it;
-                if(blob.filterLargeBlobs(mat16_filt)){
-                    lHands.push_back(Hand(blob));
-                    ++it;
-                    continue;
-                }
-                auto itErase = it;
-                ++it;
-                lBlobsClust.erase(itErase);
-            }
+        std::list<Blob> blobsExt;
+        static const float distThresh(500.0f);
+        static const int sizeThresh(4000);
+        for(auto& blob  : blobsCl) {
+            int ind = blob.indOriginNearest(mat16_filt);
+            if(ind == NO_DATA_VALUE)
+                continue;
+            blobsExt.emplace_back(Blob(mat16_filt, ind, true, distThresh, sizeThresh));
+            if(blobsExt.back().getCellsConst().Size() == 1)
+                blobsExt.pop_back();
         }
-        
+
         //tracking hands
-        Track::analyzeFrame(lHands);
+        /*Track::analyzeFrame(lHands);
         std::vector<Track> vTracks = Track::getTracksConst();
         std::vector<Blob*> vp_Blobs;
-        for(auto& track : vTracks){
-            if(track.getIsTrackFound())
-            vp_Blobs.push_back(track.getLHands().back().getP_blob());
-        }
-        
-        //analyze hand
-        for(auto p_Blob : vp_Blobs){
-            if(p_Blob->analyzeHand(mat16_filt)){
-                
-            }
-        }
         
         //create and analyze hands tracked stream data
         FrameData frameData = GestureFabrique::extractGestures(vTracks);
@@ -152,15 +137,15 @@ void *analyze_threadfunc(void *arg) {
                 Logs::writeLog("gestures", "Share error!");
                 break;
             }
-        }
+        }*/
 #ifdef WRITE_LOGS
         std::cout << frameData;
 #endif //WRITE_LOGS
         if(Config::instance()->getIsVisualisation()){
             cv::Mat img;
             Visualization::mat2img(mat16, img);
-            //Visualization::blobs2img( lBlobsClust, img, false);
-            Visualization::blobs2img( vp_Blobs, img, false);
+            Visualization::blobs2img( blobsExt, img, true);
+            
             //Visualization::gestures2img(GestureFabrique::getGestures(), img);
             
             pthread_mutex_lock(&visualisation_mutex);
