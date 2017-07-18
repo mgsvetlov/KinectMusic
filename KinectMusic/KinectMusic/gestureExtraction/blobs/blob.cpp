@@ -29,6 +29,7 @@ Blob::Blob()
 Blob::Blob(cv::Mat mat, int ind) :
 matSize(mat.size())
 {
+    cells.All().reserve(mat.total());
     int w = mat.cols;
     int h = mat.rows;
     uint16_t* p_mat = (uint16_t*)(mat.data);
@@ -62,7 +63,7 @@ matSize(mat.size())
 
 //blob extended
 Blob::Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh){
-    cells.Clear();
+    cells.All().reserve(sizeThresh);
     const uint16_t maskValue = 65535 - blobInd;
     int w =  mat.cols;
     int h = mat.rows;
@@ -71,11 +72,11 @@ Blob::Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThres
     int y = (ind - x)/ w;
     cells.AddCell(Cell(x, y, ind, *(p_mat + ind)));
     *(p_mat + ind) = maskValue;
-    
+    bool isEndModeGlobal (false);
     auto it = cells.All().begin();
     for(;it != cells.All().end();++it){
         bool isEndMode (false);
-        if((sizeThresh != NO_DATA_VALUE && cells.Size() >= sizeThresh)
+        if(isEndModeGlobal || (sizeThresh != NO_DATA_VALUE && cells.Size() >= sizeThresh)
            || (connectivity && it->dist > distThresh )) {
             isEndMode = true;
         }
@@ -110,16 +111,18 @@ Blob::Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThres
                     border2.All().back().parent = &(*it);
                     continue;
                 }
-                
-                if(connectivity){
-                    cells.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
-                    it->child = &cells.All().back();
-                    cells.All().back().parent = &(*it);
+                if(!isEndMode && !isEndModeGlobal){
+                    if(connectivity){
+                        cells.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
+                        it->child = &cells.All().back();
+                        cells.All().back().parent = &(*it);
+                    }
+                    else {
+                        cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
+                    }
+                    if(cells.Size() == sizeThresh)
+                        isEndModeGlobal = true;
                 }
-                else {
-                    cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
-                }
-                
             }
         }
     }

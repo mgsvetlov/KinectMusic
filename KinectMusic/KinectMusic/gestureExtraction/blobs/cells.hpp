@@ -13,17 +13,20 @@
 #include "cell.hpp"
 #include "../../log/logs.h"
 
+template<typename T>
+using CellsContainer = std::vector<T>;
+
 template<typename T> class Cells {
 public:
-    Cells(){}
+    Cells();
     Cells(const Cells&) = delete;
     Cells(Cells&&);
     void AddCell(const T& cell);
     void AddCell(uint16_t x, uint16_t y, int ind, int val);
     void AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell);
     void Clear();
-    std::list<T>& All();
-    const std::list<T>& AllConst() const;
+    CellsContainer<T>& All();
+    const CellsContainer<T>& AllConst() const;
     const T* const MinValCell() const;
     const T* const MaxValCell() const;
     int AverageValue() const;
@@ -38,19 +41,21 @@ private:
     void AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::false_type);
     void AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::true_type);
 private:
-    std::list<T> cells;
-    typename std::list<T>::const_iterator it_minValCell = cells.cend();
-    typename std::list<T>::const_iterator it_maxValCell = cells.cend();
+    CellsContainer<T> cells;
+    int minValInd = -1;
+    int maxValInd = -1;
 };
 
+template<typename T> Cells<T>::Cells() :
+minValInd(NO_DATA_VALUE),
+maxValInd(NO_DATA_VALUE)
+{
+}
+
 template<typename T> Cells<T>::Cells(Cells&& other){
-    size_t minNum = distance(other.cells.cbegin(), other.it_minValCell);
-    size_t maxNum = distance(other.cells.cbegin(), other.it_maxValCell);
-    
     std::move(other.cells.begin(), other.cells.end(), std::back_inserter(cells));
-    
-    it_minValCell = next(cells.cbegin(), minNum);
-    it_maxValCell = next(cells.cbegin(), maxNum);
+    minValInd = other.minValInd;
+    maxValInd = other.maxValInd;
     
     other.Clear();
 }
@@ -88,27 +93,27 @@ template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int
 
 template<typename T> void Cells<T>::Clear(){
     cells.clear();
-    it_minValCell = it_maxValCell = cells.cend();
+    minValInd = maxValInd = NO_DATA_VALUE;
 }
 
-template<typename T> std::list<T>& Cells<T>::All() {
+template<typename T> CellsContainer<T>& Cells<T>::All() {
     return cells;
 }
 
-template<typename T> const std::list<T>& Cells<T>::AllConst() const {
+template<typename T> const CellsContainer<T>& Cells<T>::AllConst() const {
     return cells;
 }
 
 template<typename T> const T* const Cells<T>::MinValCell() const{
-    if(cells.empty())
+    if(minValInd == NO_DATA_VALUE)
        return nullptr;
-    return(&(*it_minValCell));
+    return &cells.at(minValInd);
 }
 
 template<typename T> const T* const Cells<T>::MaxValCell() const{
-    if(cells.empty())
+    if(maxValInd == NO_DATA_VALUE)
         return nullptr;
-    return(&(*it_maxValCell));
+    return &cells.at(maxValInd);
 }
 
 template<typename T> int Cells<T>::AverageValue() const{
@@ -132,11 +137,10 @@ template<typename T> void Cells<T>::Merge(const Cells<T>& cells1){
 
 template<typename T> void Cells<T>::CheckBackMinMax(){
     auto val = Value(cells.back(), std::is_pointer<T>());
-    
-    if(cells.empty()  || val < Value(*it_minValCell, std::is_pointer<T>()))
-        it_minValCell-- = cells.cend();
-    if(cells.empty()  || val > Value(*it_maxValCell, std::is_pointer<T>()))
-        it_maxValCell-- = cells.cend();
+    if(minValInd == NO_DATA_VALUE || val < Value(cells[minValInd], std::is_pointer<T>()))
+        minValInd = static_cast<int>(cells.size() - 1);
+    if(maxValInd == NO_DATA_VALUE || val < Value(cells[maxValInd], std::is_pointer<T>()))
+        maxValInd = static_cast<int>(cells.size() - 1);
 }
 
 template<typename T> int Cells<T>::Value(const T& cell, std::false_type) const{
