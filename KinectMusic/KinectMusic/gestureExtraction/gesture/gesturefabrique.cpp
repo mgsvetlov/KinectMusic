@@ -7,7 +7,7 @@
 //
 
 
-
+/*
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
 #include "../analyze.h"
@@ -76,4 +76,4 @@ cv::Point3i GestureFabrique::convertToCameraSpace(const cv::Point3d& p){
     int y = p.y;// /( z * spaceCoeff);
     return cv::Point3d (x,y,z);
 }
-
+*/

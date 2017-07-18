@@ -8,7 +8,7 @@
 
 #ifndef gestureAll_hpp
 #define gestureAll_hpp
-
+/*
 #include "gesture.h"
 
 class GestureAll : public Gesture {
@@ -18,5 +18,5 @@ public:
     virtual bool extract();
     
 };
-
+*/
 #endif /* gestureAll_hpp */

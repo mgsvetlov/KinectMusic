@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 08/07/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
-
+/*
 #include "pcldownsample.hpp"
 #include "pclutility.hpp"
 
@@ -34,3 +34,4 @@ void PclDownsample::downsample (pcl::PCLPointCloud2::Ptr cloud, pcl::PCLPointClo
     sor.filter (*cloud_filtered);
 
 }
+*/

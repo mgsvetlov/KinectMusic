@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 04/12/16.
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
-
+/*
 #include "gesture.h"
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
@@ -34,3 +34,4 @@ void Gesture::eraseHandsData(int nonErasedAtEndCount){
         --it;
     handsData.erase(handsData.begin(), it);
 }
+*/

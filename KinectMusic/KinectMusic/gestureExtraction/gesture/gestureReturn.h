@@ -8,7 +8,7 @@
 
 #ifndef GestureReturn_h
 #define GestureReturn_h
-
+/*
 #include "gesture.h"
 
 class GestureReturn : public Gesture {
@@ -27,5 +27,5 @@ private:
     static cv::Vec3d threshReturn;
     
 };
-
+*/
 #endif /* GestureReturn_h */

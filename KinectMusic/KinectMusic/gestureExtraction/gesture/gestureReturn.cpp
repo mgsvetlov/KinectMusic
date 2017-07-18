@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 25/05/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
-
+/*
 #include "gestureReturn.h"
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
@@ -75,3 +75,4 @@ bool GestureReturn::isInThreshold (const cv::Point3d& point1, const cv::Point3d&
     }
     return true;
 }
+*/

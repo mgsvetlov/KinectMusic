@@ -8,6 +8,7 @@
 
 #ifndef hand_h
 #define hand_h
+/*
 #include "../blobs/blob.h"
 
 class Hand {
@@ -28,5 +29,5 @@ private:
     friend class Visualization;
     friend class Track;
 };
-
+*/
 #endif /* hand_h */

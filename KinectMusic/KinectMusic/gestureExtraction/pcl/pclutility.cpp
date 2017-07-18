@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 08/07/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
-
+/*
 #include "pclutility.hpp"
 
 
@@ -33,3 +33,4 @@ void PclUtility::cloud2blob(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, Blob& blo
         cells.AddCell(cloud->points[i].x, cloud->points[i].y, w * static_cast<int>(cloud->points[i].y) + cloud->points[i].x, cloud->points[i].z);
     }
 }
+*/

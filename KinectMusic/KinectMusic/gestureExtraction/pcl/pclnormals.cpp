@@ -6,7 +6,7 @@
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
 
-
+/*
 #include "pclnormals.hpp"
 #ifdef USE_CELL_NORMAL
 
@@ -60,3 +60,4 @@ pcl::PointCloud<pcl::Normal>::Ptr  PclNormals::estimateNormals(pcl::PointCloud<p
 }
 
 #endif //USE_CELL_NORMAL
+*/

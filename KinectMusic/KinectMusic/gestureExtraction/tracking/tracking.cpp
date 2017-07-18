@@ -7,13 +7,13 @@
 //
 
 #include "tracking.h"
-
+/*
 #include <cfloat>
 #include <limits>
 
 std::vector<Track> Track::tracks(trackCount);
 
-/*static*/
+
 void Track::analyzeFrame(const std::list<Hand>& lHands){
     for(auto& track : tracks){
         if(track.lHands.size()  > 2)
@@ -85,4 +85,4 @@ void Track::addHandData(const Hand& hand){
     lHands.push_back(hand);
     isHandFound = true;
 }
-
+*/

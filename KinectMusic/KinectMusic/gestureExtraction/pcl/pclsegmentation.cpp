@@ -5,6 +5,7 @@
 //  Created by Mikhail Svetlov on 08/07/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
+/*
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
@@ -51,3 +52,4 @@ std::list<pcl::PointCloud<pcl::PointXYZ>::Ptr> PclSegmentation::segmentation(pcl
     
     return lClouds;
 }
+*/

@@ -6,8 +6,8 @@
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
 
-#ifndef cell_hpp
-#define cell_hpp
+#ifndef cell_h
+#define cell_h
 
 #include "../types.h"
 
@@ -33,4 +33,4 @@ private:
 };
 
 
-#endif /* cell_hpp */
+#endif /* cell_h */

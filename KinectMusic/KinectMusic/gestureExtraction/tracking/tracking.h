@@ -8,7 +8,7 @@
 
 #ifndef tracking_h
 #define tracking_h
-
+/*
 #include <stdio.h>
 #include "../types.h"
 
@@ -34,5 +34,5 @@ private:
 public:
     static const size_t trackCount = 2;
 };
-
+*/
 #endif /* tracking_h */

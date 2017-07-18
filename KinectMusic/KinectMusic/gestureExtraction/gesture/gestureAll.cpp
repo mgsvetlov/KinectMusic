@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 03/06/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
-
+/*
 #include "gestureAll.h"
 
 bool GestureAll::extract(){
@@ -21,3 +21,4 @@ bool GestureAll::extract(){
     eraseHandsData(1);
     return true;
 }
+*/

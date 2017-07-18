@@ -5,15 +5,7 @@
 //  Created by Mikhail Svetlov on 01/10/16.
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
-#include <unistd.h>
-#include <stdio.h>
 #include "visualization.h"
-#include "../blobs/blob.h"
-#include "../tracking/tracking.h"
-#include "../analyze.h"
-#include "../hand/hand.h"
-#include "../gesture/gesturefabrique.h"
-#include "../../log/logs.h"
 
 Visualization* Visualization::p_vis = nullptr;
 cv::Mat Visualization::matImage;
@@ -69,9 +61,9 @@ void Visualization::mat2img(cv::Mat mat, cv::Mat& matImg) {
             //*p_b = 0;
         }
         /*else {
-            *p_r = 0;
-            *p_b = 255;
-        }*/
+         *p_r = 0;
+         *p_b = 255;
+         }*/
         p_r++, p_g++, p_b++, p_mat16++;
     }
     
@@ -81,61 +73,6 @@ void Visualization::mat2img(cv::Mat mat, cv::Mat& matImg) {
     channels.push_back(r);
     
     cv::merge(channels, matImg);
-}
-
-void Visualization::blobs2img(const std::list<Blob>& lBlobs, cv::Mat& matImg, bool drawKeyPoints ){
-    for(const auto& blob : lBlobs){
-        cv::Scalar color = blob.angle > 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
-        blob2img(blob, matImg, color, true);
-        if(drawKeyPoints) {
-            int x = blob.cells.MinValCell()->x;
-            int y = blob.cells.MinValCell()->y;
-            int z = blob.cells.MinValCell()->val;
-            keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 0, 0), 3);
-        }
-    }
-}
-
-void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg, size_t length){
-    int pointSize(5);
-    cv::Scalar color = gesture->handInd == 0 ? cv::Scalar(0,255,255) : cv::Scalar(255,255, 0);
-    auto rit = gesture->handsData.crbegin();
-    if(length == 0 || gesture->handsData.size() < length)
-        length = gesture->handsData.size();
-    for(int i = 0; i < length; ++i, ++rit){
-        const auto& handData = *rit;
-        const auto& point = handData.point;
-        if(point.x != NO_DATA_VALUE && handData.phase != NO_DATA_VALUE){
-            keyPoint2img(point, matImg, color, pointSize);
-        }
-    }
-}
-
-void Visualization::gestures2img(const std::vector<std::shared_ptr<Gesture>>& gestures, cv::Mat& matImg, size_t length){
-    for(auto& gesture : gestures) {
-        gesture2img(gesture, matImg, length);
-    }
-}
-
-
-void Visualization::blob2img(const Blob& blob, cv::Mat& matImg, const cv::Scalar& color, bool colorFromNormal){
-    int minVal = blob.cells.MinValCell()->val;
-    for(auto& cell : blob.cells.AllConst()){
-        int col = 255 - (cell.val - minVal);
-        if(col < 0)
-            col = 0;
-        cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, col, col), -1);
-    }
-    for(auto& cell : blob.border1.AllConst()){
-        auto& parentCell = cell.parent;
-        cv::circle(matImg, cv::Point(parentCell->x, parentCell->y), 1, cv::Scalar (0.0f, 255.0f, 0), -1);
-        cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, 0.0f, 255), -1);
-    }
-    for(auto& cell : blob.border2.AllConst()){
-        auto& parentCell = cell.parent;
-        cv::circle(matImg, cv::Point(parentCell->x, parentCell->y), 1, cv::Scalar (255, 255.0f, 0), -1);
-        cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (255, 0.0f, 0), -1);
-    }
 }
 
 void Visualization::keyPoint2img(const cv::Point3i& keyPoint, cv::Mat& matImg, const cv::Scalar& color, int size) {
@@ -152,13 +89,34 @@ void Visualization::drawText(cv::Mat& mat, std::string text, double fontScale, i
     
     int baseline = 0;
     cv::Size textSize = cv::getTextSize(text, fontFace,
-                                fontScale, thickness, &baseline);
+                                        fontScale, thickness, &baseline);
     baseline += thickness;
     
     // center the text
     cv::Point textOrg((mat.cols - textSize.width) * textCenter.x,
-                  (mat.rows + textSize.height) * textCenter.y);
+                      (mat.rows + textSize.height) * textCenter.y);
     
     cv::putText(mat, text, textOrg, fontFace, fontScale,
-            color, thickness, 8);
+                color, thickness, 8);
 }
+
+/*void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg, size_t length){
+ int pointSize(5);
+ cv::Scalar color = gesture->handInd == 0 ? cv::Scalar(0,255,255) : cv::Scalar(255,255, 0);
+ auto rit = gesture->handsData.crbegin();
+ if(length == 0 || gesture->handsData.size() < length)
+ length = gesture->handsData.size();
+ for(int i = 0; i < length; ++i, ++rit){
+ const auto& handData = *rit;
+ const auto& point = handData.point;
+ if(point.x != NO_DATA_VALUE && handData.phase != NO_DATA_VALUE){
+ keyPoint2img(point, matImg, color, pointSize);
+ }
+ }
+ }*/
+
+/*void Visualization::gestures2img(const std::vector<std::shared_ptr<Gesture>>& gestures, cv::Mat& matImg, size_t length){
+ for(auto& gesture : gestures) {
+ gesture2img(gesture, matImg, length);
+ }
+ }*/

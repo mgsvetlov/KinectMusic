@@ -6,7 +6,7 @@
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
 
-#include "cell.hpp"
+#include "cell.h"
 
 Cell::Cell(){}
 

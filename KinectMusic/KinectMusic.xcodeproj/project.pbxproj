@@ -42,7 +42,6 @@
 		7262274D1D90737D00644016 /* libopencv_videostab.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7262273F1D90737D00644016 /* libopencv_videostab.2.4.9.dylib */; };
 		7274B8BB1F1CEA5300F1D30D /* convex3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7274B8B91F1CEA5300F1D30D /* convex3d.cpp */; };
 		72799BA71DC61E5800BAC3DC /* analyze.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72799BA41DC61E5800BAC3DC /* analyze.cpp */; };
-		72799BAA1DC61E6D00BAC3DC /* blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72799BA81DC61E6D00BAC3DC /* blob.cpp */; };
 		72799BB31DC61EAE00BAC3DC /* visualization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72799BB11DC61EAE00BAC3DC /* visualization.cpp */; };
 		728233331F0D4B2400B6E4D4 /* libpcl_io_ply.1.7.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233271F0D4B2400B6E4D4 /* libpcl_io_ply.1.7.2.dylib */; };
 		728233341F0D4B2400B6E4D4 /* libpcl_io.1.7.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 728233281F0D4B2400B6E4D4 /* libpcl_io.1.7.2.dylib */; };
@@ -122,8 +121,6 @@
 		728233C31F11525700B6E4D4 /* pclsegmentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233C11F11525700B6E4D4 /* pclsegmentation.cpp */; };
 		728233C61F1153B100B6E4D4 /* pclnormals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233C41F1153B100B6E4D4 /* pclnormals.cpp */; };
 		728233CC1F1B5EDB00B6E4D4 /* cell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233CB1F1B5EDA00B6E4D4 /* cell.cpp */; };
-		728233CF1F1B692F00B6E4D4 /* blobsfabrique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233CD1F1B692F00B6E4D4 /* blobsfabrique.cpp */; };
-		728233D21F1B7EFE00B6E4D4 /* blobsclust.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233D01F1B7EFE00B6E4D4 /* blobsclust.cpp */; };
 		7298B7271D8D85840093134C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7298B7261D8D85840093134C /* main.cpp */; };
 		72AFE5E41E7B583000143CA7 /* libusb-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 72AFE5E31E7B583000143CA7 /* libusb-1.0.a */; };
 		72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72B332AD1BAF0733003DA9DA /* kinect.cpp */; };
@@ -219,8 +216,7 @@
 		72799BA41DC61E5800BAC3DC /* analyze.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = analyze.cpp; path = gestureExtraction/analyze.cpp; sourceTree = "<group>"; };
 		72799BA51DC61E5800BAC3DC /* analyze.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = analyze.h; path = gestureExtraction/analyze.h; sourceTree = "<group>"; };
 		72799BA61DC61E5800BAC3DC /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = gestureExtraction/types.h; sourceTree = "<group>"; };
-		72799BA81DC61E6D00BAC3DC /* blob.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = blob.cpp; path = gestureExtraction/blobs/blob.cpp; sourceTree = "<group>"; };
-		72799BA91DC61E6D00BAC3DC /* blob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blob.h; path = gestureExtraction/blobs/blob.h; sourceTree = "<group>"; };
+		72799BA91DC61E6D00BAC3DC /* blob.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = blob.hpp; path = gestureExtraction/blobs/blob.hpp; sourceTree = "<group>"; };
 		72799BB11DC61EAE00BAC3DC /* visualization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = visualization.cpp; path = gestureExtraction/visualization/visualization.cpp; sourceTree = "<group>"; };
 		72799BB21DC61EAE00BAC3DC /* visualization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = visualization.h; path = gestureExtraction/visualization/visualization.h; sourceTree = "<group>"; };
 		728233271F0D4B2400B6E4D4 /* libpcl_io_ply.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_io_ply.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_io_ply.1.7.2.dylib; sourceTree = "<group>"; };
@@ -306,11 +302,9 @@
 		728233C41F1153B100B6E4D4 /* pclnormals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclnormals.cpp; path = gestureExtraction/pcl/pclnormals.cpp; sourceTree = "<group>"; };
 		728233C51F1153B100B6E4D4 /* pclnormals.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclnormals.hpp; path = gestureExtraction/pcl/pclnormals.hpp; sourceTree = "<group>"; };
 		728233C81F19F40700B6E4D4 /* cells.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = cells.hpp; path = gestureExtraction/blobs/cells.hpp; sourceTree = "<group>"; };
-		728233CA1F1B546700B6E4D4 /* cell.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = cell.hpp; path = gestureExtraction/blobs/cell.hpp; sourceTree = "<group>"; };
+		728233CA1F1B546700B6E4D4 /* cell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = cell.h; path = gestureExtraction/blobs/cell.h; sourceTree = "<group>"; };
 		728233CB1F1B5EDA00B6E4D4 /* cell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cell.cpp; path = gestureExtraction/blobs/cell.cpp; sourceTree = "<group>"; };
-		728233CD1F1B692F00B6E4D4 /* blobsfabrique.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = blobsfabrique.cpp; path = gestureExtraction/blobs/blobsfabrique.cpp; sourceTree = "<group>"; };
 		728233CE1F1B692F00B6E4D4 /* blobsfabrique.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = blobsfabrique.hpp; path = gestureExtraction/blobs/blobsfabrique.hpp; sourceTree = "<group>"; };
-		728233D01F1B7EFE00B6E4D4 /* blobsclust.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = blobsclust.cpp; path = gestureExtraction/blobs/blobsclust.cpp; sourceTree = "<group>"; };
 		728233D11F1B7EFE00B6E4D4 /* blobsclust.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = blobsclust.hpp; path = gestureExtraction/blobs/blobsclust.hpp; sourceTree = "<group>"; };
 		7298B7261D8D85840093134C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		72AFE5E31E7B583000143CA7 /* libusb-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libusb-1.0.a"; path = "lib/libusb-1.0.a"; sourceTree = "<group>"; };
@@ -639,20 +633,17 @@
 			name = visualization;
 			sourceTree = "<group>";
 		};
-		722141A51D9FC2BD00B697E8 /* blolbs */ = {
+		722141A51D9FC2BD00B697E8 /* blobs */ = {
 			isa = PBXGroup;
 			children = (
-				72799BA81DC61E6D00BAC3DC /* blob.cpp */,
-				72799BA91DC61E6D00BAC3DC /* blob.h */,
+				72799BA91DC61E6D00BAC3DC /* blob.hpp */,
 				728233C81F19F40700B6E4D4 /* cells.hpp */,
-				728233CA1F1B546700B6E4D4 /* cell.hpp */,
+				728233CA1F1B546700B6E4D4 /* cell.h */,
 				728233CB1F1B5EDA00B6E4D4 /* cell.cpp */,
-				728233CD1F1B692F00B6E4D4 /* blobsfabrique.cpp */,
 				728233CE1F1B692F00B6E4D4 /* blobsfabrique.hpp */,
-				728233D01F1B7EFE00B6E4D4 /* blobsclust.cpp */,
 				728233D11F1B7EFE00B6E4D4 /* blobsclust.hpp */,
 			);
-			name = blolbs;
+			name = blobs;
 			sourceTree = "<group>";
 		};
 		722141C01DB015AE00B697E8 /* include */ = {
@@ -699,7 +690,7 @@
 				72048F6E1EDA00BE006381E9 /* share.cpp */,
 				72048F6F1EDA00BE006381E9 /* share.h */,
 				72799BA61DC61E5800BAC3DC /* types.h */,
-				722141A51D9FC2BD00B697E8 /* blolbs */,
+				722141A51D9FC2BD00B697E8 /* blobs */,
 				728233201F07950D00B6E4D4 /* convex3d */,
 				720C228C1DE990C10066104B /* hand */,
 				7282333F1F0D4FC700B6E4D4 /* pcl */,
@@ -764,10 +755,8 @@
 				72048F701EDA00BE006381E9 /* share.cpp in Sources */,
 				72799BB31DC61EAE00BAC3DC /* visualization.cpp in Sources */,
 				725B1BA31ED772170028AE34 /* gestureReturn.cpp in Sources */,
-				728233CF1F1B692F00B6E4D4 /* blobsfabrique.cpp in Sources */,
 				7298B7271D8D85840093134C /* main.cpp in Sources */,
 				72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */,
-				72799BAA1DC61E6D00BAC3DC /* blob.cpp in Sources */,
 				720164C11A6C058B00BC721A /* usb_libusb10.c in Sources */,
 				728233CC1F1B5EDB00B6E4D4 /* cell.cpp in Sources */,
 				7274B8BB1F1CEA5300F1D30D /* convex3d.cpp in Sources */,
@@ -778,7 +767,6 @@
 				728233C61F1153B100B6E4D4 /* pclnormals.cpp in Sources */,
 				720C228E1DE990F90066104B /* hand.cpp in Sources */,
 				720A04F31EE5B80400731552 /* config.cpp in Sources */,
-				728233D21F1B7EFE00B6E4D4 /* blobsclust.cpp in Sources */,
 				728233421F0D4FFD00B6E4D4 /* pclplane.cpp in Sources */,
 				720C22921DF2EED10066104B /* tracking.cpp in Sources */,
 				720164BA1A6C058B00BC721A /* audio.c in Sources */,

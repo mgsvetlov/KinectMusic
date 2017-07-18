@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 25/05/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
-
+/*
 #include "gestureStop.h"
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
@@ -71,3 +71,4 @@ bool GestureStop::extract(){
         return true;
     }
 }
+*/

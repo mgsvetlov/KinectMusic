@@ -8,7 +8,7 @@
 
 #ifndef pcl_hpp
 #define pcl_hpp
-
+/*
 #include <pcl/point_types.h>
 #include <pcl/filters/extract_indices.h>
 #include "../blobs/blob.h"
@@ -20,5 +20,5 @@ public:
 private:
     static void fitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, float& x, float& y, float& z, float& w);
 };
-
+*/
 #endif /* pcl_hpp */

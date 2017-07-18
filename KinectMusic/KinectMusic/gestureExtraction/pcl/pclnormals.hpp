@@ -8,7 +8,7 @@
 
 #ifndef pclnormals_hpp
 #define pclnormals_hpp
-
+/*
 #ifdef USE_CELL_NORMAL
 
 #include <pcl/point_types.h>
@@ -24,5 +24,5 @@ private:
 };
 
 #endif //USE_CELL_NORMAL
-
+*/
 #endif /* pclnormals_hpp */

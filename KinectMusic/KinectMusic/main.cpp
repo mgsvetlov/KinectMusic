@@ -133,7 +133,7 @@ int main(int argc, char **argv)
     die_kinect = 1;
     pthread_join(freenect_thread, NULL);
     
-    GestureFabrique::destroy();
+    //GestureFabrique::destroy();
     Share::destroy();
     Logs::closeLogs();
     free(rgb_back);

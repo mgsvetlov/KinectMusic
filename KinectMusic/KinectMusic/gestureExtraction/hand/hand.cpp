@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 26/11/16.
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
-
+/*
 #include "hand.h"
 
 Hand::Hand(Blob& blob){
@@ -22,3 +22,4 @@ double Hand::dist2hand(const Hand& hand) const{
     int dy = keyPoint.y - hand.keyPoint.y;
     return sqrt(dx*dx+dy*dy);
 }
+*/

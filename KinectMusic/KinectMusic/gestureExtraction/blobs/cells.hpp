@@ -10,7 +10,7 @@
 #define cells_hpp
 
 #include <type_traits>
-#include "cell.hpp"
+#include "cell.h"
 #include "../../log/logs.h"
 
 template<typename T>

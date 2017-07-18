@@ -8,7 +8,7 @@
 
 #ifndef gesturefabrique_h
 #define gesturefabrique_h
-
+/*
 #include "gesture.h"
 #include "gestureAll.h"
 #include "gestureStop.h"
@@ -36,5 +36,5 @@ private:
     static GestureFabrique* gestureFabriquePtr;
 };
 
-
+*/
 #endif /* gesturefabrique_h */

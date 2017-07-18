@@ -1,18 +1,22 @@
 //
-//  nearestblob.cpp
+//  nearestblob.hpp
 //  KinectMusic
 //
 //  Created by Mikhail Svetlov on 01/10/16.
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
+
+#ifndef blob_hpp
+#define blob_hpp
+
+#include <limits>
+#include "cells.hpp"
 #include <iostream>
 #include <queue>
 #include <algorithm>    // std::sort
 #include <vector>       // std::vector
-#include <vector>
 #include <sstream>
 #include <iterator>
-#include "blob.h"
 #include "../../log/logs.h"
 #include "../analyze.h"
 #include  "../pcl/pclplane.hpp"
@@ -22,11 +26,49 @@
 #endif //USE_CELL_NORMAL
 #include "../pcl/pclsegmentation.hpp"
 
+template<typename T> class Blob {
+public:
+    Blob();
+    
+//private:
+    Blob(cv::Mat mat, int ind);
+    Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh = NO_DATA_VALUE);
+    
+public:
+    Cells<T>& getCells() {return cells;}
+    const Cells<T>& getCellsConst() const {return cells;}
+    const Cells<T>& getBorder1Const() const {return border1;}
+    const Cells<T>& getBorder2Const() const {return border2;}
+    
+    static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
+    
+    const cv::Size& getMatSize() const {return this->matSize;}
+    void setMatSize(cv::Size size) {this->matSize = size;}
+    
+    int indOriginNearest(cv::Mat originalMat) const;
+    bool analyzeHand(cv::Mat originalMat);
+    
+private:
+    cv::Mat blob2mat();
+    void computeAngle();
+    
+private:
+    Cells<T> cells;
+    Cells<T> border1;
+    Cells<T> border2;
 
-Blob::Blob()
+    int angle;
+    cv::Size matSize;
+    
+    friend class Hand;
+    friend class Visualization;
+};
+/////////////////////////////////////////////////////////////////////////////////
+
+template<typename T> Blob<T>::Blob()
 {}
 
-Blob::Blob(cv::Mat mat, int ind) :
+template<typename T> Blob<T>::Blob(cv::Mat mat, int ind) :
 matSize(mat.size())
 {
     cells.All().reserve(mat.total());
@@ -62,7 +104,7 @@ matSize(mat.size())
 }
 
 //blob extended
-Blob::Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh){
+template<typename T> Blob<T>::Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh){
     cells.All().reserve(sizeThresh);
     const uint16_t maskValue = 65535 - blobInd;
     int w =  mat.cols;
@@ -70,7 +112,7 @@ Blob::Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThres
     uint16_t* p_mat = (uint16_t*)(mat.data);
     int x = ind % w;
     int y = (ind - x)/ w;
-    cells.AddCell(Cell(x, y, ind, *(p_mat + ind)));
+    cells.AddCell(x, y, ind, *(p_mat + ind));
     *(p_mat + ind) = maskValue;
     bool isEndModeGlobal (false);
     auto it = cells.All().begin();
@@ -128,7 +170,7 @@ Blob::Blob(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThres
     }
 }
 
-int Blob::indOriginNearest(cv::Mat originalMat) const{
+template<typename T> int Blob<T>::indOriginNearest(cv::Mat originalMat) const{
     int ind = cells.MinValCell()->ind;
     int x = ind % this->matSize.width;
     int y = (ind-x) /this->matSize.width;
@@ -162,18 +204,18 @@ int Blob::indOriginNearest(cv::Mat originalMat) const{
     }
     
     return indNearest;
-
+    
 }
 
-bool Blob::analyzeHand(cv::Mat originalMat){
+template<typename T> bool Blob<T>::analyzeHand(cv::Mat originalMat){
     
     //PclNormals::estimateNormals(*this);
     //computeAngle();
     return true;
 }
 
-void Blob::computeAngle(){
-    if( cells.Size() < 3){
+template<typename T> void Blob<T>::computeAngle(){
+    /*if( cells.Size() < 3){
         this->angle = 0.0f;
         return;
     }
@@ -185,10 +227,10 @@ void Blob::computeAngle(){
         angle /= norm;
     if(z * y < 0)
         angle *= -1;
-    this->angle = angle * 100.f;
+    this->angle = angle * 100.f;*/
 }
 
-cv::Mat Blob::blob2mat(){
+template<typename T> cv::Mat Blob<T>::blob2mat(){
     cv::Mat mat = cv::Mat_<uint16_t>::zeros(this->matSize);
     for(auto& cell : cells.All()) {
         int ind = cell.ind;
@@ -198,7 +240,7 @@ cv::Mat Blob::blob2mat(){
     return mat;
 }
 
-cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
+template<typename T> cv::Mat Blob<T>::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
     cv::Mat mat = cv::Mat_<uint16_t>::zeros(size);
     
     for(auto& blob : lBlobs) {
@@ -212,3 +254,5 @@ cv::Mat Blob::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
     return mat;
 }
 
+using BlobPrim = Blob<Cell>;
+#endif /* blob_hpp */

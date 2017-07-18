@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 05/07/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
-
+/*
 #include <iostream>
 #include <algorithm>
 #include <sstream>
@@ -43,7 +43,7 @@ void PclPlane::fitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, float& x, flo
     z = model_coefficients.z();
     w = model_coefficients.w();
 }
-
+*/
 
 
 

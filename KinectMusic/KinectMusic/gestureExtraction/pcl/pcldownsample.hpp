@@ -9,6 +9,7 @@
 #ifndef downsample_hpp
 #define downsample_hpp
 
+/*
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
 #include "../blobs/blob.h"
@@ -19,5 +20,5 @@ public:
 private:
     static void downsample (pcl::PCLPointCloud2::Ptr cloud, pcl::PCLPointCloud2::Ptr cloud_filtered);
 };
-
+*/
 #endif /* downsample_hpp */

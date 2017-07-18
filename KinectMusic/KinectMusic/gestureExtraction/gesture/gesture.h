@@ -8,7 +8,7 @@
 
 #ifndef gesture_h
 #define gesture_h
-
+/*
 #include <stdio.h>
 #include "../types.h"
 
@@ -33,5 +33,5 @@ protected:
 friend class Visualization;
 };
 
-
+*/
 #endif /* gesture_h */

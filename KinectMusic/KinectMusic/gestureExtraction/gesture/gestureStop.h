@@ -8,7 +8,7 @@
 
 #ifndef gestureStop_h
 #define gestureStop_h
-
+/*
 #include "gesture.h"
 
 class GestureStop : public Gesture {
@@ -20,5 +20,5 @@ private:
     static double speedThreshStart,  speedThreshEnd;
     static int endIterationsCount;
 };
-
+*/
 #endif /* gestureStop_h */
