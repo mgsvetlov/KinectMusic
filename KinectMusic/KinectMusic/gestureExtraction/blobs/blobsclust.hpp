@@ -9,7 +9,7 @@
 #ifndef blobsclust_hpp
 #define blobsclust_hpp
 
-#include "blob.hpp"
+#include "blobext.hpp"
 
 template<typename T> class BlobsClust {
 public:

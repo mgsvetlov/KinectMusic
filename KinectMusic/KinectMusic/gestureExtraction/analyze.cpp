@@ -103,7 +103,7 @@ void *analyze_threadfunc(void *arg) {
         static int filt_size(mat16_resized.cols / 20), filt_depth(mat16_resized.cols / 10), core_half_size(2);
         cv::Mat matDst = Convex3d::extractConvexities(matBlobs, filt_size, filt_depth, core_half_size);
         BlobsFabrique<BlobPrim> blobsFabrique1(1, matDst);
-        std::list<BlobPrim> blobsExt;
+        std::list<BlobFinal> blobsExt;
         blobsFabrique1.constructBlobsExt(mat16.clone(), blobsExt);
 
         //tracking hands

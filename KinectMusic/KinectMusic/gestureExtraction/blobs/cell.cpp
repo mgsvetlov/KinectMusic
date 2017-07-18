@@ -16,14 +16,15 @@ y(y),
 ind(ind),
 val(val){}
 
-Cell::Cell(uint16_t x, uint16_t y, int ind, int val, const Cell& cell):
-x(x),
-y(y),
-ind(ind),
-val(val),
+CellExt::CellExt(uint16_t x, uint16_t y, int ind, int val):
+Cell(x, y, ind, val)
+{}
+
+CellExt::CellExt(uint16_t x, uint16_t y, int ind, int val, const CellExt& cell):
+Cell(x, y, ind, val),
 dist(cell.dist + distance(cell)){}
 
-float Cell::distance(const Cell& cell){
+float CellExt::distance(const CellExt& cell){
     static constexpr float spaceCoeff(9./6400);
     auto& cellVal = cell.val;
     float dx = (x * val - cell.x * cellVal) * spaceCoeff;

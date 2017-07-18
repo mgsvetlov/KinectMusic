@@ -9,7 +9,7 @@
 #ifndef blobsfabrique_hpp
 #define blobsfabrique_hpp
 
-#include "blob.hpp"
+#include "blobext.hpp"
 #include "blobsclust.hpp"
 #include "../../log/logs.h"
 
