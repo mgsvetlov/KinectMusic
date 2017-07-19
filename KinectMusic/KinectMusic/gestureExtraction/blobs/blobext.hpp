@@ -18,14 +18,14 @@ public:
     BlobExt();
     BlobExt(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh = NO_DATA_VALUE);
     
-    const Cells<T>& getBorder1Const() const {return border1;}
-    const Cells<T>& getBorder2Const() const {return border2;}
+    const Cells<CellBorder>& getBorderCells1Const() const {return borderCells1;}
+    const Cells<CellBorder>& getBorderCells2Const() const {return borderCells2;}
     
     bool analyzeHand(cv::Mat originalMat);
 private:
     void computeAngle();
-    Cells<T> border1;
-    Cells<T> border2;
+    Cells<CellBorder> borderCells1;
+    Cells<CellBorder> borderCells2;
     int angle;
     
     friend class Visualization;
@@ -67,21 +67,21 @@ template<typename T> BlobExt<T>::BlobExt(cv::Mat mat, int ind, int blobInd, bool
                 if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0 || abs(valNeighb-val) >= MAX_NEIGHB_DIFF_COARSE){
                     if(valNeighb > maskValue){
                         cells.Clear();
-                        border1.Clear();
-                        border2.Clear();
+                        borderCells1.Clear();
+                        borderCells2.Clear();
                         return;
                     }
                     if(valNeighb != maskValue){
                         *(p_mat + indNeighb) = maskValue;
-                        border1.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
-                        border1.All().back().parent = &(*it);
+                        borderCells1.AddCell(xNeighb, yNeighb,indNeighb, valNeighb);
+                        borderCells1.All().back().parentInd = static_cast<int>(it - cells.All().begin());
                     }
                     continue;
                 }
                 *(p_mat + indNeighb) = maskValue;
                 if(isEndMode){
-                    border2.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
-                    border2.All().back().parent = &(*it);
+                    borderCells2.AddCell(xNeighb, yNeighb,indNeighb, valNeighb);
+                    borderCells2.All().back().parentInd = static_cast<int>(it - cells.All().begin());
                     continue;
                 }
                 if(!isEndMode && !isEndModeGlobal){

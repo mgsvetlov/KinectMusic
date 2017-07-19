@@ -10,7 +10,7 @@
 #define blob_hpp
 
 #include <limits>
-#include "cells.hpp"
+#include "cells/cells.hpp"
 #include <iostream>
 #include <queue>
 #include <algorithm>    // std::sort

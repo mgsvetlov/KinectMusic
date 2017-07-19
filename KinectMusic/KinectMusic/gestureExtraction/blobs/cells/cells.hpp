@@ -11,7 +11,7 @@
 
 #include <type_traits>
 #include "cell.h"
-#include "../../log/logs.h"
+#include "../../../log/logs.h"
 
 template<typename T>
 using CellsContainer = std::vector<T>;

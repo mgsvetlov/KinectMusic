@@ -20,7 +20,7 @@
 #include "visualization/visualization.h"
 #include "analyze.h"
 #include "blobs/blobsfabrique.hpp"
-#include "blobs/cell.h"
+#include "blobs/cells/cell.h"
 #include "convex3d/convex3d.h"
 #include "hand/hand.h"
 #include "tracking/tracking.h"

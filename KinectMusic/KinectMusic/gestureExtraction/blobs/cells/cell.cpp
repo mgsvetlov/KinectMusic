@@ -8,8 +8,6 @@
 
 #include "cell.h"
 
-Cell::Cell(){}
-
 Cell::Cell(uint16_t x, uint16_t y, int ind, int val):
 x(x),
 y(y),
@@ -32,3 +30,7 @@ float CellExt::distance(const CellExt& cell){
     int dz = val - cellVal;
     return sqrt(dx*dx + dy*dy + dz*dz);
 }
+
+CellBorder::CellBorder(uint16_t x, uint16_t y, int ind, int val):
+Cell(x, y, ind, val)
+{}
