@@ -308,6 +308,7 @@
 		728233C51F1153B100B6E4D4 /* pclnormals.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclnormals.hpp; path = gestureExtraction/pcl/pclnormals.hpp; sourceTree = "<group>"; };
 		728233CE1F1B692F00B6E4D4 /* blobsfabrique.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = blobsfabrique.hpp; path = gestureExtraction/blobs/blobsfabrique.hpp; sourceTree = "<group>"; };
 		728233D11F1B7EFE00B6E4D4 /* blobsclust.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = blobsclust.hpp; path = gestureExtraction/blobs/blobsclust.hpp; sourceTree = "<group>"; };
+		729777DD1F1F3E3800E83781 /* cellsborder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = cellsborder.hpp; path = gestureExtraction/blobs/cells/cellsborder.hpp; sourceTree = "<group>"; };
 		7298B7261D8D85840093134C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		72AFE5E31E7B583000143CA7 /* libusb-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libusb-1.0.a"; path = "lib/libusb-1.0.a"; sourceTree = "<group>"; };
 		72B332AD1BAF0733003DA9DA /* kinect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = kinect.cpp; sourceTree = "<group>"; };
@@ -664,6 +665,7 @@
 				7274B8C11F1F2B3800F1D30D /* cell.cpp */,
 				7274B8C21F1F2B3800F1D30D /* cell.h */,
 				7274B8C31F1F2B3800F1D30D /* cells.hpp */,
+				729777DD1F1F3E3800E83781 /* cellsborder.hpp */,
 			);
 			name = cells;
 			sourceTree = "<group>";

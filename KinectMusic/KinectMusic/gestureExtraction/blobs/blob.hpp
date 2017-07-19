@@ -26,13 +26,13 @@
 #endif //USE_CELL_NORMAL
 #include "../pcl/pclsegmentation.hpp"
 
-template<typename T> class Blob {
+template<template<typename> class TContainer, typename T> class Blob {
 public:
     Blob();
     Blob(cv::Mat mat, int ind);
     
-    Cells<T>& getCells() {return cells;}
-    const Cells<T>& getCellsConst() const {return cells;}
+    Cells<TContainer,T>& getCells() {return cells;}
+    const Cells<TContainer,T>& getCellsConst() const {return cells;}
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
     
@@ -43,17 +43,17 @@ private:
     cv::Mat blob2mat();
     
 protected:
-    Cells<T> cells;
+    Cells<TContainer,T> cells;
     cv::Size matSize;
     
     friend class Visualization;
 };
 /////////////////////////////////////////////////////////////////////////////////
 
-template<typename T> Blob<T>::Blob()
+template<template<typename> class TContainer, typename T> Blob<TContainer, T>::Blob()
 {}
 
-template<typename T> Blob<T>::Blob(cv::Mat mat, int ind) :
+template<template<typename> class TContainer, typename T> Blob<TContainer,T>::Blob(cv::Mat mat, int ind) :
 matSize(mat.size())
 {
     cells.All().reserve(mat.total());
@@ -90,7 +90,7 @@ matSize(mat.size())
 
 
 
-template<typename T> int Blob<T>::indOriginNearest(cv::Mat originalMat) const{
+template<template<typename> class TContainer, typename T> int Blob<TContainer,T>::indOriginNearest(cv::Mat originalMat) const{
     int ind = cells.MinValCell()->ind;
     int x = ind % this->matSize.width;
     int y = (ind-x) /this->matSize.width;
@@ -127,7 +127,7 @@ template<typename T> int Blob<T>::indOriginNearest(cv::Mat originalMat) const{
     
 }
 
-template<typename T> cv::Mat Blob<T>::blob2mat(){
+template<template<typename> class TContainer, typename T> cv::Mat Blob<TContainer,T>::blob2mat(){
     cv::Mat mat = cv::Mat_<uint16_t>::zeros(this->matSize);
     for(auto& cell : cells.All()) {
         int ind = cell.ind;
@@ -137,7 +137,7 @@ template<typename T> cv::Mat Blob<T>::blob2mat(){
     return mat;
 }
 
-template<typename T> cv::Mat Blob<T>::blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size) {
+template<template<typename> class TContainer, typename T> cv::Mat Blob<TContainer,T>::blobs2mat(const std::list<Blob<TContainer,T>>& lBlobs, const cv::Size& size) {
     cv::Mat mat = cv::Mat_<uint16_t>::zeros(size);
     
     for(auto& blob : lBlobs) {
@@ -151,7 +151,7 @@ template<typename T> cv::Mat Blob<T>::blobs2mat(const std::list<Blob>& lBlobs, c
     return mat;
 }
 
-using BlobPrim = Blob<Cell>;
+using BlobPrim = Blob<Vector, Cell>;
 
 
 #endif /* blob_hpp */

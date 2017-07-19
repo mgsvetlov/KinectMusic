@@ -11,31 +11,32 @@
 #define blobext_hpp
 
 #include "blob.hpp"
+#include "borders/border.hpp"
 
-template<typename T> class BlobExt : public Blob<T> {
-    using Blob<T>::cells;
+template<template<typename> class  TContainer, template<typename> class  TContainer1, typename T> class BlobExt : public Blob<TContainer,  T> {
+    using Blob<TContainer,T>::cells;
 public:
     BlobExt();
     BlobExt(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh = NO_DATA_VALUE);
     
-    const Cells<CellBorder>& getBorderCells1Const() const {return borderCells1;}
-    const Cells<CellBorder>& getBorderCells2Const() const {return borderCells2;}
+    const Border<TContainer, TContainer1, CellBorder>& getBorder1Const() const {return border1;}
+    const Border<TContainer, TContainer1, CellBorder>& getBorder2Const() const {return border2;}
     
     bool analyzeHand(cv::Mat originalMat);
 private:
     void computeAngle();
-    Cells<CellBorder> borderCells1;
-    Cells<CellBorder> borderCells2;
+    Border<TContainer, TContainer1, CellBorder> border1;
+    Border<TContainer, TContainer1, CellBorder> border2;
     int angle;
     
     friend class Visualization;
 };
 
-template<typename T> BlobExt<T>::BlobExt()
+template<template<typename> class  TContainer, template<typename> class  TContainer1, typename T>  BlobExt<TContainer, TContainer1, T>::BlobExt()
 {}
 
 //blob extended
-template<typename T> BlobExt<T>::BlobExt(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh){
+template<template<typename> class  TContainer, template<typename> class  TContainer1, typename T>  BlobExt<TContainer, TContainer1, T>::BlobExt(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh){
     cells.All().reserve(sizeThresh);
     const uint16_t maskValue = 65535 - blobInd;
     int w =  mat.cols;
@@ -67,21 +68,21 @@ template<typename T> BlobExt<T>::BlobExt(cv::Mat mat, int ind, int blobInd, bool
                 if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0 || abs(valNeighb-val) >= MAX_NEIGHB_DIFF_COARSE){
                     if(valNeighb > maskValue){
                         cells.Clear();
-                        borderCells1.Clear();
-                        borderCells2.Clear();
+                        border1.getBorderCells().Clear();
+                        border2.getBorderCells().Clear();
                         return;
                     }
                     if(valNeighb != maskValue){
                         *(p_mat + indNeighb) = maskValue;
-                        borderCells1.AddCell(xNeighb, yNeighb,indNeighb, valNeighb);
-                        borderCells1.All().back().parentInd = static_cast<int>(it - cells.All().begin());
+                        border1.getBorderCells().AddCell(xNeighb, yNeighb,indNeighb, valNeighb);
+                        border1.getBorderCells().All().back().parentInd = static_cast<int>(it - cells.All().begin());
                     }
                     continue;
                 }
                 *(p_mat + indNeighb) = maskValue;
                 if(isEndMode){
-                    borderCells2.AddCell(xNeighb, yNeighb,indNeighb, valNeighb);
-                    borderCells2.All().back().parentInd = static_cast<int>(it - cells.All().begin());
+                    border2.getBorderCells().AddCell(xNeighb, yNeighb,indNeighb, valNeighb);
+                    border2.getBorderCells().All().back().parentInd = static_cast<int>(it - cells.All().begin());
                     continue;
                 }
                 if(!isEndMode && !isEndModeGlobal){
@@ -101,14 +102,14 @@ template<typename T> BlobExt<T>::BlobExt(cv::Mat mat, int ind, int blobInd, bool
     }
 }
 
-template<typename T> bool BlobExt<T>::analyzeHand(cv::Mat originalMat){
+template<template<typename> class  TContainer, template<typename> class  TContainer1, typename T>  bool BlobExt<TContainer, TContainer1, T>::analyzeHand(cv::Mat originalMat){
     
     //PclNormals::estimateNormals(*this);
     //computeAngle();
     return true;
 }
 
-template<typename T> void BlobExt<T>::computeAngle(){
+template<template<typename> class  TContainer, template<typename> class  TContainer1, typename T>  void BlobExt<TContainer, TContainer1, T>::computeAngle(){
     /*if( cells.Size() < 3){
      this->angle = 0.0f;
      return;
@@ -124,6 +125,7 @@ template<typename T> void BlobExt<T>::computeAngle(){
      this->angle = angle * 100.f;*/
 }
 
-using BlobFinal = BlobExt<CellExt>;
+
+using BlobFinal = BlobExt<Vector, Deque, CellExt>;
 
 #endif /* blobext_hpp */

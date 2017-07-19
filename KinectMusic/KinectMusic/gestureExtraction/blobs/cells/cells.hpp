@@ -14,9 +14,9 @@
 #include "../../../log/logs.h"
 
 template<typename T>
-using CellsContainer = std::vector<T>;
+using Vector = std::vector<T>;
 
-template<typename T> class Cells {
+template<template<typename> class TContainer, typename T> class Cells {
 public:
     Cells();
     Cells(const Cells&) = delete;
@@ -25,14 +25,14 @@ public:
     void AddCell(uint16_t x, uint16_t y, int ind, int val);
     void AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell);
     void Clear();
-    CellsContainer<T>& All();
-    const CellsContainer<T>& AllConst() const;
+    TContainer<T>& All();
+    const TContainer<T>& AllConst() const;
     const T* const MinValCell() const;
     const T* const MaxValCell() const;
     int AverageValue() const;
     int Size() const;
-    void Merge(const Cells<T>& cells1);
-private:
+    void Merge(const Cells<TContainer,T>& cells1);
+protected:
     void CheckBackMinMax();
     int Value(const T&, std::false_type) const;
     int Value(const T&, std::true_type) const;
@@ -40,19 +40,19 @@ private:
     void AddCell(uint16_t x, uint16_t y, int ind, int val, std::true_type);
     void AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::false_type);
     void AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::true_type);
-private:
-    CellsContainer<T> cells;
+protected:
+    TContainer<T> cells;
     int minValInd = -1;
     int maxValInd = -1;
 };
 
-template<typename T> Cells<T>::Cells() :
+template<template<typename> class TContainer, typename T> Cells<TContainer,T>::Cells() :
 minValInd(NO_DATA_VALUE),
 maxValInd(NO_DATA_VALUE)
 {
 }
 
-template<typename T> Cells<T>::Cells(Cells&& other){
+template<template<typename> class  TContainer, typename T> Cells<TContainer,T>::Cells(Cells&& other){
     std::move(other.cells.begin(), other.cells.end(), std::back_inserter(cells));
     minValInd = other.minValInd;
     maxValInd = other.maxValInd;
@@ -60,63 +60,63 @@ template<typename T> Cells<T>::Cells(Cells&& other){
     other.Clear();
 }
 
-template<typename T> void Cells<T>::AddCell(const T& cell){
+template<template<typename> class TContainer, typename T> void Cells<TContainer,T>::AddCell(const T& cell){
     cells.push_back(cell);
     CheckBackMinMax();
 }
 
-template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val){
+template<template<typename> class  TContainer, typename T> void Cells<TContainer,T>::AddCell(uint16_t x, uint16_t y, int ind, int val){
     AddCell(x, y, ind, val,  std::is_pointer<T>());
 }
 
-template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val,  std::false_type){
+template<template<typename> class  TContainer, typename T> void Cells<TContainer,T>::AddCell(uint16_t x, uint16_t y, int ind, int val,  std::false_type){
     cells.emplace_back(x, y, ind, val);
     CheckBackMinMax();
 }
 
-template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val, std::true_type){
+template<template<typename> class  TContainer, typename T> void Cells<TContainer,T>::AddCell(uint16_t x, uint16_t y, int ind, int val, std::true_type){
     
 }
 
-template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell){
+template<template<typename> class  TContainer, typename T> void Cells<TContainer,T>::AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell){
     AddCell(x, y, ind, val, cell,  std::is_pointer<T>());
 }
 
-template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::false_type){
+template<template<typename> class  TContainer, typename T> void Cells<TContainer,T>::AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::false_type){
     cells.emplace_back(x, y, ind, val, cell);
     CheckBackMinMax();
 }
 
-template<typename T> void Cells<T>::AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::true_type){
+template<template<typename> class  TContainer, typename T> void Cells<TContainer,T>::AddCell(uint16_t x, uint16_t y, int ind, int val, const T& cell, std::true_type){
     
 }
 
-template<typename T> void Cells<T>::Clear(){
+template<template<typename> class  TContainer, typename T> void Cells<TContainer,T>::Clear(){
     cells.clear();
     minValInd = maxValInd = NO_DATA_VALUE;
 }
 
-template<typename T> CellsContainer<T>& Cells<T>::All() {
+template<template<typename> class  TContainer, typename T> TContainer<T>& Cells<TContainer,T>::All() {
     return cells;
 }
 
-template<typename T> const CellsContainer<T>& Cells<T>::AllConst() const {
+template<template<typename> class  TContainer, typename T> const TContainer<T>& Cells<TContainer,T>::AllConst() const {
     return cells;
 }
 
-template<typename T> const T* const Cells<T>::MinValCell() const{
+template<template<typename> class  TContainer, typename T> const T* const Cells<TContainer,T>::MinValCell() const{
     if(minValInd == NO_DATA_VALUE)
        return nullptr;
     return &cells.at(minValInd);
 }
 
-template<typename T> const T* const Cells<T>::MaxValCell() const{
+template<template<typename> class  TContainer, typename T> const T* const Cells<TContainer,T>::MaxValCell() const{
     if(maxValInd == NO_DATA_VALUE)
         return nullptr;
     return &cells.at(maxValInd);
 }
 
-template<typename T> int Cells<T>::AverageValue() const{
+template<template<typename> class  TContainer, typename T> int Cells<TContainer,T>::AverageValue() const{
     int sum (0);
     for( auto& cell: cells){
         sum += Value(cell, std::is_pointer<T>());
@@ -124,18 +124,18 @@ template<typename T> int Cells<T>::AverageValue() const{
     return sum / cells.size();
 }
 
-template<typename T> int Cells<T>::Size() const {
+template<template<typename> class  TContainer, typename T> int Cells<TContainer,T>::Size() const {
     return static_cast<int>(cells.size());
 }
 
-template<typename T> void Cells<T>::Merge(const Cells<T>& cells1){
+template<template<typename> class  TContainer, typename T> void Cells<TContainer,T>::Merge(const Cells<TContainer,T>& cells1){
     for(auto& cell : cells1.AllConst()){
         cells.push_back(cell);
         CheckBackMinMax();
     }
 }
 
-template<typename T> void Cells<T>::CheckBackMinMax(){
+template<template<typename> class  TContainer, typename T> void Cells<TContainer,T>::CheckBackMinMax(){
     auto val = Value(cells.back(), std::is_pointer<T>());
     if(minValInd == NO_DATA_VALUE || val < Value(cells[minValInd], std::is_pointer<T>()))
         minValInd = static_cast<int>(cells.size() - 1);
@@ -143,11 +143,11 @@ template<typename T> void Cells<T>::CheckBackMinMax(){
         maxValInd = static_cast<int>(cells.size() - 1);
 }
 
-template<typename T> int Cells<T>::Value(const T& cell, std::false_type) const{
+template<template<typename> class  TContainer, typename T> int Cells<TContainer,T>::Value(const T& cell, std::false_type) const{
     return cell.val;
 }
 
-template<typename T> int Cells<T>::Value(const T& cell, std::true_type) const{
+template<template<typename> class  TContainer, typename T> int Cells<TContainer,T>::Value(const T& cell, std::true_type) const{
     return cell->val;
 }
 

@@ -121,12 +121,12 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
             col = 0;
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, col, col), -1);
     }
-    for(auto& cell : blob.borderCells1.AllConst()){
+    for(auto& cell : blob.border1.getBorderCellsConst().AllConst()){
         auto& parentCell = blob.cells.AllConst()[cell.parentInd];
         cv::circle(matImg, cv::Point(parentCell.x, parentCell.y), 1, cv::Scalar (0.0f, 255.0f, 0), -1);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, 0.0f, 255), -1);
     }
-    for(auto& cell : blob.borderCells2.AllConst()){
+    for(auto& cell : blob.border2.getBorderCellsConst().AllConst()){
         auto& parentCell = blob.cells.AllConst()[cell.parentInd];
         cv::circle(matImg, cv::Point(parentCell.x, parentCell.y), 1, cv::Scalar (255, 255.0f, 0), -1);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (255, 0.0f, 0), -1);

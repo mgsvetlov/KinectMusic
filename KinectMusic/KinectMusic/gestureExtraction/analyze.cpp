@@ -99,7 +99,7 @@ void *analyze_threadfunc(void *arg) {
         auto& blobs = blobsFabrique.getBlobs();
         
         //extract 3d convexes
-        cv::Mat matBlobs = Blob<Cell>::blobs2mat(blobs, mat16_resized.size());
+        cv::Mat matBlobs = BlobPrim::blobs2mat(blobs, mat16_resized.size());
         static int filt_size(mat16_resized.cols / 20), filt_depth(mat16_resized.cols / 10), core_half_size(2);
         cv::Mat matDst = Convex3d::extractConvexities(matBlobs, filt_size, filt_depth, core_half_size);
         BlobsFabrique<BlobPrim> blobsFabrique1(1, matDst);
