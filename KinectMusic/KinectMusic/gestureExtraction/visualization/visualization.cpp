@@ -125,22 +125,46 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
             col = 0;
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (color[0] * col, color[1] * col, color[2] * col), -1);
     }
-    auto borders = blob.borderPtr->borders;
-    int i(0);
+    auto border = blob.borderPtr->borders.front();;
     std::stringstream ss;
-    for(auto& border : borders){
-        int rem = i % 5;
-        cv::Scalar color = rem == 0 ? cv::Scalar(255,0,0) : rem == 1 ?cv::Scalar(0,255,0) : rem == 2 ?cv::Scalar(0,0,255) : rem == 3 ?cv::Scalar(255,255,0) : cv::Scalar(255,0,255);
-        ss << border.size() << " Childs: ";
-        for(auto& clust : border){
-            ss << clust->childs.size() << " ";
-            int y = clust->y;
-            for(auto x = clust->first; x <= clust->last; ++ x)
-                cv::circle(matImg, cv::Point(x, y), 1, color, -1);
+    ss << border.size() << " Relatives: ";
+    for(auto& clust : border){
+        size_t count = clust->children.size() + (clust->parent != nullptr);
+        ss << count << " ";
+        if(count > 2){
+            ss << "\n<";
+            ss << "y " << clust->y << " " << clust->first << "-" << clust->last << " children: ";
+            for(auto& child : clust->children)
+                ss << "y " << child->y << " " << child->first << "-" << child->last << " ";
+            ss << " parent: ";
+            if(clust->parent)
+                ss << "y " << clust->parent->y << " " << clust->parent->first << "-" << clust->parent->last << " ";
+            ss << ">\n";
         }
-        ss << "\n";
-        ++i;
+        int y = clust->y;
+        cv::Scalar color = cv::Scalar(255,0,0);
+        switch(count){
+            case 1:
+                color = cv::Scalar(0,255,0);
+                break;
+            case 2:
+                color = cv::Scalar(255,0,0);
+                break;
+            case 3:
+                color = cv::Scalar(0,0,255);
+                break;
+            case 4:
+                color = cv::Scalar(255,0,255);
+                break;
+            default:
+                color = cv::Scalar(255,255,0);
+                break;
+        }
+        for(auto x = clust->first; x <= clust->last; ++ x)
+            cv::circle(matImg, cv::Point(x, y), 1, color, -1);
     }
+    ss << "\n";
+
     Logs::writeLog("gestures", ss.str());
     /*auto& borderClusts = blob.borderPtr->borderClusts;
     for(auto& row : borderClusts){

@@ -6,8 +6,8 @@
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
 
-#ifndef border_h
-#define border_h
+#ifndef border_hpp
+#define border_hpp
 
 #include "../cells/cellsborder.hpp"
 #include "../blobext.hpp"
@@ -25,24 +25,20 @@ struct BorderClust {
         last = clust.last;
     }
     bool IsAdjacent(const BorderClust& cluster) const {
-        if(parent != nullptr)
-            return false;
         int min = first < cluster.first ? first : cluster.first;
         int max = last > cluster.last ? last : cluster.last;
         return max - min <= last - first + cluster.last - cluster.first + 1;
-    }
-    void AddChild(BorderClust* child){
-        childs.push_back(child);
-        child->parent = this;
     }
     uint16_t y;
     uint16_t first;
     uint16_t last;
     uint16_t valAvg;
     uint16_t parentValAvg;
+    bool isInBorder = false;
     BorderClust* parent = nullptr;
-    std::list<BorderClust*> childs;
+    std::list<BorderClust*> children;
 };
+
 
 struct  BorderClustRow {
     void MergeClusts() {
@@ -61,9 +57,11 @@ struct  BorderClustRow {
             ++it;
         }
     }
-    std::list<BorderClust*> FindAdjacentChilds(const BorderClust& cluster)  {
+    std::list<BorderClust*> FindAdjacentChildren(const BorderClust& cluster)  {
         std::list<BorderClust*> clustsAdj;
         for(auto& clust : clusts){
+            if(cluster.parent == &clust)
+                continue;
             if(clust.IsAdjacent(cluster))
                 clustsAdj.push_back(&clust);
         }
@@ -99,6 +97,7 @@ borderCells2(borderCells2),
 borderClusts(mat.rows, BorderClustRow()),
 borders()
 {
+    //create clusters
     for(const auto& cell :  borderCells1.AllConst())
         AddCellToRow(cell);
     for(const auto& cell :  borderCells2.AllConst())
@@ -106,15 +105,15 @@ borders()
     for(auto& row : borderClusts)
         if(!row.clusts.empty())
             row.MergeClusts();
-    
+    //create border tree from clusters
     for(auto& row : borderClusts){
         for(auto& clust : row.clusts){
-            if(clust.parent == nullptr)
+            if(!clust.isInBorder){
                 CreateBorder(&clust);
+            }
         }
     }
-   
-    
+    borders.sort([](const std::list<BorderClust*>& cl1, const std::list<BorderClust*>& cl2){return cl1.size() > cl2.size();});
 }
 
 template<template<typename> class TContainer, typename T>
@@ -129,33 +128,62 @@ void Border<TContainer,T>::AddCellToRow(const CellBorder& cell) {
 
 template<template<typename> class TContainer, typename T>
 void Border<TContainer,T>::CreateBorder(BorderClust* clustHead){
-    borders.push_back(std::list<BorderClust*>());
+    clustHead->isInBorder = true;
+    borders.emplace_back(1, clustHead);
     auto& border = borders.back();
-    border.push_back(clustHead);
-    clustHead->parent = clustHead;
     auto it = border.begin();
     for( ;it != border.end(); ++it){
         auto& clust = **it;
         uint16_t y = clust.y;
-        if(y > 0){
-            auto& rowPrev = borderClusts[y - 1];
-            auto clustAdjPrev =  rowPrev.FindAdjacentChilds(clust);
-            for(auto& child : clustAdjPrev){
-                clust.AddChild(child);
-                border.push_back(child);
-            }
-        }
-        if(y < mat.rows - 1){
-            auto& rowNext = borderClusts[y + 1];
-            auto clustAdjNext =  rowNext.FindAdjacentChilds(clust);
-            for(auto& child : clustAdjNext){
-                clust.AddChild(child);
-                border.push_back(child);
+        std::list<BorderClustRow*> adjacentRows;
+        if(y > 0)
+            adjacentRows.push_back(&borderClusts[y - 1]);
+        if(y < mat.rows - 1)
+            adjacentRows.push_back(&borderClusts[y + 1]);
+        for(auto& adjacentRow : adjacentRows){
+            auto clustAdj =  adjacentRow->FindAdjacentChildren(clust);
+            for(auto& child : clustAdj){
+                clust.children.push_back(child);
+                child->parent = &clust;
+                if(!child->isInBorder){
+                    border.push_back(child);
+                    child->isInBorder = true;
+                }
             }
         }
     }
+
+    //iteratively delete all childless clusters
+    bool isNextIter(true);
+    while(isNextIter){
+        isNextIter = false;
+        auto it = border.begin();
+        while(it != border.end()){
+            auto& clust = **it;
+            if((clust.parent && clust.children.empty()) || (!clust.parent && clust.children.size() == 1)){
+                if(clust.parent){
+                    auto& parentChildren = clust.parent->children;
+                    auto itChild = parentChildren.begin();
+                    for(;itChild != parentChildren.end(); ++itChild){
+                        if(*itChild == &clust){
+                            parentChildren.erase(itChild);
+                        }
+                    }
+                }
+                else {
+                    auto& childParent = clust.children.front()->parent;
+                    childParent = nullptr;
+                }
+                it = border.erase(it);
+                isNextIter = true;
+                continue;
+            }
+            ++it;
+        }
+    }
+    //auto it = border.begin();
     
 }
 
 
-#endif /* border_h */
+#endif /* border_hpp */
