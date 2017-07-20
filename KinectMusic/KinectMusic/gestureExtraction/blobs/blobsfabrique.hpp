@@ -117,10 +117,12 @@ template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::cons
     int blobInd(0);
     for(auto& ind : inds) {
         blobsExt.emplace_back(origMat, ind, blobInd++, true, distThresh, sizeThresh);
-        if(blobsExt.back().getCellsConst().Size() <= 1
-           || blobsExt.back().getBorder1Const().getBorderCellsConst().Size() == 0
-           || blobsExt.back().getBorder1Const().getBorderCellsConst().Size() < blobsExt.back().getBorder2Const().getBorderCellsConst().Size())
+        auto& blobExt = blobsExt.back();
+        if(blobExt.isNotHand()) {
             blobsExt.pop_back();
+            continue;
+        }
+        blobExt.CreateBorders();
     }
     return blobsExt;
 }

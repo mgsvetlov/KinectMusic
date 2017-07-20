@@ -101,8 +101,11 @@ void Visualization::drawText(cv::Mat& mat, std::string text, double fontScale, i
 }
 
 void Visualization::blobs2img(const std::list<BlobFinal>& lBlobs, cv::Mat& matImg, bool drawKeyPoints ){
+    //int i(0);
     for(const auto& blob : lBlobs){
-        cv::Scalar color = blob.angle > 0? cv::Scalar(0,0.5,0) : cv::Scalar(0.5,0,0);
+        //int rem = i % 3;
+        //cv::Scalar color = rem == 0 ? cv::Scalar(0,1.0,0) : rem == 1 ?cv::Scalar(1.0,0,0) : cv::Scalar(1.0,1.0,0) ;
+        cv::Scalar color (0,1,1);
         blob2img(blob, matImg, color, true);
         if(drawKeyPoints) {
             int x = blob.cells.MinValCell()->x;
@@ -110,6 +113,7 @@ void Visualization::blobs2img(const std::list<BlobFinal>& lBlobs, cv::Mat& matIm
             int z = blob.cells.MinValCell()->val;
             keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 0, 0), 3);
         }
+        //++i;
     }
 }
 
@@ -119,18 +123,43 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
         int col = 255 - (cell.val - minVal);
         if(col < 0)
             col = 0;
-        cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, col, col), -1);
+        cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (color[0] * col, color[1] * col, color[2] * col), -1);
     }
-    for(auto& cell : blob.border1.getBorderCellsConst().AllConst()){
+    auto borders = blob.borderPtr->borders;
+    int i(0);
+    std::stringstream ss;
+    for(auto& border : borders){
+        int rem = i % 5;
+        cv::Scalar color = rem == 0 ? cv::Scalar(255,0,0) : rem == 1 ?cv::Scalar(0,255,0) : rem == 2 ?cv::Scalar(0,0,255) : rem == 3 ?cv::Scalar(255,255,0) : cv::Scalar(255,0,255);
+        ss << border.size() << " Childs: ";
+        for(auto& clust : border){
+            ss << clust->childs.size() << " ";
+            int y = clust->y;
+            for(auto x = clust->first; x <= clust->last; ++ x)
+                cv::circle(matImg, cv::Point(x, y), 1, color, -1);
+        }
+        ss << "\n";
+        ++i;
+    }
+    Logs::writeLog("gestures", ss.str());
+    /*auto& borderClusts = blob.borderPtr->borderClusts;
+    for(auto& row : borderClusts){
+        for(auto& clust : row.clusts){
+            int y = clust.y;
+            for(auto x = clust.first; x <= clust.last; ++ x)
+                cv::circle(matImg, cv::Point(x, y), 1, cv::Scalar (0.0f, 0.0f, 255), -1);
+        }
+    }*/
+    /*for(auto& cell : blob.borderCells1.AllConst()){
         auto& parentCell = blob.cells.AllConst()[cell.parentInd];
         cv::circle(matImg, cv::Point(parentCell.x, parentCell.y), 1, cv::Scalar (0.0f, 255.0f, 0), -1);
-        cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, 0.0f, 255), -1);
+        cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (0.0f, 255.0f, 255), -1);
     }
-    for(auto& cell : blob.border2.getBorderCellsConst().AllConst()){
+    for(auto& cell : blob.borderCells2.AllConst()){
         auto& parentCell = blob.cells.AllConst()[cell.parentInd];
         cv::circle(matImg, cv::Point(parentCell.x, parentCell.y), 1, cv::Scalar (255, 255.0f, 0), -1);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (255, 0.0f, 0), -1);
-    }
+    }*/
 }
 
 /*void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg, size_t length){

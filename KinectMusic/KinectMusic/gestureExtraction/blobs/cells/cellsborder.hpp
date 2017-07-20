@@ -23,7 +23,9 @@ public:
     CellsBorder();
     CellsBorder(const CellsBorder&) = delete;
     CellsBorder(CellsBorder&&);
-    
+    void AddCellFront(const T& cell);
+protected:
+    void CheckFrontMinMax();
 };
 
 template<template<typename> class TContainer, typename T> CellsBorder<TContainer,T>::CellsBorder()
@@ -32,6 +34,19 @@ template<template<typename> class TContainer, typename T> CellsBorder<TContainer
 
 template<template<typename> class  TContainer, typename T> CellsBorder<TContainer,T>::CellsBorder(CellsBorder&& other)
 {
+}
+
+template<template<typename> class TContainer, typename T> void CellsBorder<TContainer,T>::AddCellFront(const T& cell){
+    cells.push_front(cell);
+    CheckFrontMinMax();
+}
+
+template<template<typename> class  TContainer, typename T> void CellsBorder<TContainer,T>::CheckFrontMinMax(){
+    auto val = this->Value(cells.front(), std::is_pointer<T>());
+    if(minValInd == NO_DATA_VALUE || val < this->Value(cells[minValInd], std::is_pointer<T>()))
+        minValInd = 0;
+    if(maxValInd == NO_DATA_VALUE || val < this->Value(cells[maxValInd], std::is_pointer<T>()))
+        maxValInd = 0;
 }
 
 #endif /* cellsborder_h */

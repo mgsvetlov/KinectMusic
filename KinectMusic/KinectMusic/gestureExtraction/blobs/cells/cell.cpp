@@ -34,3 +34,9 @@ float CellExt::distance(const CellExt& cell){
 CellBorder::CellBorder(uint16_t x, uint16_t y, int ind, int val):
 Cell(x, y, ind, val)
 {}
+
+bool CellBorder::IsNeighbour( const CellBorder& other) const {
+    if(abs(x - other.x) <= 1 && abs(y - other.y) )
+        return true;
+    return false;
+}

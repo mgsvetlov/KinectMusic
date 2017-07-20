@@ -17,7 +17,7 @@ struct Cell {
     uint16_t x = 0;
     uint16_t y = 0;
     int ind = NO_DATA_VALUE;
-    int val = NO_DATA_VALUE;
+    uint16_t val = NO_DATA_VALUE;
 };
 
 
@@ -39,7 +39,7 @@ public:
 
 struct CellBorder : public Cell {
     CellBorder(uint16_t x, uint16_t y, int ind, int val);
-    
+    bool IsNeighbour( const CellBorder& other) const;
     int parentInd = -1;
 };
 #endif /* cell_h */
