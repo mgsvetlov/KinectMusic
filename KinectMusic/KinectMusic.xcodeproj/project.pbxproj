@@ -23,6 +23,8 @@
 		720C228E1DE990F90066104B /* hand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720C228D1DE990F90066104B /* hand.cpp */; };
 		720C22921DF2EED10066104B /* tracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720C22901DF2EED10066104B /* tracking.cpp */; };
 		720C22951DF4236A0066104B /* gesture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720C22931DF4236A0066104B /* gesture.cpp */; };
+		723028921F2229A5003A8770 /* borderclust.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 723028901F2229A5003A8770 /* borderclust.cpp */; };
+		723028951F222B7C003A8770 /* borderclustrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 723028931F222B7C003A8770 /* borderclustrow.cpp */; };
 		725B1B9D1ED18A800028AE34 /* gesturefabrique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1B9B1ED18A800028AE34 /* gesturefabrique.cpp */; };
 		725B1BA01ED768A60028AE34 /* gestureStop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1B9E1ED768A60028AE34 /* gestureStop.cpp */; };
 		725B1BA31ED772170028AE34 /* gestureReturn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1BA11ED772170028AE34 /* gestureReturn.cpp */; };
@@ -175,6 +177,10 @@
 		722141C11DB015AE00B697E8 /* libfreenect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect.h; sourceTree = "<group>"; };
 		722141C21DB015AE00B697E8 /* libfreenect_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect_audio.h; sourceTree = "<group>"; };
 		722141C31DB015AE00B697E8 /* libfreenect_registration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect_registration.h; sourceTree = "<group>"; };
+		723028901F2229A5003A8770 /* borderclust.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = borderclust.cpp; path = gestureExtraction/blobs/borders/borderclust.cpp; sourceTree = "<group>"; };
+		723028911F2229A5003A8770 /* borderclust.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = borderclust.h; path = gestureExtraction/blobs/borders/borderclust.h; sourceTree = "<group>"; };
+		723028931F222B7C003A8770 /* borderclustrow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = borderclustrow.cpp; path = gestureExtraction/blobs/borders/borderclustrow.cpp; sourceTree = "<group>"; };
+		723028941F222B7C003A8770 /* borderclustrow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = borderclustrow.h; path = gestureExtraction/blobs/borders/borderclustrow.h; sourceTree = "<group>"; };
 		725B1B9B1ED18A800028AE34 /* gesturefabrique.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gesturefabrique.cpp; path = gestureExtraction/gesture/gesturefabrique.cpp; sourceTree = "<group>"; };
 		725B1B9C1ED18A800028AE34 /* gesturefabrique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gesturefabrique.h; path = gestureExtraction/gesture/gesturefabrique.h; sourceTree = "<group>"; };
 		725B1B9E1ED768A60028AE34 /* gestureStop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gestureStop.cpp; path = gestureExtraction/gesture/gestureStop.cpp; sourceTree = "<group>"; };
@@ -674,6 +680,10 @@
 			isa = PBXGroup;
 			children = (
 				7274B8C71F1F2D5500F1D30D /* border.hpp */,
+				723028901F2229A5003A8770 /* borderclust.cpp */,
+				723028911F2229A5003A8770 /* borderclust.h */,
+				723028931F222B7C003A8770 /* borderclustrow.cpp */,
+				723028941F222B7C003A8770 /* borderclustrow.h */,
 			);
 			name = borders;
 			sourceTree = "<group>";
@@ -778,6 +788,7 @@
 				72799BB31DC61EAE00BAC3DC /* visualization.cpp in Sources */,
 				725B1BA31ED772170028AE34 /* gestureReturn.cpp in Sources */,
 				7298B7271D8D85840093134C /* main.cpp in Sources */,
+				723028951F222B7C003A8770 /* borderclustrow.cpp in Sources */,
 				72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */,
 				720164C11A6C058B00BC721A /* usb_libusb10.c in Sources */,
 				7274B8BB1F1CEA5300F1D30D /* convex3d.cpp in Sources */,
@@ -800,6 +811,7 @@
 				7274B8C41F1F2B3800F1D30D /* cell.cpp in Sources */,
 				728233C31F11525700B6E4D4 /* pclsegmentation.cpp in Sources */,
 				72799BA71DC61E5800BAC3DC /* analyze.cpp in Sources */,
+				723028921F2229A5003A8770 /* borderclust.cpp in Sources */,
 				728233C01F114CC200B6E4D4 /* pclutility.cpp in Sources */,
 				7207E6351EE2F5CC0021824C /* gestureAll.cpp in Sources */,
 				72048F8F1EDAD808006381E9 /* logs.cpp in Sources */,

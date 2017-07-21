@@ -70,14 +70,14 @@ void *analyze_threadfunc(void *arg) {
             std::clock_t next_t = clock();
             double elapsed_sec = double(next_t - t)/CLOCKS_PER_SEC;
             std::stringstream ss;
-            ss << "output fps " << (frameNum- frameNum_analyze)/elapsed_sec;
+            ss <<"Frame num " << frameNum << " output fps " << (frameNum- frameNum_analyze)/elapsed_sec;
             if(frameNum - frameNum_analyze > 1)
                 ss << ", missed " << frameNum - frameNum_analyze - 1 << " frames";
             t = next_t;
             Logs::writeLog("gestures", ss.str());
         }
         
-        frameNum_analyze = frameNum;
+        int frameNum_ = frameNum_analyze = frameNum;
         cv::Mat mat16(h, w, CV_16U, depthAnalyze);
         pthread_mutex_unlock(&depth_mutex);
         
@@ -127,7 +127,13 @@ void *analyze_threadfunc(void *arg) {
         if(Config::instance()->getIsVisualisation()){
             cv::Mat img;
             Visualization::mat2img(mat16, img);
+            for(auto& blob: blobsExt)
+                blob.SetFrameNum(frameNum_);
             Visualization::blobs2img( blobsExt, img, true);
+            cv::flip(img, img, 1);
+            std::stringstream ss;
+            ss << frameNum_;
+            Visualization::drawText(img, ss.str(), 1.0, 1, cv::Scalar(0,0,255), cv::Point2f(0.5, 0.15));
             
             //Visualization::gestures2img(GestureFabrique::getGestures(), img);
             
