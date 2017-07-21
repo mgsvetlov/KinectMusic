@@ -11,7 +11,6 @@
 #define blobext_hpp
 
 #include <memory>
-#include "cells/cellsborder.hpp"
 #include "blob.hpp"
 #include "borders/border.hpp"
 
@@ -21,7 +20,6 @@ public:
     BlobExt() = delete;
     BlobExt(cv::Mat mat, int ind, int blobInd, bool connectivity, float distThresh, int sizeThresh = NO_DATA_VALUE);
     
-    bool isNotHand();
     void CreateBorders();
     bool analyzeHand(cv::Mat originalMat);
     
@@ -31,8 +29,6 @@ private:
 
 private:
     const cv::Mat mat;
-    CellsBorder<TContainer, CellBorder> borderCells1;
-    CellsBorder<TContainer, CellBorder> borderCells2;
     std::unique_ptr<Border<TContainer, T>> borderPtr;
     int angle;
     int frameNum;
@@ -55,14 +51,8 @@ mat(mat)
     int y = (ind - x)/ w;
     cells.AddCell(x, y, ind, *(p_mat + ind));
     *(p_mat + ind) = maskValue;
-    bool isEndModeGlobal (false);
     auto it = cells.All().begin();
     for(;it != cells.All().end();++it){
-        bool isEndMode (false);
-        if(isEndModeGlobal || (sizeThresh != NO_DATA_VALUE && cells.Size() >= sizeThresh)
-           || (connectivity && it->dist > distThresh )) {
-            isEndMode = true;
-        }
         const uint16_t val =  it->val;
         int x_ = it->x;
         int y_ = it->y;
@@ -79,50 +69,30 @@ mat(mat)
                 if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0 || abs(valNeighb-val) >= MAX_NEIGHB_DIFF_COARSE){
                     if(valNeighb > maskValue){
                         cells.Clear();
-                        borderCells1.Clear();
-                        borderCells2.Clear();
                         return;
-                    }
-                    if(valNeighb != maskValue){
-                        *(p_mat + indNeighb) = maskValue;
-                        borderCells1.AddCell(xNeighb, yNeighb,indNeighb, valNeighb);
-                        borderCells1.All().back().parentInd = static_cast<int>(it - cells.All().begin());
                     }
                     continue;
                 }
                 *(p_mat + indNeighb) = maskValue;
-                if(isEndMode){
-                    borderCells2.AddCell(xNeighb, yNeighb,indNeighb, valNeighb);
-                    borderCells2.All().back().parentInd = static_cast<int>(it - cells.All().begin());
-                    continue;
+                if(connectivity){
+                    cells.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
+                    it->child = &cells.All().back();
+                    cells.All().back().parent = &(*it);
                 }
-                if(!isEndMode && !isEndModeGlobal){
-                    if(connectivity){
-                        cells.AddCell(xNeighb, yNeighb,indNeighb, valNeighb, *it);
-                        it->child = &cells.All().back();
-                        cells.All().back().parent = &(*it);
-                    }
-                    else {
-                        cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
-                    }
-                    if(cells.Size() == sizeThresh)
-                        isEndModeGlobal = true;
+                else {
+                    cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
                 }
+                if(cells.Size() == sizeThresh)
+                    return;
             }
         }
     }
 }
 
-template<template<typename> class  TContainer,  typename T>
-bool BlobExt<TContainer, T>::isNotHand() {
-    return (cells.Size() <= 1
-       || borderCells1.Size() == 0
-            || borderCells1.Size() < borderCells2.Size());
-}
 
 template<template<typename> class  TContainer,  typename T>
 void BlobExt<TContainer, T>::CreateBorders() {
-    borderPtr = std::unique_ptr<Border<TContainer, T>>(new Border<TContainer, T>(mat, cells, borderCells1, borderCells2));
+    borderPtr = std::unique_ptr<Border<TContainer, T>>(new Border<TContainer, T>(mat, cells));
 }
 
 template<template<typename> class  TContainer, typename T>

@@ -118,7 +118,7 @@ template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::cons
     for(auto& ind : inds) {
         blobsExt.emplace_back(origMat, ind, blobInd++, true, distThresh, sizeThresh);
         auto& blobExt = blobsExt.back();
-        if(blobExt.isNotHand()) {
+        if(blobExt.getCellsConst().Size() == 0) {
             blobsExt.pop_back();
             continue;
         }

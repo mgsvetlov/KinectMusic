@@ -356,13 +356,75 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/blobs/borders/border.hpp"
-            timestampString = "522324822.625507"
+            timestampString = "522350507.398224"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "188"
-            endingLineNumber = "188"
-            landmarkName = "CreateBorder(BorderClust* clustHead)"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
+            landmarkName = "cells(cells)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Border&lt;Vector, CellExt&gt;::Border(cv::Mat const&amp;, Cells&lt;Vector, CellExt&gt;&amp;)"
+                  moduleName = "KinectMusic"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/visualization/../blobs/borders/border.hpp"
+                  timestampString = "522348090.006957"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "76"
+                  endingLineNumber = "76"
+                  offsetFromSymbolStart = "37">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Border&lt;Vector, CellExt&gt;::Border(cv::Mat const&amp;, Cells&lt;Vector, CellExt&gt;&amp;)"
+                  moduleName = "KinectMusic"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/visualization/../blobs/borders/border.hpp"
+                  timestampString = "522348090.007131"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "76"
+                  endingLineNumber = "76"
+                  offsetFromSymbolStart = "978">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Border&lt;Vector, CellExt&gt;::Border(cv::Mat const&amp;, Cells&lt;Vector, CellExt&gt;&amp;)"
+                  moduleName = "KinectMusic"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/visualization/../blobs/borders/border.hpp"
+                  timestampString = "522348090.007236"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "76"
+                  endingLineNumber = "76"
+                  offsetFromSymbolStart = "1037">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Border&lt;Vector, CellExt&gt;::Border(cv::Mat const&amp;, Cells&lt;Vector, CellExt&gt;&amp;)"
+                  moduleName = "KinectMusic"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/visualization/../blobs/borders/border.hpp"
+                  timestampString = "522348090.007335"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "76"
+                  endingLineNumber = "76"
+                  offsetFromSymbolStart = "1052">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

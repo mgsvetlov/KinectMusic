@@ -31,6 +31,7 @@ public:
     float dist = 0;
     Cell* parent = nullptr;
     Cell* child = nullptr;
+    bool isBorder = false;
 #ifdef USE_CELL_NORMAL
     cv::Vec4f normal = cv::Vec4f(0.f, 0.f, 0.f);
 #endif //USE_CELL_NORMAL
