@@ -86,8 +86,8 @@ void *analyze_threadfunc(void *arg) {
         uint16_t* p_mat = (uint16_t*)(mat16_filt.data);
         for(size_t i = 0; i < mat16_filt.total(); i++, p_mat++)
         {
-            if(*p_mat > MAX_KINECT_DEPTH || *p_mat < MIN_KINECT_DEPTH)
-                *p_mat = 0;
+            if( *p_mat > MAX_KINECT_DEPTH || *p_mat < MIN_KINECT_DEPTH)
+                *p_mat = MAX_KINECT_DEPTH;
         }
         
         //resize

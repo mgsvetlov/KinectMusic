@@ -102,7 +102,6 @@ template<typename T> std::list<T>& BlobsFabrique<T>::getBlobs(){
 }
 
 template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt){
-    static const float distThresh(400.0f);
     static const int sizeThresh(4000);
     std::vector<int> inds;
     for(auto& blob  : blobs) {
@@ -116,7 +115,7 @@ template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::cons
               {return *(p_mat + ind1) < *(p_mat + ind2);});
     int blobInd(0);
     for(auto& ind : inds) {
-        blobsExt.emplace_back(origMat, ind, blobInd++, true, distThresh, sizeThresh);
+        blobsExt.emplace_back(origMat, ind, blobInd++, sizeThresh);
         auto& blobExt = blobsExt.back();
         if(blobExt.getCellsConst().Size() == 0) {
             blobsExt.pop_back();

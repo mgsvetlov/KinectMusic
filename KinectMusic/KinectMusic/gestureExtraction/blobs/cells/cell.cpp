@@ -14,29 +14,12 @@ y(y),
 ind(ind),
 val(val){}
 
-CellExt::CellExt(uint16_t x, uint16_t y, int ind, int val):
-Cell(x, y, ind, val)
-{}
 
-CellExt::CellExt(uint16_t x, uint16_t y, int ind, int val, const CellExt& cell):
-Cell(x, y, ind, val),
-dist(cell.dist + distance(cell)){}
-
-float CellExt::distance(const CellExt& cell){
+float Cell::Distance(const Cell& cell1, const Cell& cell2){
     static constexpr float spaceCoeff(9./6400);
-    auto& cellVal = cell.val;
-    float dx = (x * val - cell.x * cellVal) * spaceCoeff;
-    float dy = (y * val - cell.y * cellVal) * spaceCoeff;
-    int dz = val - cellVal;
+    float dx = (cell1.x * cell1.val - cell2.x * cell2.val) * spaceCoeff;
+    float dy = (cell1.y * cell1.val - cell2.y * cell2.val) * spaceCoeff;
+    int dz = cell1.val - cell2.val;
     return sqrt(dx*dx + dy*dy + dz*dz);
 }
 
-CellBorder::CellBorder(uint16_t x, uint16_t y, int ind, int val):
-Cell(x, y, ind, val)
-{}
-
-bool CellBorder::IsNeighbour( const CellBorder& other) const {
-    if(abs(x - other.x) <= 1 && abs(y - other.y) )
-        return true;
-    return false;
-}

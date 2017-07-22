@@ -45,10 +45,17 @@ private:
 protected:
     Cells<TContainer,T> cells;
     cv::Size matSize;
+private:
+    static std::vector<std::pair<int,int>> neighbours;
     
     friend class Visualization;
 };
+
 /////////////////////////////////////////////////////////////////////////////////
+template<template<typename> class  TContainer, typename T>
+std::vector<std::pair<int,int>> Blob<TContainer, T>::neighbours {
+    {-1,0}, {0, -1}, {1,0}, {0,1}
+};
 
 template<template<typename> class TContainer, typename T> Blob<TContainer, T>::Blob()
 {}
@@ -69,21 +76,17 @@ matSize(mat.size())
         const uint16_t val =  it->val;
         int x_ = it->x;
         int y_ = it->y;
-        for(int yNeighb = y_ - 1; yNeighb <= y_ + 1; yNeighb++){
-            if(yNeighb < 0 || yNeighb >= h)
+        for(auto& neighb : neighbours){
+            int xNeighb = x_ + neighb.first;
+            int yNeighb = y_ + neighb.second;
+            if(xNeighb < 0 || xNeighb >= w || yNeighb < 0 || yNeighb >= h)
                 continue;
-            for(int xNeighb = x_-1; xNeighb <= x_ + 1; xNeighb++){
-                if((yNeighb == y_ && xNeighb == x_) || xNeighb < 0 || xNeighb >= w)
-                    continue;
-                int indNeighb = yNeighb * w + xNeighb;
-                uint16_t valNeighb =  *(p_mat + indNeighb);
-                if(valNeighb >= MAX_KINECT_VALUE || valNeighb == 0)
-                    continue;
-                if(abs(valNeighb-val) < MAX_NEIGHB_DIFF_COARSE){
-                    cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
-                    *(p_mat + indNeighb) = MAX_KINECT_VALUE;
-                }
-            }
+            int indNeighb = yNeighb * w + xNeighb;
+            uint16_t valNeighb =  *(p_mat + indNeighb);
+            if(valNeighb >= MAX_KINECT_VALUE || valNeighb == 0 || abs(valNeighb-val) >= MAX_NEIGHB_DIFF_COARSE)
+                continue;
+            *(p_mat + indNeighb) = MAX_KINECT_VALUE;
+            cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
         }
     }
 }

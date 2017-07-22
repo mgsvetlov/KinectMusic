@@ -13,6 +13,7 @@
 
 struct Cell {
     Cell(uint16_t x, uint16_t y, int ind, int val);
+    static   float Distance(const Cell& cell1, const Cell& cell2);
     
     uint16_t x = 0;
     uint16_t y = 0;
@@ -21,26 +22,5 @@ struct Cell {
 };
 
 
-struct CellExt : public Cell {
-    CellExt(uint16_t x, uint16_t y, int ind, int val);
-    CellExt(uint16_t x, uint16_t y, int ind, int val, const CellExt& cell);
-private:
-    float distance(const CellExt& cell);
-    
-public:
-    float dist = 0;
-    Cell* parent = nullptr;
-    Cell* child = nullptr;
-    bool isBorder = false;
-#ifdef USE_CELL_NORMAL
-    cv::Vec4f normal = cv::Vec4f(0.f, 0.f, 0.f);
-#endif //USE_CELL_NORMAL
 
-};
-
-struct CellBorder : public Cell {
-    CellBorder(uint16_t x, uint16_t y, int ind, int val);
-    bool IsNeighbour( const CellBorder& other) const;
-    int parentInd = -1;
-};
 #endif /* cell_h */
