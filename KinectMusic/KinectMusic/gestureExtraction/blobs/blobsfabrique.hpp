@@ -60,14 +60,14 @@ template<typename T> void BlobsFabrique<T>::blobsFabrique0(){
         
         T nearestBlob(mat, ind);
         
-        if(nearestBlob.getCellsConst().Size() < BLOB_MIN_SIZE)
+        if(nearestBlob.getCellsConst().Size() < ProcessFrameData::getBlobsMinSize())
             continue;
         
         if(largeBlobMaxVal != -1 && nearestBlob.getCellsConst().MinValCell() && nearestBlob.getCellsConst().MinValCell()->val > largeBlobMaxVal){
             break;
         }
         
-        if(nearestBlob.getCellsConst().Size() > BLOB_MIN_SIZE_LAST && nearestBlob.getCellsConst().MaxValCell()){
+        if(nearestBlob.getCellsConst().Size() > ProcessFrameData::getBlobsMinSizeLast() && nearestBlob.getCellsConst().MaxValCell()){
             largeBlobMaxVal = nearestBlob.getCellsConst().MaxValCell()->val;
             blobs.push_front(std::move(nearestBlob));
         }

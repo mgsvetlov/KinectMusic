@@ -19,9 +19,9 @@ Visualization::Visualization() {
 }
 
 bool Visualization::showImage() {
-    pthread_mutex_lock(&ExtractFrameData::visualisation_mutex);
+    pthread_mutex_lock(&ProcessFrameData::visualisation_mutex);
     if(!getIsNeedRedraw()){
-        pthread_mutex_unlock(&ExtractFrameData::visualisation_mutex);
+        pthread_mutex_unlock(&ProcessFrameData::visualisation_mutex);
         usleep(10);
         return true;
     }
@@ -32,7 +32,7 @@ bool Visualization::showImage() {
     //cv::Mat matImageRes;
     //cv::resize(matImage, matImageRes, cv::Size(matImage.cols << 1, matImage.rows << 1));
     cv::imshow( "Display window", matImage);
-    pthread_mutex_unlock(&ExtractFrameData::visualisation_mutex);
+    pthread_mutex_unlock(&ProcessFrameData::visualisation_mutex);
     
     if(cv::waitKey(1) == 27) {
         return false;

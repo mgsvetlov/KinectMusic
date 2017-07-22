@@ -122,7 +122,7 @@ T* Border<TContainer,T>::nextCell(const cv::Mat& matCells, CellContour& cell, in
     uint16_t x = cell.x;
     uint16_t y = cell.y;
     T* next = nullptr;
-    uint16_t valOutMin(MAX_KINECT_DEPTH);
+    uint16_t valOutMin(ProcessFrameData::getMaxKinectDepth());
     for(int i = 0; i < 8; ++i){
         (++indDiff) %= 8;
         std::pair<int, int> diff = int2pair[indDiff];

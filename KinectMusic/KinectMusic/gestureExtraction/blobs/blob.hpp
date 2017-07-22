@@ -10,6 +10,7 @@
 #define blob_hpp
 
 #include <limits>
+#include "../processframedata.h"
 #include "cells/cells.hpp"
 #include <iostream>
 #include <queue>
@@ -97,10 +98,11 @@ template<template<typename> class TContainer, typename T> int Blob<TContainer,T>
     int ind = cells.MinValCell()->ind;
     int x = ind % this->matSize.width;
     int y = (ind-x) /this->matSize.width;
-    x <<= BLOBS_RESIZE_POW;
-    y <<= BLOBS_RESIZE_POW;
+    static const int resizePow(ProcessFrameData::getBlobsResizePow());
+    x <<= resizePow;
+    y <<= resizePow;
     
-    static const int halfSize(1 << BLOBS_RESIZE_POW);
+    static const int halfSize(1 << resizePow);
     
     int minX(x - halfSize), minY(y - halfSize), maxX(x + halfSize), maxY(y + halfSize);
     if(minX < 0)

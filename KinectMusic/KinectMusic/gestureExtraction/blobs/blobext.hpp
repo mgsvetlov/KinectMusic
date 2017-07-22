@@ -13,6 +13,7 @@
 #include <memory>
 #include "blob.hpp"
 #include "borders/border.hpp"
+#include "../processframedata.h"
 
 
 template<template<typename> class  TContainer, typename T> class BlobExt : public Blob<TContainer,  T> {
@@ -47,7 +48,7 @@ template<template<typename> class  TContainer, typename T>
 BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd) :
 mat(mat)
 {
-    cells.All().reserve(BLOB_EXT_MAX_SIZE);
+    cells.All().reserve(ProcessFrameData::getBlobExtMaxSize());
     const uint16_t maskValue = 65535 - blobInd;
     int w = matClone.cols;
     int h = matClone.rows;
@@ -68,7 +69,7 @@ mat(mat)
                 continue;
             int indNeighb = yNeighb * w + xNeighb;
             uint16_t valNeighb =  *(p_mat + indNeighb);
-            if(valNeighb >= MAX_KINECT_DEPTH  || valNeighb == 0 || abs(valNeighb-val) >= ExtractFrameData::MAX_NEIGHB_DIFF_COARSE){
+            if(valNeighb >= ProcessFrameData::getMaxKinectDepth()  || valNeighb == 0 || abs(valNeighb-val) >= ExtractFrameData::MAX_NEIGHB_DIFF_COARSE){
                 if(valNeighb > maskValue){
                     cells.Clear();
                     return;
@@ -77,7 +78,7 @@ mat(mat)
             }
             *(p_mat + indNeighb) = maskValue;
             cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
-            if(cells.Size() == BLOB_EXT_MAX_SIZE)
+            if(cells.Size() == ProcessFrameData::getBlobExtMaxSize())
                 return;
         }
     }

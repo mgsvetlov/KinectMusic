@@ -86,8 +86,6 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 
 void video_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 {
-    pthread_mutex_lock(&ExtractFrameData::video_mutex);
-    
     // swap buffers
     assert (rgb_back == rgb);
     rgb_back = rgb_mid;
@@ -95,15 +93,14 @@ void video_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
     rgb_mid = (uint8_t*)rgb;
     
     got_rgb++;
-    pthread_mutex_unlock(&ExtractFrameData::video_mutex);
 }
 
 void *freenect_threadfunc(void *arg)
 {
     freenect_set_led(f_dev,LED_RED);
     freenect_set_depth_callback(f_dev, depth_cb);
-    freenect_set_video_callback(f_dev, video_cb);
-    freenect_set_video_mode(f_dev, freenect_find_video_mode(current_resolution, current_format));
+    /*freenect_set_video_callback(f_dev, video_cb);
+    freenect_set_video_mode(f_dev, freenect_find_video_mode(current_resolution, current_format));*/
     freenect_depth_format depth_format = FREENECT_DEPTH_REGISTERED; //FREENECT_DEPTH_11BIT
     pthread_mutex_lock(&ExtractFrameData::depth_mutex);
     switch(depth_format){
@@ -131,22 +128,21 @@ void *freenect_threadfunc(void *arg)
     pthread_mutex_unlock(&ExtractFrameData::depth_mutex);
     
     freenect_set_depth_mode(f_dev, freenect_find_depth_mode(current_resolution, depth_format));
-    rgb_back = (uint8_t*)malloc(freenect_find_video_mode(current_resolution, current_format).bytes);
+    /*rgb_back = (uint8_t*)malloc(freenect_find_video_mode(current_resolution, current_format).bytes);
     rgb_mid = (uint8_t*)malloc(freenect_find_video_mode(current_resolution, current_format).bytes);
     rgb_front = (uint8_t*)malloc(freenect_find_video_mode(current_resolution, current_format).bytes);
-    freenect_set_video_buffer(f_dev, rgb_back);
+    freenect_set_video_buffer(f_dev, rgb_back);*/
     
     freenect_start_depth(f_dev);
-    freenect_start_video(f_dev);
+    //freenect_start_video(f_dev);
     
     int status = 0;
     
     while (!ExtractFrameData::die_kinect && status >= 0) {
         status = freenect_process_events(f_ctx);
-        if (requested_format != current_format || requested_resolution != current_resolution) {
+        /*if (requested_format != current_format || requested_resolution != current_resolution) {
             freenect_stop_video(f_dev);
             freenect_set_video_mode(f_dev, freenect_find_video_mode(requested_resolution, requested_format));
-            pthread_mutex_lock(&ExtractFrameData::video_mutex);
             free(rgb_back);
             free(rgb_mid);
             free(rgb_front);
@@ -155,10 +151,9 @@ void *freenect_threadfunc(void *arg)
             rgb_front = (uint8_t*)malloc(freenect_find_video_mode(requested_resolution, requested_format).bytes);
             current_format = requested_format;
             current_resolution = requested_resolution;
-            pthread_mutex_unlock(&ExtractFrameData::video_mutex);
             freenect_set_video_buffer(f_dev, rgb_back);
             freenect_start_video(f_dev);
-        }
+        }*/
     }
     
     if (status < 0) {

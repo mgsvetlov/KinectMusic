@@ -16,8 +16,6 @@ struct ExtractFrameData {
 static void *analyze_threadfunc(void *arg);
 static  uint16_t * const depthAnalyze;
 static pthread_mutex_t depth_mutex;
-static pthread_mutex_t video_mutex;
-static pthread_mutex_t visualisation_mutex;
 static volatile int die_kinect;
 static volatile int die_gesture;
 static volatile int frameNum;
