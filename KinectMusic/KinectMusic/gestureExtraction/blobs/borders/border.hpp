@@ -18,14 +18,19 @@ using List = std::list<T>;
 template<template<typename> class TContainer, typename T> class Border {
 public:
     Border(const cv::Mat& mat, Cells<TContainer,T>& cells);
-    std::list<T*>& getContour() { return contour;}
+    bool isNotHandContour();
+    const std::list<CellContour>& getContour() const { return contour;}
 private:
     bool createContour();
-    T* nextCell(const cv::Mat& matCells, uint16_t x, uint16_t y, int indDiff);
+    T* nextCell(const cv::Mat& matCells, CellContour& cell, int indDiff);
+    int eraseLoops();
+    bool checkContour();
 private:
     const cv::Mat mat;
     Cells<TContainer,T>& cells;
-    std::list<T*> contour;
+    std::list<CellContour> contour;
+    int bodyAdjacentCount = 0;
+    int nonBodyAdjacentCount = 0;
     static std::vector<std::pair<int, int>> int2pair;
     static std::map<std::pair<int, int>, int> pair2int;
     friend class Visualization;
@@ -60,10 +65,14 @@ Border<TContainer,T>::Border(const cv::Mat& mat, Cells<TContainer,T>& cells) :
 mat(mat),
 cells(cells)
 {
+    if(cells.Size() == 0)
+        return;
     if(!createContour()){
         contour.clear();
         return;
     }
+    eraseLoops();
+    checkContour();
 }
 
 template<template<typename> class TContainer, typename T>
@@ -77,7 +86,7 @@ bool Border<TContainer,T>::createContour(){
     T** p = p_matCells;
     for(int i = 0; i < matCells.total(); ++i){
         if(*(p+i) != nullptr){
-            contour.push_back(*(p_matCells + i));
+            contour.emplace_back(**(p_matCells + i));
             break;
         }
     }
@@ -85,34 +94,35 @@ bool Border<TContainer,T>::createContour(){
         return false;
     }
     //find second cell
-    auto x = contour.back()->x;
-    auto y = contour.back()->y;
-    T* next = nextCell(matCells, x, y, 3);
+    T* next = nextCell(matCells, contour.back(), 7);
     if(!next){
         return false;
     }
-    contour.push_back(next);
+    contour.emplace_back(*next);
     //find all cells
     while(true){
         auto itPrevLast = contour.rbegin();
         ++itPrevLast;
-        auto x = contour.back()->x, y = contour.back()->y;
-        std::pair<int, int> diff {(*itPrevLast)->x - x, (*itPrevLast)->y - y};
+        auto& cell = contour.back();
+        std::pair<int, int> diff {(*itPrevLast).x - cell.x, (*itPrevLast).y - cell.y};
         int indDiff = pair2int[diff];
-        T* next = nextCell(matCells, x, y, indDiff);
-        if(next == contour.front()) {
+        T* next = nextCell(matCells, cell, indDiff);
+        if(next->ind == contour.front().ind) {
             break;
         }
-        contour.push_back(next);
+        contour.emplace_back(*next);
     }
-    return true;
+    return nonBodyAdjacentCount > bodyAdjacentCount;
 }
 
 template<template<typename> class TContainer, typename T>
-T* Border<TContainer,T>::nextCell(const cv::Mat& matCells, uint16_t x, uint16_t y, int indDiff){
+T* Border<TContainer,T>::nextCell(const cv::Mat& matCells, CellContour& cell, int indDiff){
     int w = matCells.cols;
     int h = matCells.rows;
+    uint16_t x = cell.x;
+    uint16_t y = cell.y;
     T* next = nullptr;
+    uint16_t valOutMin(MAX_KINECT_DEPTH);
     for(int i = 0; i < 8; ++i){
         (++indDiff) %= 8;
         std::pair<int, int> diff = int2pair[indDiff];
@@ -123,12 +133,101 @@ T* Border<TContainer,T>::nextCell(const cv::Mat& matCells, uint16_t x, uint16_t 
         T* pcell = matCells.at<T*>(yNeighb, xNeighb);
         if(pcell){
             next = pcell;
+            cell.valOut = valOutMin;
+            int valDiff = abs(cell.val - cell.valOut);
+            if( valDiff <= MAX_NEIGHB_DIFF_COARSE) {
+                cell.flags |= FLAGS::ADJACENT_BODY;
+                ++bodyAdjacentCount;
+            }
+            else {
+                ++nonBodyAdjacentCount;
+            }
             break;
+        }
+        else {
+            auto valOut = mat.at<uint16_t>(yNeighb, xNeighb);
+            if(valOut < valOutMin)
+                valOutMin = valOut;
         }
     }
     return next;
 }
 
+template<template<typename> class TContainer, typename T>
+int Border<TContainer,T>::eraseLoops(){
+    //std::stringstream ss;
+    //ss << "eraseLoops ";
+    int eraseCount(0);
+    cv::Mat matMask  = cv::Mat_<unsigned char>::zeros(mat.size());
+    unsigned char* p_matMask = (unsigned char*)(matMask.data);
+    auto it = contour.begin();
+    while( it != contour.end()) {
+        int ind = it->ind;
+        int maskVal = *(p_matMask + ind);
+        if(maskVal == 0){
+            *(p_matMask + ind) = 255;
+        }
+        else {
+            auto it1 = contour.begin();
+            for(; it1 != it; ++it1){
+                if(it1->ind == ind)
+                    break;
+            }
+            if(it1 != it) {
+                int dist = static_cast<int>(std::distance(it1, it));
+                if( dist < (contour.size() >> 1)){
+                    it = contour.erase(it1, it);
+                    eraseCount += dist;
+                    //ss << dist << " erased ";
+                }
+                else {
+                    contour.erase(it, contour.end());
+                    contour.erase(contour.begin(), it1);
+                    eraseCount += contour.size() - dist;
+                    //ss << contour.size() - dist << " erased at end ";
+                    break;
+                }
+            }
+            else {
+                std::stringstream ss;
+                ss << "\nsize " << contour.size() << " dist " << std::distance(contour.begin(), it)
+                << " error!\n";
+                Logs::writeLog("gestures", ss.str());
+            }
+        }
+        ++it;
+    }
+    //Logs::writeLog("gestures", ss.str());
+    return eraseCount;
+}
 
-
+template<template<typename> class TContainer, typename T>
+bool Border<TContainer,T>::checkContour(){
+    if(contour.empty())
+        return true;
+    auto it1 = contour.begin();
+    auto it2 = it1;
+    ++it2;
+    auto itPreEnd = contour.end();
+    --itPreEnd;
+    bool isEnd(false);
+    for(; it2 != contour.end(); ++it1, ++it2){
+        if(it2 == itPreEnd){
+            it1 = contour.begin();
+            isEnd = true;
+        }
+        if(!CellContour::IsNeighbours(*it1, *it2)){
+            std::stringstream ss;
+            for(auto it3 = contour.begin(); it3 != it1; ++it3)
+                ss << *it3;
+            ss << (!isEnd ? "disconnection!" : "disconnection end!");
+            for(auto it3 = it2; it3 != contour.end(); ++it3)
+                ss << *it3;
+            ss  << std::flush;
+            Logs::writeLog("gestures", ss.str());
+            std::exit(EXIT_FAILURE);
+        }
+    }
+    return true;
+}
 #endif /* border_hpp */

@@ -23,3 +23,23 @@ float Cell::Distance(const Cell& cell1, const Cell& cell2){
     return sqrt(dx*dx + dy*dy + dz*dz);
 }
 
+CellContour::CellContour(const Cell& cell) :
+Cell(cell)
+{
+    
+}
+
+bool CellContour::IsNeighbours(const CellContour& cell1, const CellContour& cell2){
+    int dx = abs(cell1.x - cell2.x);
+    if( dx > 1)
+        return false;
+    int dy = abs(cell1.y - cell2.y);
+    if( dy > 1)
+        return false;
+    return dx + dy > 0;
+}
+
+std::ostream& operator << (std::ostream& os, const CellContour c){
+    os << "<" << c.x << "," << c.y << ">";
+    return os;
+}

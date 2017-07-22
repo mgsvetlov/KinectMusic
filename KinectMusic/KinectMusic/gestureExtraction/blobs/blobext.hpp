@@ -19,9 +19,9 @@ template<template<typename> class  TContainer, typename T> class BlobExt : publi
     using Blob<TContainer,T>::cells;
 public:
     BlobExt() = delete;
-    BlobExt(cv::Mat mat, int ind, int blobInd, int sizeThresh);
+    BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd, int sizeThresh);
     
-    void CreateBorders();
+    size_t CreateBorder();
     
     void SetFrameNum(int frameNum);
 private:
@@ -38,19 +38,20 @@ private:
 
 template<template<typename> class  TContainer, typename T>
 std::vector<std::pair<int,int>> BlobExt<TContainer, T>::neighbours {
-    {-1,0}, {0, -1}, {1,0}, {0,1}
+    {-1,0}, {0, -1}, {1,0}, {0,1},
+    {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
 };
 
 //blob extended
 template<template<typename> class  TContainer, typename T>
-BlobExt<TContainer, T>::BlobExt(cv::Mat mat, int ind, int blobInd, int sizeThresh) :
+BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd, int sizeThresh) :
 mat(mat)
 {
     cells.All().reserve(sizeThresh);
     const uint16_t maskValue = 65535 - blobInd;
-    int w = mat.cols;
-    int h = mat.rows;
-    uint16_t* p_mat = (uint16_t*)(mat.data);
+    int w = matClone.cols;
+    int h = matClone.rows;
+    uint16_t* p_mat = (uint16_t*)(matClone.data);
     int x = ind % w;
     int y = (ind - x)/ w;
     cells.AddCell(x, y, ind, *(p_mat + ind));
@@ -84,8 +85,9 @@ mat(mat)
 
 
 template<template<typename> class  TContainer,  typename T>
-void BlobExt<TContainer, T>::CreateBorders() {
+size_t BlobExt<TContainer, T>::CreateBorder() {
     borderPtr = std::unique_ptr<Border<TContainer, T>>(new Border<TContainer, T>(mat, cells));
+    return borderPtr->getContour().size();
 }
 
 template<template<typename> class  TContainer, typename T>

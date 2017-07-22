@@ -11,9 +11,13 @@
 
 #include "../../types.h"
 
+struct FLAGS {
+    static const unsigned char ADJACENT_BODY = 0x01;
+};
+
 struct Cell {
     Cell(uint16_t x, uint16_t y, int ind, int val);
-    static   float Distance(const Cell& cell1, const Cell& cell2);
+    static float Distance(const Cell& cell1, const Cell& cell2);
     
     uint16_t x = 0;
     uint16_t y = 0;
@@ -21,6 +25,16 @@ struct Cell {
     uint16_t val = NO_DATA_VALUE;
 };
 
+struct CellContour : public Cell {
+    CellContour(const Cell& cell);
+    static bool IsNeighbours(const CellContour& cell1, const CellContour& cell2);
+    
+    uint16_t valOut = NO_DATA_VALUE;
+    unsigned char flags = 0x00;
+    
+};
+
+std::ostream& operator << (std::ostream& os, const CellContour);
 
 
 #endif /* cell_h */

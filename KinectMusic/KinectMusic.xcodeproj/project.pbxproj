@@ -712,11 +712,11 @@
 				72799BA61DC61E5800BAC3DC /* types.h */,
 				722141A51D9FC2BD00B697E8 /* blobs */,
 				728233201F07950D00B6E4D4 /* convex3d */,
+				7221419E1D9FB91400B697E8 /* visualization */,
 				720C228C1DE990C10066104B /* hand */,
 				7282333F1F0D4FC700B6E4D4 /* pcl */,
 				720C228F1DF2EE820066104B /* tracking */,
 				720C22961DF4238A0066104B /* gesture */,
-				7221419E1D9FB91400B697E8 /* visualization */,
 			);
 			name = gestureExtraction;
 			sourceTree = "<group>";

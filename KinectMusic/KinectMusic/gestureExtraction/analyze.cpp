@@ -44,7 +44,7 @@ uint16_t * const depthAnalyze = new uint16_t[w*h];
 
 int MAX_KINECT_VALUE;
 int MAX_KINECT_DEPTH = 2000;
-int MIN_KINECT_DEPTH = 1000;
+int MIN_KINECT_DEPTH = 800;
 int BLOBS_RESIZE_POW  = 3;
 int BLOB_MIN_SIZE = (w >> BLOBS_RESIZE_POW)  * 0.15625 * 0.5;
 int BLOB_MIN_SIZE_LAST = (w >> BLOBS_RESIZE_POW)  * 18.75;
