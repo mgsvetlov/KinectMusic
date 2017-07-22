@@ -35,7 +35,7 @@
 #include <math.h>
 
 #include "kinect.h"
-#include "analyze.h"
+#include "extractframedata.h"
 #include "visualization.h"
 #include "gestureExtraction/types.h"
 #include "gestureExtraction/gesture/gesturefabrique.h"
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
     size_t analyzeThreadsCount = 2;
     pthread_t* p_analyze_create = new pthread_t[analyzeThreadsCount];
     for(int i = 0; i < analyzeThreadsCount; i++){
-        res = pthread_create(&p_analyze_create[i], NULL, analyze_threadfunc, NULL);
+        res = pthread_create(&p_analyze_create[i], NULL, ExtractFrameData::analyze_threadfunc, NULL);
         if (res) {
             printf("pthread_create   p_analyze_create[%u] failed\n", i);
             return 1;
@@ -125,16 +125,16 @@ int main(int argc, char **argv)
         }
     }
     
-    die_gesture = 1;
+    ExtractFrameData::die_gesture = 1;
     for(int i = 0; i < analyzeThreadsCount; i++){
         pthread_join(p_analyze_create[i], NULL);
     }
     
-    die_kinect = 1;
+    ExtractFrameData::die_kinect = 1;
     pthread_join(freenect_thread, NULL);
     
     //GestureFabrique::destroy();
-    Share::destroy();
+    //Share::destroy();
     Logs::closeLogs();
     free(rgb_back);
     free(rgb_mid);

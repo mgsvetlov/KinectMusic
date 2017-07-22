@@ -135,7 +135,7 @@ T* Border<TContainer,T>::nextCell(const cv::Mat& matCells, CellContour& cell, in
             next = pcell;
             cell.valOut = valOutMin;
             int valDiff = abs(cell.val - cell.valOut);
-            if( valDiff <= MAX_NEIGHB_DIFF_COARSE) {
+            if( valDiff <= ExtractFrameData::MAX_NEIGHB_DIFF_COARSE) {
                 cell.flags |= FLAGS::ADJACENT_BODY;
                 ++bodyAdjacentCount;
             }

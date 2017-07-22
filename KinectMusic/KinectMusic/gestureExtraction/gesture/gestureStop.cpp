@@ -9,7 +9,7 @@
 #include "gestureStop.h"
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
-#include "../analyze.h"
+#include "../extractframedata.h"
 
 double GestureStop::speedThreshStart (8e3 * 9./6400),  GestureStop::speedThreshEnd(2e3 * 9./6400);
 int GestureStop::endIterationsCount = 1;

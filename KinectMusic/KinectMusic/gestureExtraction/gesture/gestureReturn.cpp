@@ -9,7 +9,7 @@
 #include "gestureReturn.h"
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
-#include "../analyze.h"
+#include "../extractframedata.h"
 
 cv::Vec3d GestureReturn::threshStart = cv::Vec3d(-1e6,-1e6,10);
 cv::Vec3d GestureReturn::threshFar = cv::Vec3d(-1e6,-1e6,60);

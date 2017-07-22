@@ -5,6 +5,7 @@
 //  Created by Mikhail Svetlov on 27/05/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
+/*
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -108,3 +109,4 @@ int Share::exec_prog(const char **argv){
     }
     return 0;
 }
+*/

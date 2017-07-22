@@ -18,25 +18,25 @@ GLuint gl_depth_tex;
 GLuint gl_rgb_tex;
 
 void DispatchDraws() {
-    pthread_mutex_lock(&depth_mutex);
+    pthread_mutex_lock(&ExtractFrameData::depth_mutex);
     if (got_depth) {
         glutSetWindow(depth_window);
         glutPostRedisplay();
     }
-    pthread_mutex_unlock(&depth_mutex);
+    pthread_mutex_unlock(&ExtractFrameData::depth_mutex);
     
 }
 
 void DrawDepthScene()
 {
-    pthread_mutex_lock(&depth_mutex);
+    pthread_mutex_lock(&ExtractFrameData::depth_mutex);
     if (got_depth) {
         uint8_t* tmp = depth_front;
         depth_front = depth_mid;
         depth_mid = tmp;
         got_depth = 0;
     }
-    pthread_mutex_unlock(&depth_mutex);
+    pthread_mutex_unlock(&ExtractFrameData::depth_mutex);
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();

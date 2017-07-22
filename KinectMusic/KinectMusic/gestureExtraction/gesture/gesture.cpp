@@ -9,7 +9,7 @@
 #include "gesture.h"
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
-#include "../analyze.h"
+#include "../extractframedata.h"
 
 size_t Gesture::threshUnrecogn = 2;
 

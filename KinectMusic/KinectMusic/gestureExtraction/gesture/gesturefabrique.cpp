@@ -10,7 +10,7 @@
 /*
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
-#include "../analyze.h"
+#include "../extractframedata.h"
 #include "../../config/config.h"
 
 GestureFabrique* GestureFabrique::gestureFabriquePtr (nullptr)
@@ -55,7 +55,7 @@ void GestureFabrique::addDataToGestures(const std::vector<Track>& tracks){
 
 FrameData  GestureFabrique::extractGestures(){
     FrameData frameData;
-    frameData.frameNum = frameNum;
+    frameData.frameNum = ExtractFrameData::frameNum;
     for(auto& gesture : gestures){
         gesture->extract();
         frameData.data.push_back(gesture->getHandsData().back());

@@ -15,7 +15,7 @@
 #include "../blobs/blobext.hpp"
 #include <unistd.h>
 #include "../tracking/tracking.h"
-#include "../analyze.h"
+#include "../extractframedata.h"
 #include "../hand/hand.h"
 #include "../gesture/gesturefabrique.h"
 #include "../../log/logs.h"

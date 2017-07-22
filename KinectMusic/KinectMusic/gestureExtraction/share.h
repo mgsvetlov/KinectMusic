@@ -8,7 +8,7 @@
 
 #ifndef share_h
 #define share_h
-
+/*
 #include "types.h"
 #include <semaphore.h>  
 
@@ -30,5 +30,6 @@ private:
     sem_t *sem;
     const char* SEMAPHORE_NAME = "sem";
 };
+*/
 
 #endif /* share_h */

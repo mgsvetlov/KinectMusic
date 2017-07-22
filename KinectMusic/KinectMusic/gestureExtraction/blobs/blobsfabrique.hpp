@@ -55,7 +55,7 @@ template<typename T> void BlobsFabrique<T>::blobsFabrique0(){
             break;
         
         int minVal = *((uint16_t*)(mat.data) + ind);
-        if(minVal >= MAX_KINECT_VALUE)
+        if(minVal >= ExtractFrameData::MAX_KINECT_VALUE)
             break;
         
         T nearestBlob(mat, ind);
@@ -87,7 +87,7 @@ template<typename T> void BlobsFabrique<T>::blobsFabrique1(){
             break;
         
         int minVal = *((uint16_t*)(mat.data) + ind);
-        if(minVal == MAX_KINECT_VALUE)
+        if(minVal == ExtractFrameData::MAX_KINECT_VALUE)
             return;
         blobs.emplace_back(mat, ind);
         continue;
@@ -102,7 +102,6 @@ template<typename T> std::list<T>& BlobsFabrique<T>::getBlobs(){
 }
 
 template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt){
-    static const int sizeThresh(4096);
     std::vector<int> inds;
     for(auto& blob  : blobs) {
         int ind = blob.indOriginNearest(origMat);
@@ -116,7 +115,7 @@ template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::cons
     int blobInd(0);
     cv::Mat origMatClone = origMat.clone();
     for(auto& ind : inds) {
-        blobsExt.emplace_back(origMat, origMatClone, ind, blobInd++, sizeThresh);
+        blobsExt.emplace_back(origMat, origMatClone, ind, blobInd++);
         auto& blobExt = blobsExt.back();
         if(blobExt.CreateBorder() == 0) {
             blobsExt.pop_back();
@@ -132,7 +131,7 @@ template<typename T> int BlobsFabrique<T>::getBodyDepth(){
 }
 
 template<typename T> int BlobsFabrique<T>::minCellIndex(){
-    double minVal = MAX_KINECT_VALUE;
+    double minVal = ExtractFrameData::MAX_KINECT_VALUE;
     int ind (-1);
     uint16_t* p = (uint16_t*)(mat.data);
     for(int i = 0; i < mat.total(); ++i, ++p){

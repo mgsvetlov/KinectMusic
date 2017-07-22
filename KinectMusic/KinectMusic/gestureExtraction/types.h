@@ -19,19 +19,18 @@
 #include "opencv2/opencv.hpp"
 #include <iostream>
 
-extern int MAX_KINECT_VALUE;
+
 extern int MAX_KINECT_DEPTH;
 extern int BLOBS_RESIZE_POW;
 extern int BLOB_MIN_SIZE;
 extern int BLOB_MIN_SIZE_LAST;
-extern int MAX_NEIGHB_DIFF_COARSE;
-extern int MAX_NEIGHB_DIFF_FINE;
 
-extern volatile int die_kinect;
-extern volatile int die_gesture;
+extern int BLOB_EXT_MAX_SIZE;
+
+
 
 #define NO_DATA_VALUE -1
-#define START_GESTURE_VALUE -10
+/*#define START_GESTURE_VALUE -10
 #define INSIDE_GESTURE_VALUE -100
 #define END_GESTURE_VALUE -1000
 
@@ -56,5 +55,5 @@ struct FrameData {
 };
 
 std::ostream& operator << (std::ostream& os, const FrameData& data);
-
+*/
 #endif /* types_h */

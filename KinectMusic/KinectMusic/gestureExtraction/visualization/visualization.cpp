@@ -19,9 +19,9 @@ Visualization::Visualization() {
 }
 
 bool Visualization::showImage() {
-    pthread_mutex_lock(&visualisation_mutex);
+    pthread_mutex_lock(&ExtractFrameData::visualisation_mutex);
     if(!getIsNeedRedraw()){
-        pthread_mutex_unlock(&visualisation_mutex);
+        pthread_mutex_unlock(&ExtractFrameData::visualisation_mutex);
         usleep(10);
         return true;
     }
@@ -32,7 +32,7 @@ bool Visualization::showImage() {
     //cv::Mat matImageRes;
     //cv::resize(matImage, matImageRes, cv::Size(matImage.cols << 1, matImage.rows << 1));
     cv::imshow( "Display window", matImage);
-    pthread_mutex_unlock(&visualisation_mutex);
+    pthread_mutex_unlock(&ExtractFrameData::visualisation_mutex);
     
     if(cv::waitKey(1) == 27) {
         return false;
@@ -55,8 +55,8 @@ void Visualization::mat2img(cv::Mat mat, cv::Mat& matImg) {
     for(int i = 0; i < w*h; i++) {
         uint16_t d16 = *p_mat16;
         
-        if(d16 && d16 < MAX_KINECT_VALUE) {
-            *p_b = *p_g =*p_r = 255 - d16 * 255. / MAX_KINECT_VALUE;
+        if(d16 && d16 < ExtractFrameData::MAX_KINECT_VALUE) {
+            *p_b = *p_g =*p_r = 255 - d16 * 255. / ExtractFrameData::MAX_KINECT_VALUE;
             //*p_b = 0;
         }
         /*else {

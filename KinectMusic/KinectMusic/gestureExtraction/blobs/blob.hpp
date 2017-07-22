@@ -18,7 +18,7 @@
 #include <sstream>
 #include <iterator>
 #include "../../log/logs.h"
-#include "../analyze.h"
+#include "../extractframedata.h"
 #include  "../pcl/pclplane.hpp"
 #include  "../pcl/pcldownsample.hpp"
 #ifdef USE_CELL_NORMAL
@@ -70,7 +70,7 @@ matSize(mat.size())
     int x = ind % w;
     int y = (ind -x) / w;
     cells.AddCell(x, y, ind, *(p_mat + ind));
-    *(p_mat + ind) = MAX_KINECT_VALUE;
+    *(p_mat + ind) = ExtractFrameData::MAX_KINECT_VALUE;
     auto it = cells.All().begin();
     for( ;it != cells.All().end(); ++it){
         const uint16_t val =  it->val;
@@ -83,9 +83,9 @@ matSize(mat.size())
                 continue;
             int indNeighb = yNeighb * w + xNeighb;
             uint16_t valNeighb =  *(p_mat + indNeighb);
-            if(valNeighb >= MAX_KINECT_VALUE || valNeighb == 0 || abs(valNeighb-val) >= MAX_NEIGHB_DIFF_COARSE)
+            if(valNeighb >= ExtractFrameData::MAX_KINECT_VALUE || valNeighb == 0 || abs(valNeighb-val) >= ExtractFrameData::MAX_NEIGHB_DIFF_COARSE)
                 continue;
-            *(p_mat + indNeighb) = MAX_KINECT_VALUE;
+            *(p_mat + indNeighb) = ExtractFrameData::MAX_KINECT_VALUE;
             cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
         }
     }
@@ -113,7 +113,7 @@ template<template<typename> class TContainer, typename T> int Blob<TContainer,T>
         maxY = originalMat.rows - 1;
     
     int indNearest (NO_DATA_VALUE);
-    int valNearest (MAX_KINECT_VALUE);
+    int valNearest (ExtractFrameData::MAX_KINECT_VALUE);
     
     for(int y = minY; y <= maxY; ++y){
         uint16_t* p = (uint16_t*)(originalMat.data) + originalMat.cols * y + minX;

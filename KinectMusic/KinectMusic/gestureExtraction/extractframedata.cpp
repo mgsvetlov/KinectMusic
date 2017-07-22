@@ -18,7 +18,7 @@
 
 #include "types.h"
 #include "visualization/visualization.h"
-#include "analyze.h"
+#include "extractframedata.h"
 #include "blobs/blobsfabrique.hpp"
 #include "blobs/cells/cell.h"
 #include "convex3d/convex3d.h"
@@ -29,35 +29,31 @@
 #include "../log/logs.h"
 #include "../config/config.h"
 
+uint16_t * const ExtractFrameData::depthAnalyze = new uint16_t[w*h];
 
-pthread_mutex_t depth_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t video_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t visualisation_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t ExtractFrameData::depth_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t ExtractFrameData::video_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t ExtractFrameData::visualisation_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-volatile int die_kinect = 0;
-volatile int die_gesture = 0;
+volatile int ExtractFrameData::die_kinect = 0;
+volatile int ExtractFrameData::die_gesture = 0;
 
-volatile bool newFrame = false;
+volatile int ExtractFrameData::frameNum = 0;
+volatile int ExtractFrameData::frameNum_analyze = 0;
 
-int w = 640, h = 480;
-uint16_t * const depthAnalyze = new uint16_t[w*h];
+volatile int ExtractFrameData::MAX_KINECT_VALUE;
+volatile int ExtractFrameData::MAX_NEIGHB_DIFF_COARSE  = 4;
 
-int MAX_KINECT_VALUE;
+volatile int ExtractFrameData::w = 640, ExtractFrameData::h = 480; //why should be initialized here???
 int MAX_KINECT_DEPTH = 2000;
 int MIN_KINECT_DEPTH = 800;
-int BLOBS_RESIZE_POW  = 3;
-int BLOB_MIN_SIZE = (w >> BLOBS_RESIZE_POW)  * 0.15625 * 0.5;
-int BLOB_MIN_SIZE_LAST = (w >> BLOBS_RESIZE_POW)  * 18.75;
-int MAX_NEIGHB_DIFF_COARSE  = 4;
-int MAX_NEIGHB_DIFF_FINE  = 1;
+int BLOBS_RESIZE_POW;
+int BLOB_MIN_SIZE;
+int BLOB_MIN_SIZE_LAST;
+int BLOB_EXT_MAX_SIZE;
 
-volatile int frameNum = 0;
-volatile int frameNum_analyze = 0;
-volatile int analyzeThreadId = 0;
-
-void *analyze_threadfunc(void *arg) {
-    
-    while (!die_gesture){
+void *ExtractFrameData::analyze_threadfunc(void *arg) {
+    while (!ExtractFrameData::die_gesture){
         pthread_mutex_lock(&depth_mutex);
         if(frameNum_analyze == frameNum) {
             pthread_mutex_unlock(&depth_mutex);
@@ -76,7 +72,12 @@ void *analyze_threadfunc(void *arg) {
             t = next_t;
             Logs::writeLog("gestures", ss.str());
         }
-        
+        if(frameNum_analyze == 0){
+            BLOBS_RESIZE_POW = w == 640 ? 3 : 2;
+            BLOB_MIN_SIZE = (w >> BLOBS_RESIZE_POW)  * 0.15625 * 0.5;
+            BLOB_MIN_SIZE_LAST = (w >> BLOBS_RESIZE_POW)  * 18.75;
+            BLOB_EXT_MAX_SIZE = w * 6.4;
+        }
         int frameNum_ = frameNum_analyze = frameNum;
         cv::Mat mat16(h, w, CV_16U, depthAnalyze);
         pthread_mutex_unlock(&depth_mutex);
@@ -147,7 +148,7 @@ void *analyze_threadfunc(void *arg) {
     return NULL;
 }
 
-std::ostream& operator << (std::ostream& os, const FrameData& frameData){
+/*std::ostream& operator << (std::ostream& os, const FrameData& frameData){
     std::stringstream ss;
     ss << frameData.frameNum << " ";
     for(auto& gestureData: frameData.data){
@@ -159,6 +160,6 @@ std::ostream& operator << (std::ostream& os, const FrameData& frameData){
     }
     Logs::writeLog("gestures", ss.str());
     return os;
-}
+}*/
 
 
