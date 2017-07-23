@@ -56,8 +56,8 @@ void Visualization::mat2img(cv::Mat mat, cv::Mat& matImg) {
     for(int i = 0; i < w*h; i++) {
         uint16_t d16 = *p_mat16;
         
-        if(d16 && d16 < ExtractFrameData::MAX_KINECT_VALUE) {
-            *p_b = *p_g =*p_r = 255 - d16 * 255. / ExtractFrameData::MAX_KINECT_VALUE;
+        if(d16 && d16 < Params::getMaxKinectValue()) {
+            *p_b = *p_g =*p_r = 255 - d16 * 255. / Params::getMaxKinectValue();
             //*p_b = 0;
         }
         /*else {

@@ -69,7 +69,7 @@ mat(mat)
                 continue;
             int indNeighb = yNeighb * w + xNeighb;
             uint16_t valNeighb =  *(p_mat + indNeighb);
-            if(valNeighb >= Params::getMaxKinectDepth()  || valNeighb == 0 || abs(valNeighb-val) >= ExtractFrameData::MAX_NEIGHB_DIFF_COARSE){
+            if(valNeighb >= Params::getMaxKinectDepth()  || valNeighb == 0 || abs(valNeighb-val) >= Params::getMaxHeighbDiffCoarse()){
                 if(valNeighb > maskValue ){
                     cells.Clear();
                     return;

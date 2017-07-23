@@ -41,7 +41,8 @@ void ProcessFrameData::filterFar(){
     uint16_t* p_mat = (uint16_t*)(matFilt.data);
     for(size_t i = 0; i < matFilt.total(); i++, p_mat++)
     {
-        if( *p_mat > maxKinectDepth || *p_mat < minKinectDepth)
+        uint16_t val = *p_mat;
+        if( val > maxKinectDepth || val < minKinectDepth)
             *p_mat = maxKinectDepth;
     }
 }

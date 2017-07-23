@@ -126,7 +126,6 @@
 		7298B7271D8D85840093134C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7298B7261D8D85840093134C /* main.cpp */; };
 		72AFE5E41E7B583000143CA7 /* libusb-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 72AFE5E31E7B583000143CA7 /* libusb-1.0.a */; };
 		72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72B332AD1BAF0733003DA9DA /* kinect.cpp */; };
-		72B332B21BAF1050003DA9DA /* opengl_.c in Sources */ = {isa = PBXBuildFile; fileRef = 72B332B01BAF1050003DA9DA /* opengl_.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -318,8 +317,6 @@
 		72AFE5E31E7B583000143CA7 /* libusb-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libusb-1.0.a"; path = "lib/libusb-1.0.a"; sourceTree = "<group>"; };
 		72B332AD1BAF0733003DA9DA /* kinect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = kinect.cpp; sourceTree = "<group>"; };
 		72B332AE1BAF0733003DA9DA /* kinect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kinect.h; sourceTree = "<group>"; };
-		72B332B01BAF1050003DA9DA /* opengl_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = opengl_.c; sourceTree = "<group>"; };
-		72B332B11BAF1050003DA9DA /* opengl_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opengl_.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -551,8 +548,6 @@
 				720164A11A6C023800BC721A /* KinectMusic.1 */,
 				72B332AD1BAF0733003DA9DA /* kinect.cpp */,
 				72B332AE1BAF0733003DA9DA /* kinect.h */,
-				72B332B01BAF1050003DA9DA /* opengl_.c */,
-				72B332B11BAF1050003DA9DA /* opengl_.h */,
 			);
 			path = KinectMusic;
 			sourceTree = "<group>";
@@ -812,7 +807,6 @@
 				728233C01F114CC200B6E4D4 /* pclutility.cpp in Sources */,
 				7207E6351EE2F5CC0021824C /* gestureAll.cpp in Sources */,
 				72048F8F1EDAD808006381E9 /* logs.cpp in Sources */,
-				72B332B21BAF1050003DA9DA /* opengl_.c in Sources */,
 				7230289E1F247BB0003A8770 /* params.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

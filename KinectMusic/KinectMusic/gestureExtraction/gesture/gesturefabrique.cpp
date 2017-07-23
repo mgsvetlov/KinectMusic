@@ -10,7 +10,6 @@
 /*
 #include "gesturefabrique.h"
 #include "../tracking/tracking.h"
-#include "../extractframedata.h"
 #include "../../config/config.h"
 
 GestureFabrique* GestureFabrique::gestureFabriquePtr (nullptr)

@@ -14,23 +14,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <pthread.h>
 
 #include "libfreenect.h"
 
 namespace Sensor {
-extern int volatile frameNum;
-extern uint16_t* pDepthMatrix;
+    extern int volatile frameNum;
+    extern uint16_t* pDepthMatrix;
+    extern pthread_mutex_t depthMutex;
+    extern volatile int die_kinect;
 }
 
 extern uint8_t *rgb_back, *rgb_mid, *rgb_front;
-extern uint8_t *depth_mid;
 extern freenect_context *f_ctx;
 extern freenect_device *f_dev;
 extern int freenect_led;
 
 extern freenect_video_format requested_format;
 extern freenect_video_format current_format;
-extern freenect_resolution requested_resolution;
+//extern freenect_resolution requested_resolution;
 extern freenect_resolution current_resolution;
 
 extern uint16_t t_gamma[2048];

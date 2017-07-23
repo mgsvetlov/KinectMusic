@@ -22,38 +22,24 @@
 #include "../log/logs.h"
 #include "../config/config.h"
 
-pthread_mutex_t ExtractFrameData::depth_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-volatile int ExtractFrameData::die_kinect = 0;
 volatile int ExtractFrameData::die_gesture = 0;
 
-volatile int ExtractFrameData::MAX_KINECT_VALUE;
-volatile int ExtractFrameData::MAX_NEIGHB_DIFF_COARSE  = 4;
-
-void *ExtractFrameData::analyze_threadfunc(void *arg) {
+void *ExtractFrameData::threadfunc(void *arg) {
     static volatile int frameNumExtract = 0;
+    startLog();
     while (!ExtractFrameData::die_gesture){
-        pthread_mutex_lock(&depth_mutex);
+        pthread_mutex_lock(&Sensor::depthMutex);
+        //check if new frame is available
         if(frameNumExtract == Sensor::frameNum) {
-            pthread_mutex_unlock(&depth_mutex);
+            pthread_mutex_unlock(&Sensor::depthMutex);
             usleep(100);
             continue;
         }
-        
-        static std::clock_t t = clock();
-        if(Sensor::frameNum != 0){
-            std::clock_t next_t = clock();
-            double elapsed_sec = double(next_t - t)/CLOCKS_PER_SEC;
-            std::stringstream ss;
-            ss <<"Frame num " << Sensor::frameNum << " output fps " << (Sensor::frameNum - frameNumExtract)/elapsed_sec;
-            if(Sensor::frameNum - frameNumExtract > 1)
-                ss << ", missed " << Sensor::frameNum - frameNumExtract - 1 << " frames";
-            t = next_t;
-            Logs::writeLog("gestures", ss.str());
-        }
+        //get matrix from frame
+        fpsLog(frameNumExtract);
         int frameNum_ = frameNumExtract = Sensor::frameNum;
         cv::Mat mat16(Params::getMatrixHeight(), Params::getMatrixWidth(), CV_16U, Sensor::pDepthMatrix);
-        pthread_mutex_unlock(&depth_mutex);
+        pthread_mutex_unlock(&Sensor::depthMutex);
         
         ProcessFrameData processFrameData(mat16, frameNum_);
     }
@@ -61,5 +47,24 @@ void *ExtractFrameData::analyze_threadfunc(void *arg) {
     return NULL;
 }
 
+void ExtractFrameData::startLog(){
+    std::stringstream ss;
+    ss << "MAX_KINECT_VALUE " << Params::getMaxKinectValue() << "\n";
+    Logs::writeLog("gestures", ss.str());
+}
+
+void ExtractFrameData::fpsLog(int frameNumExtract){
+    static std::clock_t t = clock();
+    if(Sensor::frameNum != 0){
+        std::clock_t next_t = clock();
+        double elapsed_sec = double(next_t - t)/CLOCKS_PER_SEC;
+        std::stringstream ss;
+        ss <<"Frame num " << Sensor::frameNum << " output fps " << (Sensor::frameNum - frameNumExtract)/elapsed_sec;
+        if(Sensor::frameNum - frameNumExtract > 1)
+            ss << ", missed " << Sensor::frameNum - frameNumExtract - 1 << " frames";
+        t = next_t;
+        Logs::writeLog("gestures", ss.str());
+    }
+}
 
 

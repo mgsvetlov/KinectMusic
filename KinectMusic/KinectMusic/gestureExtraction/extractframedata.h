@@ -13,13 +13,15 @@
 #include <pthread.h>
 
 struct ExtractFrameData {
-static void *analyze_threadfunc(void *arg);
-static pthread_mutex_t depth_mutex;
-static volatile int die_kinect;
-static volatile int die_gesture;
-static volatile int MAX_KINECT_VALUE;
-static volatile int MAX_NEIGHB_DIFF_COARSE;
+public:
+    static void *threadfunc(void *arg);
+private:
+    static void fpsLog(int frameNumExtract);
+    static void startLog();
 
+public:
+    
+    static volatile int die_gesture;
 };
 
 //struct FrameData;

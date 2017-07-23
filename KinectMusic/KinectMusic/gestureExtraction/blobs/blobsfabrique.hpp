@@ -56,7 +56,7 @@ template<typename T> void BlobsFabrique<T>::blobsFabrique0(){
             break;
         
         int minVal = *((uint16_t*)(mat.data) + ind);
-        if(minVal >= ExtractFrameData::MAX_KINECT_VALUE)
+        if(minVal >= Params::getMaxKinectValue())
             break;
         
         T nearestBlob(mat, ind);
@@ -88,7 +88,7 @@ template<typename T> void BlobsFabrique<T>::blobsFabrique1(){
             break;
         
         int minVal = *((uint16_t*)(mat.data) + ind);
-        if(minVal == ExtractFrameData::MAX_KINECT_VALUE)
+        if(minVal == Params::getMaxKinectValue())
             return;
         blobs.emplace_back(mat, ind);
         continue;
@@ -132,7 +132,7 @@ template<typename T> int BlobsFabrique<T>::getBodyDepth(){
 }
 
 template<typename T> int BlobsFabrique<T>::minCellIndex(){
-    double minVal = ExtractFrameData::MAX_KINECT_VALUE;
+    double minVal = Params::getMaxKinectValue();
     int ind (-1);
     uint16_t* p = (uint16_t*)(mat.data);
     for(int i = 0; i < mat.total(); ++i, ++p){

@@ -39,6 +39,7 @@ protected:
 public:
     static void setFileName(std::string value) {fileName = value;}
     
+    int getDepthFormat() const { return depthFormat;}
     int  getMatrixWidth() const {return matrixWidth; }
     bool getIsVisualisation() const {return isVisualisation; }
     bool getIsCsound() const {return isCsound; }
@@ -51,6 +52,7 @@ private:
     static Config* _self;
     static std::map<std::string, double> varmap;
     
+    int depthFormat; //0 - FREENECT_DEPTH_REGISTERED, 1 - FREENECT_DEPTH_11BIT
     int matrixWidth;
     bool isVisualisation;
     bool isCsound;

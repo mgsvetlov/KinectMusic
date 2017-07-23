@@ -43,8 +43,6 @@
 #include "log/logs.h"
 #include "config/config.h"
 
-//#include "opengl_.h"
-
 
 int main(int argc, char **argv)
 {
@@ -55,21 +53,7 @@ int main(int argc, char **argv)
         return -1;
     }
     
-	//depth_mid = (uint8_t*)malloc(640*480*3);
-	//depth_front = (uint8_t*)malloc(640*480*3);
-    
-	printf("Kinect camera test\n");
-    
-	/*int i;
-	for (i=0; i<2048; i++) {
-		float v = i/2048.0;
-		v = powf(v, 3)* 6;
-		t_gamma[i] = v*6*256;
-	}*/
-    
-	//g_argc = argc;
-	//g_argv = argv;
-    
+    printf("Kinect camera test\n");
 	if (freenect_init(&f_ctx, NULL) < 0) {
 		printf("freenect_init() failed\n");
 		return 1;
@@ -101,12 +85,12 @@ int main(int argc, char **argv)
 		return 1;
 	}
     
-    size_t analyzeThreadsCount = 2;
-    pthread_t* p_analyze_create = new pthread_t[analyzeThreadsCount];
-    for(int i = 0; i < analyzeThreadsCount; i++){
-        res = pthread_create(&p_analyze_create[i], NULL, ExtractFrameData::analyze_threadfunc, NULL);
+    size_t extractFrameDataThreadsCount = 2;
+    pthread_t* p_extractFrameData_create = new pthread_t[extractFrameDataThreadsCount];
+    for(int i = 0; i < extractFrameDataThreadsCount; i++){
+        res = pthread_create(&p_extractFrameData_create[i], NULL, ExtractFrameData::threadfunc, NULL);
         if (res) {
-            printf("pthread_create   p_analyze_create[%u] failed\n", i);
+            printf("pthread_create   p_extractFrameData_create[%u] failed\n", i);
             return 1;
         }
     }
@@ -126,11 +110,11 @@ int main(int argc, char **argv)
     }
     
     ExtractFrameData::die_gesture = 1;
-    for(int i = 0; i < analyzeThreadsCount; i++){
-        pthread_join(p_analyze_create[i], NULL);
+    for(int i = 0; i < extractFrameDataThreadsCount; i++){
+        pthread_join(p_extractFrameData_create[i], NULL);
     }
     
-    ExtractFrameData::die_kinect = 1;
+    Sensor::die_kinect = 1;
     pthread_join(freenect_thread, NULL);
     
     //GestureFabrique::destroy();

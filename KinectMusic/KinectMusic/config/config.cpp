@@ -17,6 +17,7 @@ Config* Config::_self = nullptr;
 
 std::map<std::string, double> Config::varmap =
 {
+    { "depthFormat", 0 },
     { "matrixWidth", 640 },
     { "isVisualisation", 0. },
     { "isCsound", 1. },
@@ -24,6 +25,7 @@ std::map<std::string, double> Config::varmap =
 };
 
 Config::Config() :
+depthFormat(static_cast<int>(varmap["depthFormat"])),
 matrixWidth(static_cast<int>(varmap["matrixWidth"])),
 isVisualisation(static_cast<bool>(varmap["isVisualisation"])),
 isCsound(static_cast<bool>(varmap["isCsound"])),

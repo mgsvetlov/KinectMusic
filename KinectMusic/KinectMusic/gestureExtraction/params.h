@@ -12,6 +12,8 @@
 class Params {
 public:
     static void Init();
+    static int getMaxKinectValue(){return MAX_KINECT_VALUE;}
+    static int getMaxHeighbDiffCoarse(){return MAX_NEIGHB_DIFF_COARSE;}
     static int getMatrixWidth() { return MATRIX_WIDTH;}
     static int getMatrixHeight() { return MATRIX_HEIGHT;}
     static int getMaxKinectDepth() { return MAX_KINECT_DEPTH;}
@@ -22,6 +24,8 @@ public:
     static int getBlobExtMaxSize() { return BLOB_EXT_MAX_SIZE;}
     static int getIsInit() { return isInit;}
 private:
+    static int MAX_KINECT_VALUE;
+    static int MAX_NEIGHB_DIFF_COARSE;
     static int MATRIX_WIDTH;
     static int MATRIX_HEIGHT;
     static int MAX_KINECT_DEPTH;

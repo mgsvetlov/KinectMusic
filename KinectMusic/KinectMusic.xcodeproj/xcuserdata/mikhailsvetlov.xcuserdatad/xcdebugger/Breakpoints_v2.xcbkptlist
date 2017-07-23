@@ -504,22 +504,6 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/extractframedata.cpp"
-            timestampString = "522426030.210987"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "57"
-            endingLineNumber = "57"
-            landmarkName = "ExtractFrameData::analyze_threadfunc(void *arg)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KinectMusic/gestureExtraction/extractframedata.cpp"
             timestampString = "522426329.017113"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
