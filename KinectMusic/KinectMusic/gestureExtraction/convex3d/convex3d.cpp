@@ -7,7 +7,7 @@
 //
 
 #include "convex3d.h"
-#include "../processframedata.h"
+#include "../params.h"
 
 cv::Mat Convex3d::extractConvexities(cv::Mat mat, int filt_size, int filt_depth, int core_half_size)
 {
@@ -20,7 +20,7 @@ cv::Mat Convex3d::extractConvexities(cv::Mat mat, int filt_size, int filt_depth,
             uint16_t val = *p_mat;
             if(!val)
                 continue;
-            int filt_size_ = sqrt(static_cast<double>(ProcessFrameData::getMaxKinectDepth()) /val) * filt_size;
+            int filt_size_ = sqrt(static_cast<double>(Params::getMaxKinectDepth()) /val) * filt_size;
             bool isConvexity(true);
             for(int m = -core_half_size; m <= core_half_size; m++){
                 int y_ = y + m * filt_size_;

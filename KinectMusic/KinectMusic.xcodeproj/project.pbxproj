@@ -24,6 +24,7 @@
 		720C22921DF2EED10066104B /* tracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720C22901DF2EED10066104B /* tracking.cpp */; };
 		720C22951DF4236A0066104B /* gesture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720C22931DF4236A0066104B /* gesture.cpp */; };
 		723028981F23BB04003A8770 /* processframedata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 723028961F23BB04003A8770 /* processframedata.cpp */; };
+		7230289E1F247BB0003A8770 /* params.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7230289C1F247BB0003A8770 /* params.cpp */; };
 		725B1B9D1ED18A800028AE34 /* gesturefabrique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1B9B1ED18A800028AE34 /* gesturefabrique.cpp */; };
 		725B1BA01ED768A60028AE34 /* gestureStop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1B9E1ED768A60028AE34 /* gestureStop.cpp */; };
 		725B1BA31ED772170028AE34 /* gestureReturn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1BA11ED772170028AE34 /* gestureReturn.cpp */; };
@@ -178,6 +179,8 @@
 		722141C31DB015AE00B697E8 /* libfreenect_registration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfreenect_registration.h; sourceTree = "<group>"; };
 		723028961F23BB04003A8770 /* processframedata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = processframedata.cpp; path = gestureExtraction/processframedata.cpp; sourceTree = "<group>"; };
 		723028971F23BB04003A8770 /* processframedata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = processframedata.h; path = gestureExtraction/processframedata.h; sourceTree = "<group>"; };
+		7230289C1F247BB0003A8770 /* params.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = params.cpp; path = gestureExtraction/params.cpp; sourceTree = "<group>"; };
+		7230289D1F247BB0003A8770 /* params.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = params.h; path = gestureExtraction/params.h; sourceTree = "<group>"; };
 		725B1B9B1ED18A800028AE34 /* gesturefabrique.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gesturefabrique.cpp; path = gestureExtraction/gesture/gesturefabrique.cpp; sourceTree = "<group>"; };
 		725B1B9C1ED18A800028AE34 /* gesturefabrique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gesturefabrique.h; path = gestureExtraction/gesture/gesturefabrique.h; sourceTree = "<group>"; };
 		725B1B9E1ED768A60028AE34 /* gestureStop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gestureStop.cpp; path = gestureExtraction/gesture/gestureStop.cpp; sourceTree = "<group>"; };
@@ -708,13 +711,15 @@
 		7298B7231D8D76CE0093134C /* gestureExtraction */ = {
 			isa = PBXGroup;
 			children = (
+				72799BA61DC61E5800BAC3DC /* types.h */,
+				7230289D1F247BB0003A8770 /* params.h */,
+				7230289C1F247BB0003A8770 /* params.cpp */,
 				72799BA51DC61E5800BAC3DC /* extractframedata.h */,
 				72799BA41DC61E5800BAC3DC /* extractframedata.cpp */,
 				723028971F23BB04003A8770 /* processframedata.h */,
 				723028961F23BB04003A8770 /* processframedata.cpp */,
 				72048F6E1EDA00BE006381E9 /* share.cpp */,
 				72048F6F1EDA00BE006381E9 /* share.h */,
-				72799BA61DC61E5800BAC3DC /* types.h */,
 				722141A51D9FC2BD00B697E8 /* blobs */,
 				728233201F07950D00B6E4D4 /* convex3d */,
 				7221419E1D9FB91400B697E8 /* visualization */,
@@ -808,6 +813,7 @@
 				7207E6351EE2F5CC0021824C /* gestureAll.cpp in Sources */,
 				72048F8F1EDAD808006381E9 /* logs.cpp in Sources */,
 				72B332B21BAF1050003DA9DA /* opengl_.c in Sources */,
+				7230289E1F247BB0003A8770 /* params.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

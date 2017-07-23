@@ -17,7 +17,10 @@
 
 #include "libfreenect.h"
 
-
+namespace Sensor {
+extern int volatile frameNum;
+extern uint16_t* pDepthMatrix;
+}
 
 extern uint8_t *rgb_back, *rgb_mid, *rgb_front;
 extern uint8_t *depth_mid;

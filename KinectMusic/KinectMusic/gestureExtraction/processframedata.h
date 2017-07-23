@@ -10,36 +10,27 @@
 #define processframedata_h
 #include <pthread.h>
 #include "types.h"
+#include "blobs/blobext.hpp"
 
 class ProcessFrameData {
 public:
-    static void Init(int w);
     ProcessFrameData(cv::Mat mat, int frameNum);
-    
-    static int getMaxKinectDepth() { return MAX_KINECT_DEPTH;}
-    static int getMinKinectDepth() { return MIN_KINECT_DEPTH;}
-    static int getBlobsResizePow() { return BLOBS_RESIZE_POW;}
-    static int getBlobsMinSize() { return BLOB_MIN_SIZE;}
-    static int getBlobsMinSizeLast() { return BLOB_MIN_SIZE_LAST;}
-    static int getBlobExtMaxSize() { return BLOB_EXT_MAX_SIZE;}
 
 private:
     void filterFar();
     void resize();
+    void createBlobsAndBorders();
+    void tracking();
+    void visualize();
    
 private:
-    static int MAX_KINECT_DEPTH;
-    static int MIN_KINECT_DEPTH;
-    static int BLOBS_RESIZE_POW;
-    static int BLOB_MIN_SIZE;
-    static int BLOB_MIN_SIZE_LAST;
-    static int BLOB_EXT_MAX_SIZE;
-    
      static pthread_mutex_t visualisation_mutex;
     
     cv::Mat mat;
+    int frameNum;
     cv::Mat matFilt;
     cv::Mat matResized;
+    std::list<BlobFinal> blobsExt;
     
     friend class Visualization;
 };

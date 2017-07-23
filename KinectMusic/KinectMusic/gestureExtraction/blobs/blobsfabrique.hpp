@@ -9,6 +9,7 @@
 #ifndef blobsfabrique_hpp
 #define blobsfabrique_hpp
 
+#include "../params.h"
 #include "blobext.hpp"
 #include "blobsclust.hpp"
 #include "../../log/logs.h"
@@ -60,14 +61,14 @@ template<typename T> void BlobsFabrique<T>::blobsFabrique0(){
         
         T nearestBlob(mat, ind);
         
-        if(nearestBlob.getCellsConst().Size() < ProcessFrameData::getBlobsMinSize())
+        if(nearestBlob.getCellsConst().Size() < Params::getBlobsMinSize())
             continue;
         
         if(largeBlobMaxVal != -1 && nearestBlob.getCellsConst().MinValCell() && nearestBlob.getCellsConst().MinValCell()->val > largeBlobMaxVal){
             break;
         }
         
-        if(nearestBlob.getCellsConst().Size() > ProcessFrameData::getBlobsMinSizeLast() && nearestBlob.getCellsConst().MaxValCell()){
+        if(nearestBlob.getCellsConst().Size() > Params::getBlobsMinSizeLast() && nearestBlob.getCellsConst().MaxValCell()){
             largeBlobMaxVal = nearestBlob.getCellsConst().MaxValCell()->val;
             blobs.push_front(std::move(nearestBlob));
         }

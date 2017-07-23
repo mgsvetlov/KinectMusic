@@ -10,14 +10,11 @@
 #define blob_hpp
 
 #include <limits>
-#include "../processframedata.h"
+#include <algorithm>
+
+#include "../params.h"
 #include "cells/cells.hpp"
-#include <iostream>
-#include <queue>
-#include <algorithm>    // std::sort
-#include <vector>       // std::vector
-#include <sstream>
-#include <iterator>
+
 #include "../../log/logs.h"
 #include "../extractframedata.h"
 #include  "../pcl/pclplane.hpp"
@@ -98,7 +95,7 @@ template<template<typename> class TContainer, typename T> int Blob<TContainer,T>
     int ind = cells.MinValCell()->ind;
     int x = ind % this->matSize.width;
     int y = (ind-x) /this->matSize.width;
-    static const int resizePow(ProcessFrameData::getBlobsResizePow());
+    static const int resizePow(Params::getBlobsResizePow());
     x <<= resizePow;
     y <<= resizePow;
     

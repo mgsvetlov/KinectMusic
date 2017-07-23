@@ -7,6 +7,7 @@
 //
 
 #include "processframedata.h"
+#include "params.h"
 #include "blobs/blobsfabrique.hpp"
 #include "convex3d/convex3d.h"
 #include "share.h"
@@ -14,28 +15,44 @@
 #include "../config/config.h"
 #include "visualization/visualization.h"
 
-int ProcessFrameData::MAX_KINECT_DEPTH = 2000;
-int ProcessFrameData::MIN_KINECT_DEPTH = 800;
-int ProcessFrameData::BLOBS_RESIZE_POW;
-int ProcessFrameData::BLOB_MIN_SIZE;
-int ProcessFrameData::BLOB_MIN_SIZE_LAST;
-int ProcessFrameData::BLOB_EXT_MAX_SIZE;
 
 pthread_mutex_t ProcessFrameData::visualisation_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void ProcessFrameData::Init(int w){
-    BLOBS_RESIZE_POW = w == 640 ? 3 : 2;
-    BLOB_MIN_SIZE = (w >> BLOBS_RESIZE_POW)  * 0.15625 * 0.5;
-    BLOB_MIN_SIZE_LAST = (w >> BLOBS_RESIZE_POW)  * 18.75;
-    BLOB_EXT_MAX_SIZE = w * 6.4;
-}
-
 ProcessFrameData::ProcessFrameData(cv::Mat mat, int frameNum) :
-mat(mat)
+mat(mat),
+frameNum(frameNum)
 {
+    if(!Params::getIsInit())
+        Params::Init();
     filterFar();
     resize();
+    createBlobsAndBorders();
+    
+    //tracking();
+    visualize();
 
+}
+
+void ProcessFrameData::filterFar(){
+    //filter far area
+    static const int maxKinectDepth(Params::getMaxKinectDepth());
+    static const int minKinectDepth(Params::getMinKinectDepth());
+    matFilt = mat.clone();
+    uint16_t* p_mat = (uint16_t*)(matFilt.data);
+    for(size_t i = 0; i < matFilt.total(); i++, p_mat++)
+    {
+        if( *p_mat > maxKinectDepth || *p_mat < minKinectDepth)
+            *p_mat = maxKinectDepth;
+    }
+}
+
+void ProcessFrameData::resize(){
+    //resize
+    const static int blobsResizePow(Params::getBlobsResizePow());
+    cv::resize(matFilt, matResized, cv::Size(Params::getMatrixWidth()>>blobsResizePow, Params::getMatrixHeight()>>blobsResizePow));
+}
+
+void ProcessFrameData::createBlobsAndBorders(){
     //extract all the blobs up to person
     BlobsFabrique<BlobPrim> blobsFabrique(0, matResized);
     auto& blobs = blobsFabrique.getBlobs();
@@ -45,9 +62,12 @@ mat(mat)
     static int filt_size(matResized.cols / 20), filt_depth(matResized.cols / 10), core_half_size(2);
     cv::Mat matDst = Convex3d::extractConvexities(matBlobs, filt_size, filt_depth, core_half_size);
     BlobsFabrique<BlobPrim> blobsFabrique1(1, matDst);
-    std::list<BlobFinal> blobsExt;
-    blobsFabrique1.constructBlobsExt(matFilt, blobsExt);
     
+    //create blobs extended and borders
+    blobsFabrique1.constructBlobsExt(matFilt, blobsExt);
+}
+
+void ProcessFrameData::tracking(){
     //tracking hands
     /*Track::analyzeFrame(lHands);
      std::vector<Track> vTracks = Track::getTracksConst();
@@ -63,7 +83,9 @@ mat(mat)
      break;
      }
      }*/
-    
+}
+
+void ProcessFrameData::visualize(){
     if(Config::instance()->getIsVisualisation()){
         cv::Mat img;
         Visualization::mat2img(mat, img);
@@ -82,21 +104,4 @@ mat(mat)
         Visualization::setIsNeedRedraw(true);
         pthread_mutex_unlock(&visualisation_mutex);
     }
-    
-}
-
-void ProcessFrameData::filterFar(){
-    //filter far area
-    matFilt = mat.clone();
-    uint16_t* p_mat = (uint16_t*)(matFilt.data);
-    for(size_t i = 0; i < matFilt.total(); i++, p_mat++)
-    {
-        if( *p_mat > ProcessFrameData::MAX_KINECT_DEPTH || *p_mat < ProcessFrameData::MIN_KINECT_DEPTH)
-            *p_mat = ProcessFrameData::MAX_KINECT_DEPTH;
-    }
-}
-
-void ProcessFrameData::resize(){
-    //resize
-    cv::resize(matFilt, matResized, cv::Size(ExtractFrameData::w>>ProcessFrameData::BLOBS_RESIZE_POW, ExtractFrameData::h>>ProcessFrameData::BLOBS_RESIZE_POW));
 }

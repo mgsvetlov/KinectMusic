@@ -6,6 +6,7 @@
 //  Copyright © 2016 mgsvetlov. All rights reserved.
 //
 #include "visualization.h"
+#include "../processframedata.h"
 
 Visualization* Visualization::p_vis = nullptr;
 cv::Mat Visualization::matImage;

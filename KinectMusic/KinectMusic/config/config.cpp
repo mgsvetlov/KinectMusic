@@ -17,12 +17,14 @@ Config* Config::_self = nullptr;
 
 std::map<std::string, double> Config::varmap =
 {
+    { "matrixWidth", 640 },
     { "isVisualisation", 0. },
     { "isCsound", 1. },
     { "gestureType", 0. }
 };
 
 Config::Config() :
+matrixWidth(static_cast<int>(varmap["matrixWidth"])),
 isVisualisation(static_cast<bool>(varmap["isVisualisation"])),
 isCsound(static_cast<bool>(varmap["isCsound"])),
 gestureType(static_cast<int>(varmap["gestureType"]))
@@ -36,10 +38,11 @@ bool Config::parse()
         std::stringstream ss;
         ss <<"Can't find configuration file " << fileName << "\nDefault values will be set.\n";
         Logs::writeLog("gestures", ss.str());
-        
+   
+        varmap["matrixWidth"] = 640;
         varmap["isVisualisation"] = 0.;
         varmap["isCsound"] = 1.;
-        varmap["igestureType"] = 0.;
+        varmap["gestureType"] = 0.;
     }
     else {
         std::map<std::string, int> confmap;

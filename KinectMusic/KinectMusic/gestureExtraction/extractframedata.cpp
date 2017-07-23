@@ -13,53 +13,46 @@
 #include <iostream>
 #include <ctime>
 
+#include "../kinect.h"
+
 #include "types.h"
 #include "extractframedata.h"
 #include "processframedata.h"
+#include "params.h"
 #include "../log/logs.h"
 #include "../config/config.h"
-
-uint16_t * const ExtractFrameData::depthAnalyze = new uint16_t[w*h];
 
 pthread_mutex_t ExtractFrameData::depth_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 volatile int ExtractFrameData::die_kinect = 0;
 volatile int ExtractFrameData::die_gesture = 0;
 
-volatile int ExtractFrameData::frameNum = 0;
-volatile int ExtractFrameData::frameNum_analyze = 0;
-
 volatile int ExtractFrameData::MAX_KINECT_VALUE;
 volatile int ExtractFrameData::MAX_NEIGHB_DIFF_COARSE  = 4;
 
-volatile int ExtractFrameData::w = 640, ExtractFrameData::h = 480; //why should be initialized here???
-
-
 void *ExtractFrameData::analyze_threadfunc(void *arg) {
+    static volatile int frameNumExtract = 0;
     while (!ExtractFrameData::die_gesture){
         pthread_mutex_lock(&depth_mutex);
-        if(frameNum_analyze == frameNum) {
+        if(frameNumExtract == Sensor::frameNum) {
             pthread_mutex_unlock(&depth_mutex);
             usleep(100);
             continue;
         }
         
         static std::clock_t t = clock();
-        if(frameNum != 0){
+        if(Sensor::frameNum != 0){
             std::clock_t next_t = clock();
             double elapsed_sec = double(next_t - t)/CLOCKS_PER_SEC;
             std::stringstream ss;
-            ss <<"Frame num " << frameNum << " output fps " << (frameNum- frameNum_analyze)/elapsed_sec;
-            if(frameNum - frameNum_analyze > 1)
-                ss << ", missed " << frameNum - frameNum_analyze - 1 << " frames";
+            ss <<"Frame num " << Sensor::frameNum << " output fps " << (Sensor::frameNum - frameNumExtract)/elapsed_sec;
+            if(Sensor::frameNum - frameNumExtract > 1)
+                ss << ", missed " << Sensor::frameNum - frameNumExtract - 1 << " frames";
             t = next_t;
             Logs::writeLog("gestures", ss.str());
         }
-        if(frameNum_analyze == 0){
-            ProcessFrameData::Init(w);
-        }
-        int frameNum_ = frameNum_analyze = frameNum;
-        cv::Mat mat16(h, w, CV_16U, depthAnalyze);
+        int frameNum_ = frameNumExtract = Sensor::frameNum;
+        cv::Mat mat16(Params::getMatrixHeight(), Params::getMatrixWidth(), CV_16U, Sensor::pDepthMatrix);
         pthread_mutex_unlock(&depth_mutex);
         
         ProcessFrameData processFrameData(mat16, frameNum_);

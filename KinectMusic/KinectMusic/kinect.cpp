@@ -9,6 +9,10 @@
 #include "kinect.h"
 #include  "gestureExtraction/extractframedata.h"
 
+namespace Sensor {
+int volatile frameNum = 0;
+uint16_t* pDepthMatrix = nullptr;
+}
 
 uint8_t *rgb_back, *rgb_mid, *rgb_front;
 //uint8_t *depth_mid;
@@ -33,9 +37,11 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
     //static std::clock_t t = clock();
 
     pthread_mutex_lock(&ExtractFrameData::depth_mutex);
-    ++ExtractFrameData::frameNum;
+    ++Sensor::frameNum;
     uint16_t *p_depth1 = (uint16_t*)v_depth;
-    uint16_t *p_depth2 = ExtractFrameData::depthAnalyze;
+    if(Sensor::pDepthMatrix == nullptr)
+        Sensor::pDepthMatrix = new uint16_t[w*h];
+    uint16_t *p_depth2 = Sensor::pDepthMatrix;
     for (int i = 0; i < w * h; i++) {
         *(p_depth2++) = *(p_depth1++);
     }
@@ -111,16 +117,6 @@ void *freenect_threadfunc(void *arg)
         case FREENECT_DEPTH_REGISTERED:
             ExtractFrameData::MAX_KINECT_VALUE  = FREENECT_DEPTH_MM_MAX_VALUE;
             ExtractFrameData::MAX_NEIGHB_DIFF_COARSE  = 80;
-            break;
-        default:
-            break;
-    }
-    switch(current_resolution){
-        case FREENECT_RESOLUTION_LOW:
-            w = ExtractFrameData::w = 320, h = ExtractFrameData::h = 240;
-            break;
-        case FREENECT_RESOLUTION_MEDIUM:
-            w = ExtractFrameData::w = 640, h = ExtractFrameData::h = 480;
             break;
         default:
             break;
