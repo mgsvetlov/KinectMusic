@@ -118,7 +118,7 @@ int main(int argc, char **argv)
     pthread_join(freenect_thread, NULL);
     
     //GestureFabrique::destroy();
-    //Share::destroy();
+    Share::destroy();
     Logs::closeLogs();
     free(rgb_back);
     free(rgb_mid);

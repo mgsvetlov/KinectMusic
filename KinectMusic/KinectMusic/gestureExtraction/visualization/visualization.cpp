@@ -154,6 +154,16 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
     }*/
 }
 
+void Visualization::tracks2img(const std::vector<Track>& tracks, cv::Mat& matImg){
+    for(int i = 0; i < tracks.size(); ++i){
+        cv::Scalar color = i == 0 ? cv::Scalar (255.0f, 0.0f, 0) : cv::Scalar (0.0f, 255.0f, 0);
+        const auto& track = tracks[i];
+        if(track.handHistory.empty())
+            return;
+        auto& keyPoint = track.handHistory.back().keyPoint;
+        cv::circle(matImg, cv::Point(keyPoint.x, keyPoint.y), 5, color, -1);
+    }
+}
 /*void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg, size_t length){
  int pointSize(5);
  cv::Scalar color = gesture->handInd == 0 ? cv::Scalar(0,255,255) : cv::Scalar(255,255, 0);

@@ -9,6 +9,8 @@
 #ifndef params_h
 #define params_h
 
+#include <cstddef>
+
 class Params {
 public:
     static void Init();
@@ -23,6 +25,8 @@ public:
     static int getBlobsMinSizeLast() { return BLOB_MIN_SIZE_LAST;}
     static int getBlobExtMaxSize() { return BLOB_EXT_MAX_SIZE;}
     static int getIsInit() { return isInit;}
+    static size_t getTracksCount() { return TRACKS_COUNT;}
+    static size_t getTrackingDistThresh() { return TRACKING_DIST_THRESH;}
 private:
     static int MAX_KINECT_VALUE;
     static int MAX_NEIGHB_DIFF_COARSE;
@@ -34,6 +38,8 @@ private:
     static int BLOB_MIN_SIZE;
     static int BLOB_MIN_SIZE_LAST;
     static int BLOB_EXT_MAX_SIZE;
+    static size_t TRACKS_COUNT;
+    static size_t TRACKING_DIST_THRESH;
     static bool isInit;
 };
 

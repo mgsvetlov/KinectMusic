@@ -8,31 +8,31 @@
 
 #ifndef tracking_h
 #define tracking_h
-/*
+
 #include <stdio.h>
 #include "../types.h"
-
-#include "../hand/hand.h"
+#include "../blobs/blobext.hpp"
+#include "../processframedata.h"
 
 
 class Track {
 public:
     Track(){}
-    Track(const Hand& hand);
-    static void analyzeFrame(const std::list<Hand>& lBlobs);
+    Track(const BlobFinal& blobExt);
+    static void analyzeFrame(const std::list<BlobFinal>& lBlobs);
     static const std::vector<Track>& getTracksConst() {return tracks;}
-    std::list<Hand>& getLHands()  { return lHands;}
-    const std::list<Hand>& getLHandsConst() const { return lHands;}
+    std::list<HandData>& getHandHistory()  { return handHistory;}
+    const std::list<HandData>& getHandHistoryConst() const { return handHistory;}
     const bool getIsTrackFound() const  {return isHandFound;}
 private:
-    double dist2hand(const Hand& hand);
-    void addHandData(const Hand& hand);
+    double dist2blob(const BlobFinal& blob);
+    void addHandData(const BlobFinal& blob);
 private:
     static std::vector<Track> tracks;
     bool isHandFound = false;
-    std::list<Hand> lHands;
-public:
-    static const size_t trackCount = 2;
+    std::list<HandData> handHistory; //lHands
+    
+    friend class Visualization;
 };
-*/
+
 #endif /* tracking_h */

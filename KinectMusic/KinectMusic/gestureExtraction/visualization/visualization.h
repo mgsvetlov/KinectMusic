@@ -16,15 +16,12 @@
 #include <unistd.h>
 #include "../tracking/tracking.h"
 #include "../extractframedata.h"
-#include "../hand/hand.h"
 #include "../gesture/gesturefabrique.h"
 #include "../../log/logs.h"
 
 class Hand;
-class Track;
 struct HandData;
 class Gesture;
-
 
 class Visualization {
 private:
@@ -39,7 +36,8 @@ public:
     static void mat2img(cv::Mat mat, cv::Mat& matImg);
 
     static void blobs2img(const std::list<BlobFinal>& lBlobs, cv::Mat& matImg, bool drawKeyPoints = true);
-
+    
+    static void tracks2img(const std::vector<Track>& tracks, cv::Mat& matImg);
     //static void gestures2img(const std::vector<std::shared_ptr<Gesture>>& handsTrackedStreams, cv::Mat& matImg, size_t length = 0);
      static void drawText(cv::Mat& mat, std::string text, double fontScale, int thickness, cv::Scalar color, cv::Point2f textCenter);
 private:

@@ -20,15 +20,15 @@ pthread_mutex_t ProcessFrameData::visualisation_mutex = PTHREAD_MUTEX_INITIALIZE
 
 ProcessFrameData::ProcessFrameData(cv::Mat mat, int frameNum) :
 mat(mat),
-frameNum(frameNum)
+frameData(frameNum)
 {
     if(!Params::getIsInit())
         Params::Init();
     filterFar();
     resize();
     createBlobsAndBorders();
-    
-    //tracking();
+    tracking();
+    shareFrameData();
     visualize();
 
 }
@@ -57,6 +57,7 @@ void ProcessFrameData::createBlobsAndBorders(){
     //extract all the blobs up to person
     BlobsFabrique<BlobPrim> blobsFabrique(0, matResized);
     auto& blobs = blobsFabrique.getBlobs();
+    frameData.bodyDepth = blobsFabrique.getBodyDepth();
     
     //extract 3d convexes
     cv::Mat matBlobs = BlobPrim::blobs2mat(blobs, matResized.size());
@@ -70,20 +71,24 @@ void ProcessFrameData::createBlobsAndBorders(){
 
 void ProcessFrameData::tracking(){
     //tracking hands
-    /*Track::analyzeFrame(lHands);
-     std::vector<Track> vTracks = Track::getTracksConst();
-     std::vector<Blob*> vp_Blobs;
-     
-     //create and analyze hands tracked stream data
-     FrameData frameData = GestureFabrique::extractGestures(vTracks);
-     frameData.bodyDepth = blobsFabrique.getBodyDepth();// body_depth;
-     
-     if(Config::instance()->getIsCsound()){
-     if(!Share::share(frameData)){
-     Logs::writeLog("gestures", "Share error!");
-     break;
-     }
-     }*/
+     Track::analyzeFrame(blobsExt);
+    
+}
+
+void ProcessFrameData::shareFrameData(){
+    if(Config::instance()->getIsCsound()){
+        const auto& tracks = Track::getTracksConst();
+        for(const auto& track : tracks){
+            const std::list<HandData>& handHistory = track.getHandHistoryConst();
+            if(!handHistory.empty())
+                frameData.data.push_back(handHistory.back());
+            else
+                frameData.data.push_back(HandData());
+        }
+        if(!Share::share(frameData)){
+            Logs::writeLog("gestures", "Share error!");
+        }
+    }
 }
 
 void ProcessFrameData::visualize(){
@@ -91,14 +96,15 @@ void ProcessFrameData::visualize(){
         cv::Mat img;
         Visualization::mat2img(mat, img);
         for(auto& blob: blobsExt)
-            blob.SetFrameNum(frameNum);
+            blob.SetFrameNum(frameData.frameNum);
         Visualization::blobs2img( blobsExt, img, true);
+        Visualization::tracks2img(Track::getTracksConst(), img);
+        //Visualization::gestures2img(GestureFabrique::getGestures(), img);
+        
         cv::flip(img, img, 1);
         std::stringstream ss;
-        ss << frameNum;
+        ss << frameData.frameNum;
         Visualization::drawText(img, ss.str(), 1.0, 1, cv::Scalar(0,0,255), cv::Point2f(0.5, 0.15));
-        
-        //Visualization::gestures2img(GestureFabrique::getGestures(), img);
         
         pthread_mutex_lock(&visualisation_mutex);
         Visualization::setMatImage(img);

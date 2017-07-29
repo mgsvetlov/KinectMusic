@@ -8,9 +8,11 @@
 
 #ifndef share_h
 #define share_h
-/*
+
+#include <semaphore.h>
 #include "types.h"
-#include <semaphore.h>  
+
+struct FrameData;
 
 class Share {
 public:
@@ -30,6 +32,6 @@ private:
     sem_t *sem;
     const char* SEMAPHORE_NAME = "sem";
 };
-*/
+
 
 #endif /* share_h */

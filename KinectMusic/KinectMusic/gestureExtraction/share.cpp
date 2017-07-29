@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 27/05/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
-/*
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,6 +20,7 @@
 #include "share.h"
 #include "../log/logs.h"
 #include "../config/config.h"
+#include "processframedata.h"
 
 Share* Share::sharePtr = nullptr;
 
@@ -90,9 +91,9 @@ bool Share::share_data(const FrameData& frameData){
     *intPtr++ = frameData.data[1].angle;
     for(auto& gestureData: frameData.data){
         *intPtr++ = gestureData.phase;
-        *intPtr++ = gestureData.point.x;
-        *intPtr++ = gestureData.point.y;
-        *intPtr++ = gestureData.point.z;
+        *intPtr++ = gestureData.keyPoint.x;
+        *intPtr++ = gestureData.keyPoint.y;
+        *intPtr++ = gestureData.keyPoint.z;
     }
     sem_post(sem);
     return true;
@@ -109,4 +110,3 @@ int Share::exec_prog(const char **argv){
     }
     return 0;
 }
-*/

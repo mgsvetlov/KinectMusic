@@ -25,23 +25,7 @@
 
 //#define USE_CELL_NORMAL
 
-struct HandData {
-    cv::Point3i point;
-    int phase = NO_DATA_VALUE;
-    int angle = NO_DATA_VALUE;
-    HandData() : point (NO_DATA_VALUE,NO_DATA_VALUE,NO_DATA_VALUE), phase(NO_DATA_VALUE), angle(NO_DATA_VALUE) {}
-    HandData(const cv::Point3i& point, int phase, int angle) :
-    point(point),
-    phase(phase),
-    angle(angle)
-    {}
-};
 
-struct FrameData {
-    int frameNum;
-    int bodyDepth;
-    std::vector<HandData> data;
-};
 
 */
 #endif /* types_h */

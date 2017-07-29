@@ -20,6 +20,8 @@ int Params::BLOB_MIN_SIZE;
 int Params::BLOB_MIN_SIZE_LAST;
 int Params::BLOB_EXT_MAX_SIZE;
 bool Params::isInit;
+size_t Params::TRACKS_COUNT = 2;
+size_t Params::TRACKING_DIST_THRESH;
 
 void Params::Init(){
     //0 FREENECT_DEPTH_REGISTERED MAX_KINECT_VALUE 10000 MAX_NEIGHB_DIFF_COARSE 80,
@@ -33,5 +35,6 @@ void Params::Init(){
     BLOB_MIN_SIZE = (MATRIX_WIDTH >> BLOBS_RESIZE_POW)  * 0.15625 * 0.5;
     BLOB_MIN_SIZE_LAST = (MATRIX_WIDTH >> BLOBS_RESIZE_POW)  * 18.75;
     BLOB_EXT_MAX_SIZE = MATRIX_WIDTH * 6.4;
+    TRACKING_DIST_THRESH = MATRIX_WIDTH * 0.125;
     isInit = true;
 }

@@ -7,33 +7,36 @@
 //
 
 #include "tracking.h"
-/*
+#include "../params.h"
+
 #include <cfloat>
 #include <limits>
 
-std::vector<Track> Track::tracks(trackCount);
+std::vector<Track> Track::tracks;
 
 
-void Track::analyzeFrame(const std::list<Hand>& lHands){
+void Track::analyzeFrame(const std::list<BlobFinal>& blobs){
+    if(tracks.empty())
+        tracks = std::vector<Track>(Params::getTracksCount());
     for(auto& track : tracks){
-        if(track.lHands.size()  > 2)
-            track.lHands.pop_front();
+        if(track.handHistory.size()  > 2)
+            track.handHistory.pop_front();
         track.isHandFound = false;
     }
-    std::vector<bool> vHandsMatched(lHands.size(), false);
-    std::vector<std::vector<double>> vvDists(tracks.size(), std::vector<double>(lHands.size()));
+    std::vector<bool> vHandsMatched(blobs.size(), false);
+    std::vector<std::vector<double>> vvDists(tracks.size(), std::vector<double>(blobs.size()));
     for(int i = 0; i < tracks.size(); i++){
         int j = 0;
-        for(auto it  = lHands.begin(); it != lHands.end(); it++, j++){
-            vvDists[i][j] = tracks[i].dist2hand(*it);
+        for(auto it  = blobs.begin(); it != blobs.end(); it++, j++){
+            vvDists[i][j] = tracks[i].dist2blob(*it);
         }
     }
     //nearest neighbour search
     for(int i = 0; i < vvDists.size(); i++){
         double minDist (DBL_MAX);
         int ind (-1);
-        auto it  = lHands.begin();
-        auto itNearest  = lHands.begin();
+        auto it  = blobs.begin();
+        auto itNearest  = blobs.begin();
         for(int j = 0; j < vvDists[i].size(); j++, it++){
             if(vvDists[i][j]< minDist){
                 minDist = vvDists[i][j];
@@ -54,35 +57,38 @@ void Track::analyzeFrame(const std::list<Hand>& lHands){
     }
     //if neighbour isn't found
     int i (-1);
-    for(auto& hand : lHands){
+    for(auto& blob : blobs){
         if(vHandsMatched[++i])
             continue;
         for(auto& track : tracks){
             if(!track.isHandFound){
-                track.addHandData(hand);
+                track.addHandData(blob);
                 break;
             }
         }
-        
     }
     //data cleaning 
     for(auto& track : tracks){
         if(!track.isHandFound){
-            track.lHands.clear();
+            track.handHistory.clear();
         }
     }
 }
 
-double Track::dist2hand(const Hand& hand){
-    if(lHands.empty())
+double Track::dist2blob(const BlobFinal& blob){
+    if(handHistory.empty())
         return DBL_MAX;
-    auto& prevHand = lHands.back();
-    double dist = prevHand.dist2hand(hand);
-    return dist < 80 ? dist : DBL_MAX;
+    auto& prevHand = handHistory.back();
+    const auto& minValCell = blob.getCellsConst().MinValCell();
+    int dx = prevHand.keyPoint.x - minValCell->x;
+    int dy = prevHand.keyPoint.y - minValCell->y;
+    double dist = sqrt(dx*dx+dy*dy);
+    return dist < Params::getTrackingDistThresh() ? dist : DBL_MAX;
 }
 
-void Track::addHandData(const Hand& hand){
-    lHands.push_back(hand);
+void Track::addHandData(const BlobFinal& blob){
+    const auto& minValCell = blob.getCellsConst().MinValCell();
+    handHistory.emplace_back(HandData(cv::Point3i(minValCell->x, minValCell->y, minValCell->val)));
     isHandFound = true;
 }
-*/
+
