@@ -18,12 +18,12 @@ Theremin::Theremin() {
 //protected:
     csdName = "theremin";
     csound_data = {
-                    {"midiPitch0",ParamData( 69, 1e-1)},  //midi
-                    {"amp0", ParamData(0.001, 1e-1)}, //amp
+                    {"midiPitch0",ParamData( 69, 1e-2)},  //midi
+                    {"amp0", ParamData(0.001, 1e-2)}, //amp
                     {"vibrRate0", ParamData( 10., 2e-3)}, //vibr rate
                     {"fmodSide0",ParamData( 1.0, 1e-1)}, //mod side
-                    {"midiPitch1", ParamData( 69, 1e-1)},  //midi
-                    {"amp1",ParamData( 0.001, 1e-1)}, //amp
+                    {"midiPitch1", ParamData( 69, 1e-2)},  //midi
+                    {"amp1",ParamData( 0.001, 1e-2)}, //amp
                     {"vibrRate1", ParamData(10., 2e-3)}, //vibr rate
                     {"fmodSide1", ParamData(1.0, 1e-1)} //mod side
                 };
@@ -43,8 +43,11 @@ void Theremin::mappingData() {
     if(frameData.frameNum == frameNum){
         return ;
     }
+    
+    static FrameData frameDataPrev;
+    
     frameNum = frameData.frameNum;
-    if(frameData.hands[0].phase == NO_DATA_VALUE || frameData.hands[1].phase == NO_DATA_VALUE ){
+    if(frameData.hands[0].x == NO_DATA_VALUE || frameData.hands[1].x == NO_DATA_VALUE ){
         csound_data["amp0"].param = csound_data["amp1"].param = 0.001;
     }
     else {
@@ -60,9 +63,22 @@ void Theremin::mappingData() {
             }
             else {
                 //amp
-                csound_data["amp0"].param = csound_data["amp1"].param =  sqrt(frameData.hands[i].y);
+                if(frameDataPrev.frameNum != NO_DATA_VALUE){
+                    double dy = std::abs(frameData.hands[i].y - frameDataPrev.hands[i].y);
+                    double dx = std::abs(frameData.hands[i].x - frameDataPrev.hands[i].x);
+                    double amp = dy + dx;// > 0.01 ? 1.0 : 0.0;
+                    static double thresh = 0.01;
+                    if(amp > thresh){
+                        amp *= pow(amp * 1. /thresh, 15);
+                    }
+                    if(amp > 1)
+                        amp = 1;
+                    amp *= (1.0 - frameData.hands[i].y);
+                    csound_data["amp0"].param = csound_data["amp1"].param = amp;
+                }
+                //csound_data["amp0"].param = csound_data["amp1"].param =  sqrt(frameData.hands[i].y);
                 //side mod
-                float mod = frameData.hands[i].angle;
+                float mod = 0.0f;//frameData.hands[i].angle;
                 if(mod < -50.f)
                     mod = -50.f;
                 else if(mod > 50.f)
@@ -74,4 +90,5 @@ void Theremin::mappingData() {
         }
     }
     
+    frameDataPrev = frameData;
 }

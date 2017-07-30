@@ -22,15 +22,15 @@ struct HandData{
     double x;
     double y;
     int z;
-    int angle = -1;
-    HandData() : z(-1){}
+    int angle = NO_DATA_VALUE;
+    HandData() : z(NO_DATA_VALUE){}
     HandData(int phase, double x, double y, int z) :
     phase(phase), x(x), y(y), z(z){}
 };
 
 struct FrameData{
-    int frameNum;
-    int bodyDepth;
+    int frameNum = NO_DATA_VALUE;
+    int bodyDepth = NO_DATA_VALUE;
     std::vector<HandData> hands = std::vector<HandData>(2);
 };
 

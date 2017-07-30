@@ -15,7 +15,7 @@
 std::vector<Track> Track::tracks;
 
 
-void Track::analyzeFrame(const std::list<BlobFinal>& blobs){
+void Track::analyzeFrame(std::list<BlobFinal>& blobs){
     if(tracks.empty())
         tracks = std::vector<Track>(Params::getTracksCount());
     for(auto& track : tracks){
@@ -86,9 +86,11 @@ double Track::dist2blob(const BlobFinal& blob){
     return dist < Params::getTrackingDistThresh() ? dist : DBL_MAX;
 }
 
-void Track::addHandData(const BlobFinal& blob){
-    const auto& minValCell = blob.getCellsConst().MinValCell();
-    handHistory.emplace_back(HandData(cv::Point3i(minValCell->x, minValCell->y, minValCell->val)));
+void Track::addHandData(BlobFinal& blob){
+    cv::Point3i averagedMinPoint = blob.getCells().AveragedMinPoint(1000);
+    handHistory.push_back(HandData(averagedMinPoint));
+    //const auto& minValCell = blob.getCellsConst().MinValCell();
+    //handHistory.emplace_back(HandData(cv::Point3i(minValCell->x, minValCell->y, minValCell->val)));
     isHandFound = true;
 }
 

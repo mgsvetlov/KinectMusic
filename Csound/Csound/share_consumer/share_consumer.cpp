@@ -66,7 +66,6 @@ ShareConsumer::~ShareConsumer(){
 }
 
 bool ShareConsumer::share_data_consume(Mapping* mapping){
-    static FrameData frameDataPrev;
     
     sem_wait(sem);
     if(shmget(key, SIZE, 0) < 0){
@@ -104,10 +103,10 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
                 frameData.hands[0].phase = *intPtr;
                 break;
             case 5:
-                frameData.hands[0].x = *intPtr == NO_DATA_VALUE ? frameDataPrev.hands[0].x : *intPtr / screen_width;
+                frameData.hands[0].x = *intPtr == NO_DATA_VALUE ? NO_DATA_VALUE : *intPtr / screen_width;
                 break;
             case 6:
-                frameData.hands[0].y = *intPtr == NO_DATA_VALUE ? frameDataPrev.hands[0].y : (screen_height - *intPtr) / screen_height;
+                frameData.hands[0].y = *intPtr == NO_DATA_VALUE ? NO_DATA_VALUE : (screen_height - *intPtr) / screen_height;
                 break;
             case 7:
                 frameData.hands[0].z = *intPtr;
@@ -116,10 +115,10 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
                 frameData.hands[1].phase = *intPtr;
                 break;
             case 9:
-                frameData.hands[1].x = *intPtr == NO_DATA_VALUE ? frameDataPrev.hands[1].x : *intPtr / screen_width;
+                frameData.hands[1].x = *intPtr == NO_DATA_VALUE ? NO_DATA_VALUE : *intPtr / screen_width;
                 break;
             case 10:
-                frameData.hands[1].y = *intPtr == NO_DATA_VALUE ? frameDataPrev.hands[1].y : (screen_height - *intPtr) / screen_height;
+                frameData.hands[1].y = *intPtr == NO_DATA_VALUE ? NO_DATA_VALUE : (screen_height - *intPtr) / screen_height;
                 break;
             case 11:
                 frameData.hands[1].z = *intPtr;
@@ -129,8 +128,6 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
         }
     }
     sem_post(sem);
-    
-    frameDataPrev = frameData;
 
     if(Config::instance()->getIsLogCsound()){
         std::stringstream ss;
