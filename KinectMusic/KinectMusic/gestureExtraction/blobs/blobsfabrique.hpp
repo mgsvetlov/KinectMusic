@@ -49,7 +49,7 @@ mode(mode)
 }
 
 template<typename T> void BlobsFabrique<T>::blobsFabrique0(){
-    int largeBlobMaxVal(-1);
+    int largeBlobMaxVal(NO_DATA_VALUE);
     while(true){
         int ind = minCellIndex();
         if(ind == -1)
@@ -64,13 +64,18 @@ template<typename T> void BlobsFabrique<T>::blobsFabrique0(){
         if(nearestBlob.getCellsConst().Size() < Params::getBlobsMinSize())
             continue;
         
-        if(largeBlobMaxVal != -1 && nearestBlob.getCellsConst().MinValCell() && nearestBlob.getCellsConst().MinValCell()->val > largeBlobMaxVal){
+        if(largeBlobMaxVal != NO_DATA_VALUE && nearestBlob.getCellsConst().MinValCell() && nearestBlob.getCellsConst().MinValCell()->val > largeBlobMaxVal){
             break;
         }
         
         if(nearestBlob.getCellsConst().Size() > Params::getBlobsMinSizeLast() && nearestBlob.getCellsConst().MaxValCell()){
-            largeBlobMaxVal = nearestBlob.getCellsConst().MaxValCell()->val;
-            blobs.push_front(std::move(nearestBlob));
+            if(nearestBlob.getCellsConst().MaxValCell()->val < Params::getMaxKinectDepth()){
+                largeBlobMaxVal = nearestBlob.getCellsConst().MaxValCell()->val;
+                blobs.push_front(std::move(nearestBlob));
+            }
+            else {
+                break;
+            }
         }
         else {
             blobs.push_back(std::move(nearestBlob));

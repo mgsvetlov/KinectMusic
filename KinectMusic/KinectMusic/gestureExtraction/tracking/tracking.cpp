@@ -89,8 +89,6 @@ double Track::dist2blob(const BlobFinal& blob){
 void Track::addHandData(BlobFinal& blob){
     cv::Point3i averagedMinPoint = blob.getCells().AveragedMinPoint(1000);
     handHistory.push_back(HandData(averagedMinPoint));
-    //const auto& minValCell = blob.getCellsConst().MinValCell();
-    //handHistory.emplace_back(HandData(cv::Point3i(minValCell->x, minValCell->y, minValCell->val)));
     isHandFound = true;
 }
 

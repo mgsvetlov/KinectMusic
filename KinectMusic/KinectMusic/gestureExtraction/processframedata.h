@@ -51,6 +51,7 @@ private:
     FrameData frameData;
     cv::Mat matFilt;
     cv::Mat matResized;
+    cv::Mat matBlobsPrim;
     std::list<BlobFinal> blobsExt;
     
     friend class Visualization;

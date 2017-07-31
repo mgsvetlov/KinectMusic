@@ -143,9 +143,11 @@ int Cells<TContainer,T>::AverageValue() const{
 }
 
 template<template<typename> class  TContainer, typename T>
-cv::Point3i Cells<TContainer,T>::AveragedMinPoint(size_t pointsCount) {
+cv::Point3i Cells<TContainer,T>::AveragedMinPoint(size_t pointsCount) {    
+    if(pointsCount < cells.size()){
+        std::nth_element(cells.begin(), cells.begin() + pointsCount, cells.end(), [this](const T& cell1, const T& cell2){ return Value(cell1, std::is_pointer<T>()) < Value(cell2, std::is_pointer<T>());} );
+    }
     size_t count = pointsCount < cells.size() ? pointsCount : cells.size();
-    std::sort(cells.begin(), cells.end(), [this](const T& cell1, const T& cell2){ return Value(cell1, std::is_pointer<T>()) < Value(cell2, std::is_pointer<T>());} );
     cv::Point3i  avMinPoint(0);
     for(size_t i = 0; i < count; ++i){
         avMinPoint += Point3i(cells[i], std::is_pointer<T>());

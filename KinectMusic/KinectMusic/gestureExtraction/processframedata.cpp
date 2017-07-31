@@ -60,9 +60,9 @@ void ProcessFrameData::createBlobsAndBorders(){
     frameData.bodyDepth = blobsFabrique.getBodyDepth();
     
     //extract 3d convexes
-    cv::Mat matBlobs = BlobPrim::blobs2mat(blobs, matResized.size());
+    matBlobsPrim = BlobPrim::blobs2mat(blobs, matResized.size());
     static int filt_size(matResized.cols / 20), filt_depth(matResized.cols / 10), core_half_size(2);
-    cv::Mat matDst = Convex3d::extractConvexities(matBlobs, filt_size, filt_depth, core_half_size);
+    cv::Mat matDst = Convex3d::extractConvexities(matBlobsPrim, filt_size, filt_depth, core_half_size);
     BlobsFabrique<BlobPrim> blobsFabrique1(1, matDst);
     
     //create blobs extended and borders
@@ -94,6 +94,8 @@ void ProcessFrameData::shareFrameData(){
 void ProcessFrameData::visualize(){
     if(Config::instance()->getIsVisualisation()){
         cv::Mat img;
+        //cv::resize(matBlobsPrim, matBlobsPrim, cv::Size(Params::getMatrixWidth(), Params::getMatrixHeight()));
+        //Visualization::mat2img(matBlobsPrim, img);
         Visualization::mat2img(mat, img);
         for(auto& blob: blobsExt)
             blob.SetFrameNum(frameData.frameNum);
