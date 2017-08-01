@@ -19,17 +19,17 @@ public:
     BlobsFabrique(int mode, cv::Mat mat, const std::list<int>& inds = std::list<int>());
     std::list<T>& getBlobs();
     template<typename T1> std::list<T1>& constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt);
-    int getBodyDepth();
+    cv::Point3i getAveragedBodyPoint();
 private:
     void blobsFabrique0();
     void blobsFabrique1();
     int minCellIndex();
-    void computeBodyDepth();
+    void computeAveragedBodyPoint();
 private:
     cv::Mat mat;
     int mode = 0;
     std::list<T> blobs;
-    int bodyDepth = -1;
+    cv::Point3i averagedBodyPoint = cv::Point3i(-1);
 };
 
 template<typename T> BlobsFabrique<T>::BlobsFabrique(int mode, cv::Mat m, const std::list<int>& inds) :
@@ -83,7 +83,7 @@ template<typename T> void BlobsFabrique<T>::blobsFabrique0(){
         
     }
     if(!blobs.empty())
-        computeBodyDepth();
+        computeAveragedBodyPoint();
 }
 
 template<typename T> void BlobsFabrique<T>::blobsFabrique1(){
@@ -132,8 +132,8 @@ template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::cons
 }
 
 
-template<typename T> int BlobsFabrique<T>::getBodyDepth(){
-    return bodyDepth;
+template<typename T> cv::Point3i BlobsFabrique<T>::getAveragedBodyPoint(){
+    return averagedBodyPoint;
 }
 
 template<typename T> int BlobsFabrique<T>::minCellIndex(){
@@ -150,7 +150,7 @@ template<typename T> int BlobsFabrique<T>::minCellIndex(){
     return ind;
 }
 
-template<typename T> void BlobsFabrique<T>::computeBodyDepth(){
+template<typename T> void BlobsFabrique<T>::computeAveragedBodyPoint(){
     
     auto it = blobs.begin();
     T* largestBlob = &(*it++);
@@ -159,7 +159,7 @@ template<typename T> void BlobsFabrique<T>::computeBodyDepth(){
             largestBlob = &(*it);
     }
     
-    bodyDepth = largestBlob->getCellsConst().AverageValue();
+    averagedBodyPoint = largestBlob->getCells().AveragedMinPoint(largestBlob->getCellsConst().Size());
 }
 
 #endif /* blobsfabrique_hpp */

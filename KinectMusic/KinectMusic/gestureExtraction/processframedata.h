@@ -27,9 +27,9 @@ struct HandData {
 
 struct FrameData {
     int frameNum;
-    int bodyDepth;
+    cv::Point3i averagedBodyPoint;
     std::vector<HandData> data;
-    FrameData(int frameNum) : frameNum(frameNum), bodyDepth(NO_DATA_VALUE) {}
+    FrameData(int frameNum) : frameNum(frameNum), averagedBodyPoint(cv::Point3i(NO_DATA_VALUE)) {}
 };
 
 class ProcessFrameData {

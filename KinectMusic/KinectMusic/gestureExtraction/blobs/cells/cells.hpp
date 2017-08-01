@@ -29,7 +29,6 @@ public:
     const TContainer<T>& AllConst() const;
     const T* const MinValCell() const;
     const T* const MaxValCell() const;
-    int AverageValue() const;
     cv::Point3i AveragedMinPoint(size_t pointsCount);
     int Size() const;
     void Merge(const Cells<TContainer,T>& cells1);
@@ -131,15 +130,6 @@ const T* const Cells<TContainer,T>::MaxValCell() const{
     if(maxValInd == NO_DATA_VALUE)
         return nullptr;
     return &cells.at(maxValInd);
-}
-
-template<template<typename> class  TContainer, typename T>
-int Cells<TContainer,T>::AverageValue() const{
-    int sum (0);
-    for( auto& cell: cells){
-        sum += Value(cell, std::is_pointer<T>());
-    }
-    return sum / cells.size();
 }
 
 template<template<typename> class  TContainer, typename T>

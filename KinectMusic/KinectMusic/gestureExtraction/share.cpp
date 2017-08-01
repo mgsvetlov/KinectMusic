@@ -86,9 +86,9 @@ bool Share::share_data(const FrameData& frameData){
     sem_wait(sem);
     int* intPtr = static_cast<int*>(ptr);
     *intPtr++ = frameData.frameNum;
-    *intPtr++ = frameData.bodyDepth;
-    *intPtr++ = frameData.data[0].angle;
-    *intPtr++ = frameData.data[1].angle;
+    *intPtr++ = frameData.averagedBodyPoint.x;
+    *intPtr++ = frameData.averagedBodyPoint.y;
+    *intPtr++ = frameData.averagedBodyPoint.z;
     for(auto& gestureData: frameData.data){
         *intPtr++ = gestureData.phase;
         *intPtr++ = gestureData.keyPoint.x;

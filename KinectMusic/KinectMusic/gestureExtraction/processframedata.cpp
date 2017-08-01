@@ -57,7 +57,7 @@ void ProcessFrameData::createBlobsAndBorders(){
     //extract all the blobs up to person
     BlobsFabrique<BlobPrim> blobsFabrique(0, matResized);
     auto& blobs = blobsFabrique.getBlobs();
-    frameData.bodyDepth = blobsFabrique.getBodyDepth();
+    frameData.averagedBodyPoint = blobsFabrique.getAveragedBodyPoint();
     
     //extract 3d convexes
     matBlobsPrim = BlobPrim::blobs2mat(blobs, matResized.size());
@@ -99,7 +99,9 @@ void ProcessFrameData::visualize(){
         Visualization::mat2img(mat, img);
         for(auto& blob: blobsExt)
             blob.SetFrameNum(frameData.frameNum);
-        Visualization::blobs2img( blobsExt, img, true);
+        const auto& point = frameData.averagedBodyPoint;
+        cv::circle(img, cv::Point(point.x << Params::getBlobsResizePow(), point.y << Params::getBlobsResizePow()), 5,  cv::Scalar(255, 0, 255), -1);
+        Visualization::blobs2img( blobsExt, img, false);
         Visualization::tracks2img(Track::getTracksConst(), img);
         //Visualization::gestures2img(GestureFabrique::getGestures(), img);
         
