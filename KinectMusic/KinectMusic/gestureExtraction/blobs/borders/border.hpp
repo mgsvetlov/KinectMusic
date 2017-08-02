@@ -26,14 +26,19 @@ private:
     T* nextCell(const cv::Mat& matCells, CellContour& cell, int indDiff);
     int eraseLoops();
     bool checkContour();
+    void countBodyAdjacentParts();
 private:
     const cv::Mat mat;
     Cells<TContainer,T>& cells;
     std::list<CellContour> contour;
     int bodyAdjacentCount = 0;
     int nonBodyAdjacentCount = 0;
+    int bodyAdjacentPartsCount = 0;
     static std::vector<std::pair<int, int>> int2pair;
     static std::map<std::pair<int, int>, int> pair2int;
+    
+    template<template<typename> class UContainer, typename U>
+    friend class BlobExt;
     friend class Visualization;
 };
 
@@ -74,6 +79,7 @@ cells(cells)
     }
     eraseLoops();
     checkContour();
+    countBodyAdjacentParts();
 }
 
 template<template<typename> class TContainer, typename T>
@@ -230,5 +236,28 @@ bool Border<TContainer,T>::checkContour(){
         }
     }
     return true;
+}
+
+template<template<typename> class TContainer, typename T>
+void Border<TContainer,T>::countBodyAdjacentParts(){
+    bool isCurrAdjacentPart(false), isFirstAdjacentPart(false);
+    bool isBegin(true), isAdjacent(false);
+    for(auto& cell : contour){
+        isAdjacent = cell.flags & FLAGS::ADJACENT_BODY;
+        if(isBegin){
+            if(isAdjacent)
+                isFirstAdjacentPart = true;
+            isBegin = false;
+        }
+        if(!isCurrAdjacentPart && isAdjacent){
+            isCurrAdjacentPart = true;
+            ++bodyAdjacentPartsCount;
+        }
+        else if(isCurrAdjacentPart && !isAdjacent){
+            isCurrAdjacentPart = false;
+        }
+    }
+    if(isAdjacent && isFirstAdjacentPart)
+        --bodyAdjacentPartsCount;
 }
 #endif /* border_hpp */

@@ -23,8 +23,10 @@ public:
     BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd);
     
     size_t CreateBorder();
-    
     void SetFrameNum(int frameNum);
+    const std::vector<double>& getFeatures() const {return features;}
+    void computeFeatures(const cv::Point3i& averagedBodyPoint);
+    const cv::Point3i& AveragePoint();
 private:
     void computeAngle();
 
@@ -33,8 +35,12 @@ private:
     std::unique_ptr<Border<TContainer, T>> borderPtr;
     int angle;
     int frameNum;
-    friend class Visualization;
+    cv::Point3i averagePoint = cv::Point3i(-1);
+    std::vector<double> features;
+    
     static std::vector<std::pair<int,int>> neighbours;
+   
+    friend class Visualization;
 };
 
 template<template<typename> class  TContainer, typename T>
@@ -89,6 +95,24 @@ template<template<typename> class  TContainer,  typename T>
 size_t BlobExt<TContainer, T>::CreateBorder() {
     borderPtr = std::unique_ptr<Border<TContainer, T>>(new Border<TContainer, T>(mat, cells));
     return borderPtr->getContour().size();
+}
+
+template<template<typename> class TContainer, typename T>
+void BlobExt<TContainer,T>::computeFeatures(const cv::Point3i& averagedBodyPoint) {
+    averagePoint = AveragePoint();
+    features.push_back(borderPtr->bodyAdjacentPartsCount);
+    features.push_back(static_cast<double>(borderPtr->bodyAdjacentCount) / borderPtr->nonBodyAdjacentCount);
+    features.push_back(std::abs(averagedBodyPoint.x - averagePoint.x));
+    features.push_back(averagePoint.y - averagedBodyPoint.y);
+    features.push_back(averagePoint.z - averagedBodyPoint.z);
+}
+
+template<template<typename> class TContainer, typename T>
+const cv::Point3i& BlobExt<TContainer,T>::AveragePoint() {
+    if(averagePoint != cv::Point3i(-1))
+        return averagePoint;
+    averagePoint = cells.AveragedMinPoint(Params::getBlobFrontCellsCount());
+    return averagePoint;
 }
 
 template<template<typename> class  TContainer, typename T>

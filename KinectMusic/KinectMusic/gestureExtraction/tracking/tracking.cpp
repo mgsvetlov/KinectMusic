@@ -87,8 +87,8 @@ double Track::dist2blob(const BlobFinal& blob){
 }
 
 void Track::addHandData(BlobFinal& blob){
-    cv::Point3i averagedMinPoint = blob.getCells().AveragedMinPoint(1000);
-    handHistory.push_back(HandData(averagedMinPoint));
+    const cv::Point3i& averagePoint = blob.AveragePoint();
+    handHistory.push_back(HandData(averagePoint));
     isHandFound = true;
 }
 

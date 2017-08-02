@@ -24,6 +24,7 @@ public:
     static int getBlobsMinSize() { return BLOB_MIN_SIZE;}
     static int getBlobsMinSizeLast() { return BLOB_MIN_SIZE_LAST;}
     static int getBlobExtMaxSize() { return BLOB_EXT_MAX_SIZE;}
+    static int getBlobFrontCellsCount() { return BLOB_FRONT_CELLS_COUNT;}
     static int getIsInit() { return isInit;}
     static size_t getTracksCount() { return TRACKS_COUNT;}
     static size_t getTrackingDistThresh() { return TRACKING_DIST_THRESH;}
@@ -38,6 +39,7 @@ private:
     static int BLOB_MIN_SIZE;
     static int BLOB_MIN_SIZE_LAST;
     static int BLOB_EXT_MAX_SIZE;
+    static int BLOB_FRONT_CELLS_COUNT;
     static size_t TRACKS_COUNT;
     static size_t TRACKING_DIST_THRESH;
     static bool isInit;

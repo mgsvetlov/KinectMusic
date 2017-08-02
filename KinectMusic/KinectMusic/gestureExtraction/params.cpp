@@ -19,6 +19,7 @@ int Params::BLOBS_RESIZE_POW;
 int Params::BLOB_MIN_SIZE;
 int Params::BLOB_MIN_SIZE_LAST;
 int Params::BLOB_EXT_MAX_SIZE;
+int Params::BLOB_FRONT_CELLS_COUNT;
 bool Params::isInit;
 size_t Params::TRACKS_COUNT = 2;
 size_t Params::TRACKING_DIST_THRESH;
@@ -35,6 +36,7 @@ void Params::Init(){
     BLOB_MIN_SIZE = (MATRIX_WIDTH >> BLOBS_RESIZE_POW)  * 0.15625 * 0.5;
     BLOB_MIN_SIZE_LAST = (MATRIX_WIDTH >> BLOBS_RESIZE_POW)  * 4;
     BLOB_EXT_MAX_SIZE = MATRIX_WIDTH * 6.4;
+    BLOB_FRONT_CELLS_COUNT = MATRIX_WIDTH * 1.5625;
     TRACKING_DIST_THRESH = MATRIX_WIDTH * 0.125;
     isInit = true;
 }

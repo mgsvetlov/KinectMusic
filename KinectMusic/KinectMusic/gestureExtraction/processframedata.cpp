@@ -5,7 +5,7 @@
 //  Created by Mikhail Svetlov on 22/07/17.
 //  Copyright © 2017 mgsvetlov. All rights reserved.
 //
-
+#include <sys/stat.h>
 #include "processframedata.h"
 #include "params.h"
 #include "blobs/blobsfabrique.hpp"
@@ -27,6 +27,7 @@ frameData(frameNum)
     filterFar();
     resize();
     createBlobsAndBorders();
+    learnTest();
     tracking();
     shareFrameData();
     visualize();
@@ -69,6 +70,23 @@ void ProcessFrameData::createBlobsAndBorders(){
     blobsFabrique1.constructBlobsExt(matFilt, blobsExt);
 }
 
+void ProcessFrameData::learnTest(){
+    auto it = blobsExt.begin();
+    while(it != blobsExt.end()){
+        it->computeFeatures(frameData.averagedBodyPoint);
+        const auto& features = it->getFeatures();
+        if(Config::instance()->getIsLearning()){
+            std::stringstream ss;
+            ss << "features: ";
+            for(auto& feature : features)
+                ss << feature << " ";
+            ss << frameData.frameNum;
+            Logs::writeLog("ann/train/", ss.str());
+        }
+        ++it;
+    }
+}
+
 void ProcessFrameData::tracking(){
     //tracking hands
      Track::analyzeFrame(blobsExt);
@@ -109,7 +127,16 @@ void ProcessFrameData::visualize(){
         std::stringstream ss;
         ss << frameData.frameNum;
         Visualization::drawText(img, ss.str(), 1.0, 1, cv::Scalar(0,0,255), cv::Point2f(0.5, 0.15));
-        
+        if(Config::instance()->getIsLearning()) {
+            static std::string dirName;
+            static int status = -1;
+            if(dirName == ""){
+                dirName = "ann/train/" + Logs::getCurrentTime();
+                status = mkdir(dirName.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+            }
+            if(status == 0)
+                cv::imwrite( dirName + "/" + ss.str() + ".jpg", img );
+        }
         pthread_mutex_lock(&visualisation_mutex);
         Visualization::setMatImage(img);
         Visualization::setIsNeedRedraw(true);

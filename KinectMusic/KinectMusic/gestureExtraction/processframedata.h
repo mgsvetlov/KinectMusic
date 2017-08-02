@@ -14,15 +14,9 @@
 
 struct HandData {
     cv::Point3i keyPoint;
-    int phase = NO_DATA_VALUE;
-    int angle = NO_DATA_VALUE;
-    HandData() : keyPoint (NO_DATA_VALUE,NO_DATA_VALUE,NO_DATA_VALUE), phase(NO_DATA_VALUE), angle(NO_DATA_VALUE) {}
-    HandData(const cv::Point3i& point) : keyPoint (point), phase(NO_DATA_VALUE), angle(NO_DATA_VALUE) {}
-    HandData(const cv::Point3i& point, int phase, int angle) :
-    keyPoint(point),
-    phase(phase),
-    angle(angle)
-    {}
+    HandData() : keyPoint (cv::Point3i(NO_DATA_VALUE)){}
+    HandData(const cv::Point3i& point) : keyPoint (point){}
+   
 };
 
 struct FrameData {
@@ -40,6 +34,7 @@ private:
     void filterFar();
     void resize();
     void createBlobsAndBorders();
+    void learnTest();
     void tracking();
     void shareFrameData();
     void visualize();

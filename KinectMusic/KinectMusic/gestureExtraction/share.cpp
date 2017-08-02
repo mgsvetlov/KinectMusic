@@ -90,7 +90,7 @@ bool Share::share_data(const FrameData& frameData){
     *intPtr++ = frameData.averagedBodyPoint.y;
     *intPtr++ = frameData.averagedBodyPoint.z;
     for(auto& gestureData: frameData.data){
-        *intPtr++ = gestureData.phase;
+        *intPtr++ = NO_DATA_VALUE;
         *intPtr++ = gestureData.keyPoint.x;
         *intPtr++ = gestureData.keyPoint.y;
         *intPtr++ = gestureData.keyPoint.z;
