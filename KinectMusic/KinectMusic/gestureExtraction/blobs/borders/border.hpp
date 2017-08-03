@@ -26,14 +26,14 @@ private:
     T* nextCell(const cv::Mat& matCells, CellContour& cell, int indDiff);
     int eraseLoops();
     bool checkContour();
-    void countBodyAdjacentParts();
+    void compressContour();
 private:
     const cv::Mat mat;
     Cells<TContainer,T>& cells;
     std::list<CellContour> contour;
+    std::list<CellContour> contourCompressed;
     int bodyAdjacentCount = 0;
     int nonBodyAdjacentCount = 0;
-    int bodyAdjacentPartsCount = 0;
     static std::vector<std::pair<int, int>> int2pair;
     static std::map<std::pair<int, int>, int> pair2int;
     
@@ -79,7 +79,7 @@ cells(cells)
     }
     eraseLoops();
     checkContour();
-    countBodyAdjacentParts();
+    compressContour();
 }
 
 template<template<typename> class TContainer, typename T>
@@ -239,25 +239,45 @@ bool Border<TContainer,T>::checkContour(){
 }
 
 template<template<typename> class TContainer, typename T>
-void Border<TContainer,T>::countBodyAdjacentParts(){
-    bool isCurrAdjacentPart(false), isFirstAdjacentPart(false);
-    bool isBegin(true), isAdjacent(false);
-    for(auto& cell : contour){
-        isAdjacent = cell.flags & FLAGS::ADJACENT_BODY;
-        if(isBegin){
-            if(isAdjacent)
-                isFirstAdjacentPart = true;
-            isBegin = false;
-        }
-        if(!isCurrAdjacentPart && isAdjacent){
-            isCurrAdjacentPart = true;
-            ++bodyAdjacentPartsCount;
-        }
-        else if(isCurrAdjacentPart && !isAdjacent){
-            isCurrAdjacentPart = false;
+void Border<TContainer,T>::compressContour(){
+    static size_t size(256);
+    contourCompressed = contour;
+    if(contourCompressed.size() == size){
+        return;
+    }
+    else if(contourCompressed.size() > size){
+        size_t rem = contourCompressed.size() - size;
+        const size_t step = contourCompressed.size()  / rem;
+        auto it = contourCompressed.begin();
+        size_t count(0);
+        while(it != contourCompressed.end()){
+            ++count;
+            if(count >= step){
+                count = 0;
+                it = contourCompressed.erase(it);
+                if(contourCompressed.size() == size)
+                    return;
+                continue;
+            }
+            ++it;
         }
     }
-    if(isAdjacent && isFirstAdjacentPart)
-        --bodyAdjacentPartsCount;
+    else {
+        size_t rem = - contourCompressed.size() + size;
+        const size_t step = contourCompressed.size()  / rem;
+        auto it = contourCompressed.begin();
+        size_t count(0);
+        while(it != contourCompressed.end()){
+            ++count;
+            if(count >= step){
+                count = 0;
+                it = contourCompressed.insert(it, *it);
+                if(contourCompressed.size() == size)
+                    return;
+            }
+            ++it;
+        }
+    }
 }
+
 #endif /* border_hpp */

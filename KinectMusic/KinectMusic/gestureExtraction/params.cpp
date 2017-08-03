@@ -29,13 +29,13 @@ void Params::Init(){
     //1 FREENECT_DEPTH_11BIT     MAX_KINECT_VALUE  2018 MAX_NEIGHB_DIFF_COARSE 4
     int depthFormatIndex = Config::instance()->getDepthFormat();
     MAX_KINECT_VALUE = depthFormatIndex == 0 ? 10000 : 2018;
-    MAX_NEIGHB_DIFF_COARSE = depthFormatIndex == 0 ? 80 : 4;
+    MAX_NEIGHB_DIFF_COARSE = depthFormatIndex == 0 ? 120 : 4;
     MAX_KINECT_DEPTH = depthFormatIndex == 0 ? 2000 : 900;
     MATRIX_WIDTH = Config::instance()->getMatrixWidth();
     BLOBS_RESIZE_POW = MATRIX_WIDTH == 640 ? 3 : 2;
     BLOB_MIN_SIZE = (MATRIX_WIDTH >> BLOBS_RESIZE_POW)  * 0.15625 * 0.5;
     BLOB_MIN_SIZE_LAST = (MATRIX_WIDTH >> BLOBS_RESIZE_POW)  * 4;
-    BLOB_EXT_MAX_SIZE = MATRIX_WIDTH * 6.4;
+    BLOB_EXT_MAX_SIZE = MATRIX_WIDTH * 10;
     BLOB_FRONT_CELLS_COUNT = MATRIX_WIDTH * 1.5625;
     TRACKING_DIST_THRESH = MATRIX_WIDTH * 0.125;
     isInit = true;

@@ -59,6 +59,8 @@ void ProcessFrameData::createBlobsAndBorders(){
     BlobsFabrique<BlobPrim> blobsFabrique(0, matResized);
     auto& blobs = blobsFabrique.getBlobs();
     frameData.averagedBodyPoint = blobsFabrique.getAveragedBodyPoint();
+    frameData.averagedBodyPoint.x <<= Params::getBlobsResizePow();
+    frameData.averagedBodyPoint.y <<= Params::getBlobsResizePow();
     
     //extract 3d convexes
     matBlobsPrim = BlobPrim::blobs2mat(blobs, matResized.size());
@@ -118,7 +120,7 @@ void ProcessFrameData::visualize(){
         for(auto& blob: blobsExt)
             blob.SetFrameNum(frameData.frameNum);
         const auto& point = frameData.averagedBodyPoint;
-        cv::circle(img, cv::Point(point.x << Params::getBlobsResizePow(), point.y << Params::getBlobsResizePow()), 5,  cv::Scalar(255, 0, 255), -1);
+        cv::circle(img, cv::Point(point.x , point.y), 5,  cv::Scalar(255, 0, 255), -1);
         Visualization::blobs2img( blobsExt, img, false);
         Visualization::tracks2img(Track::getTracksConst(), img);
         //Visualization::gestures2img(GestureFabrique::getGestures(), img);
