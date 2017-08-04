@@ -80,9 +80,9 @@ void ProcessFrameData::learnTest(){
         if(Config::instance()->getIsLearning()){
             std::stringstream ss;
             ss << "features: ";
+            ss << frameData.frameNum << " ";
             for(auto& feature : features)
                 ss << feature << " ";
-            ss << frameData.frameNum;
             Logs::writeLog("ann/train/", ss.str());
         }
         ++it;
@@ -114,11 +114,7 @@ void ProcessFrameData::shareFrameData(){
 void ProcessFrameData::visualize(){
     if(Config::instance()->getIsVisualisation()){
         cv::Mat img;
-        //cv::resize(matBlobsPrim, matBlobsPrim, cv::Size(Params::getMatrixWidth(), Params::getMatrixHeight()));
-        //Visualization::mat2img(matBlobsPrim, img);
         Visualization::mat2img(mat, img);
-        for(auto& blob: blobsExt)
-            blob.SetFrameNum(frameData.frameNum);
         const auto& point = frameData.averagedBodyPoint;
         cv::circle(img, cv::Point(point.x , point.y), 5,  cv::Scalar(255, 0, 255), -1);
         Visualization::blobs2img( blobsExt, img, false);
@@ -129,6 +125,8 @@ void ProcessFrameData::visualize(){
         std::stringstream ss;
         ss << frameData.frameNum;
         Visualization::drawText(img, ss.str(), 1.0, 1, cv::Scalar(0,0,255), cv::Point2f(0.5, 0.15));
+        
+        //learning
         if(Config::instance()->getIsLearning()) {
             static std::string dirName;
             static int status = -1;
@@ -139,6 +137,7 @@ void ProcessFrameData::visualize(){
             if(status == 0)
                 cv::imwrite( dirName + "/" + ss.str() + ".jpg", img );
         }
+        
         pthread_mutex_lock(&visualisation_mutex);
         Visualization::setMatImage(img);
         Visualization::setIsNeedRedraw(true);

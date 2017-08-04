@@ -3,6 +3,7 @@
 
 #include "Neuron.hpp"
 #include <vector>
+#include <string>
 
 struct Epoch;
 class DataSet;
@@ -10,10 +11,11 @@ class DataSet;
 class NN {
 public:
     NN(int inputs, int outputs, std::vector<int> layers);
+    NN(std::string paramsFileName);
     ~NN();
-    void Init();
+    void Connect();
     bool Train(DataSet* dataSet);
-    bool Test(DataSet* dataSet, int numOut);
+    bool Test(DataSet* dataSet, int numOut = -1);
     std::vector<int> GetHiddenLayers() { return _hiddenLayers;}
     int GetInputs() { return _inputs;}
     int GetOutputs() { return _outputs;}

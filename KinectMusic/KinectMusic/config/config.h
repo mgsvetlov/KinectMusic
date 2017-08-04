@@ -41,8 +41,8 @@ public:
     
     int getDepthFormat() const { return depthFormat;}
     int  getMatrixWidth() const {return matrixWidth; }
-    bool getIsVisualisation() const {return isLearning; }
-    bool getIsLearning() const {return isVisualisation; }
+    bool getIsVisualisation() const {return isVisualisation;}
+    bool getIsLearning() const {return isLearning; }
     bool getIsCsound() const {return isCsound; }
     int  getGestureType() const {return gestureType; }
 private:

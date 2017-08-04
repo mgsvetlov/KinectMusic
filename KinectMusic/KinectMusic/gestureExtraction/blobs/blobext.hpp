@@ -23,7 +23,6 @@ public:
     BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd);
     
     size_t CreateBorder();
-    void SetFrameNum(int frameNum);
     const std::vector<double>& getFeatures() const {return features;}
     void computeFeatures(const cv::Point3i& averagedBodyPoint);
     const cv::Point3i& AveragePoint();
@@ -33,8 +32,6 @@ private:
 private:
     const cv::Mat mat;
     std::unique_ptr<Border<TContainer, T>> borderPtr;
-    int angle;
-    int frameNum;
     cv::Point3i averagePoint = cv::Point3i(-1);
     std::vector<double> features;
     
@@ -54,14 +51,18 @@ template<template<typename> class  TContainer, typename T>
 BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd) :
 mat(mat)
 {
-    cells.All().reserve(Params::getBlobExtMaxSize());
+    
     const uint16_t maskValue = 65535 - blobInd;
     int w = matClone.cols;
     int h = matClone.rows;
     uint16_t* p_mat = (uint16_t*)(matClone.data);
     int x = ind % w;
     int y = (ind - x)/ w;
-    cells.AddCell(x, y, ind, *(p_mat + ind));
+    uint16_t firstVal = *(p_mat + ind);
+    double coeff = 1200. / firstVal;
+    int maxCount = coeff * coeff * Params::getBlobExtMaxSize();
+    cells.All().reserve(maxCount);
+    cells.AddCell(x, y, ind, firstVal);
     *(p_mat + ind) = maskValue;
     auto it = cells.All().begin();
     for(;it != cells.All().end();++it){
@@ -84,7 +85,7 @@ mat(mat)
             }
             *(p_mat + indNeighb) = maskValue;
             cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
-            if(cells.Size() == Params::getBlobExtMaxSize())
+            if(cells.Size() == maxCount)
                 return;
         }
     }
@@ -100,11 +101,16 @@ size_t BlobExt<TContainer, T>::CreateBorder() {
 template<template<typename> class TContainer, typename T>
 void BlobExt<TContainer,T>::computeFeatures(const cv::Point3i& averagedBodyPoint) {
     averagePoint = AveragePoint();
-    features.push_back(static_cast<double>(borderPtr->contour.size()));
-    features.push_back(static_cast<double>(borderPtr->contourCompressed.size()));
-    features.push_back(averagePoint.x - averagedBodyPoint.x);
-    features.push_back(averagePoint.y - averagedBodyPoint.y);
-    features.push_back(averagePoint.z - averagedBodyPoint.z);
+    //features.push_back(frameNum);
+    features.push_back(averagePoint.x);
+    features.push_back(averagePoint.y);
+    for(auto& cell : borderPtr->contourCompressed){
+        features.push_back(cell.x - averagedBodyPoint.x);
+        features.push_back(cell.y - averagedBodyPoint.y);
+        features.push_back(cell.val - averagedBodyPoint.z);
+        bool isAdj = cell.flags & FLAGS::ADJACENT_BODY;
+        features.push_back(isAdj ? -1 : 1);
+    }
 }
 
 template<template<typename> class TContainer, typename T>
@@ -132,10 +138,6 @@ void BlobExt<TContainer, T>::computeAngle(){
      this->angle = angle * 100.f;*/
 }
 
-template<template<typename> class  TContainer, typename T>
-void BlobExt<TContainer, T>::SetFrameNum(int frameNum_){
-    frameNum = frameNum_;
-}
 
 using BlobFinal = BlobExt<Vector, Cell>;
 

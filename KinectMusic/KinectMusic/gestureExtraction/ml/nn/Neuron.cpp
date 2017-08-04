@@ -1,4 +1,5 @@
 #include <cmath>
+#include <sstream>
 #include "Neuron.hpp"
 #include "NN.h"
 #include "DataSet.hpp"
@@ -32,6 +33,24 @@ void  Neuron::Init() {
     inputs ++; 
     for(int i = 0; i < inputs; i++)
         _w.push_back((std::rand() % 2000) * 1e-3 - 1);
+    
+}
+
+void Neuron::Init(std::string& str){
+    _eta = Neuron::_etaSeed * pow(_etaBias, _L);
+    if(_type == INPUT)
+        return;
+    size_t pos = str.find(':');
+    if (pos == std::string::npos){
+        std::cout << "Error str in params file, no ':' found: " << str << "\n";
+        return;
+    }
+    str.erase(str.begin(), str.begin() + pos + 1);
+    std::stringstream ss(str);
+    double d;
+    while( ss >> d) {
+        _w.push_back(d);
+    }
     
 }
 
@@ -88,9 +107,9 @@ std::ostream& operator << (std::ostream& os, const Neuron& neuron){
     os << "i " << neuron._i << " type " << neuron._type << " w: ";
     for( auto w : neuron._w )
         os << w << " ";
-    std::cout << " eta " << neuron._eta;
+    /*os << " eta " << neuron._eta;
     if(neuron._type == OUTPUT)
-        os << " e " << neuron._e;
+        os << " e " << neuron._e;*/
     os << "\n";
     return os;
 }

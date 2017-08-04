@@ -24,6 +24,9 @@
 		720C22951DF4236A0066104B /* gesture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720C22931DF4236A0066104B /* gesture.cpp */; };
 		723028981F23BB04003A8770 /* processframedata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 723028961F23BB04003A8770 /* processframedata.cpp */; };
 		7230289E1F247BB0003A8770 /* params.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7230289C1F247BB0003A8770 /* params.cpp */; };
+		7252AB891F3476E700521714 /* Neuron.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB851F3476E700521714 /* Neuron.cpp */; };
+		7252AB8A1F3476E700521714 /* NN.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB871F3476E700521714 /* NN.cpp */; };
+		7252AB901F347A6700521714 /* DataSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB8E1F347A6700521714 /* DataSet.cpp */; };
 		725B1B9D1ED18A800028AE34 /* gesturefabrique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1B9B1ED18A800028AE34 /* gesturefabrique.cpp */; };
 		725B1BA01ED768A60028AE34 /* gestureStop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1B9E1ED768A60028AE34 /* gestureStop.cpp */; };
 		725B1BA31ED772170028AE34 /* gestureReturn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 725B1BA11ED772170028AE34 /* gestureReturn.cpp */; };
@@ -177,6 +180,12 @@
 		723028971F23BB04003A8770 /* processframedata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = processframedata.h; path = gestureExtraction/processframedata.h; sourceTree = "<group>"; };
 		7230289C1F247BB0003A8770 /* params.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = params.cpp; path = gestureExtraction/params.cpp; sourceTree = "<group>"; };
 		7230289D1F247BB0003A8770 /* params.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = params.h; path = gestureExtraction/params.h; sourceTree = "<group>"; };
+		7252AB851F3476E700521714 /* Neuron.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Neuron.cpp; path = gestureExtraction/ml/nn/Neuron.cpp; sourceTree = "<group>"; };
+		7252AB861F3476E700521714 /* Neuron.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Neuron.hpp; path = gestureExtraction/ml/nn/Neuron.hpp; sourceTree = "<group>"; };
+		7252AB871F3476E700521714 /* NN.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NN.cpp; path = gestureExtraction/ml/nn/NN.cpp; sourceTree = "<group>"; };
+		7252AB881F3476E700521714 /* NN.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NN.h; path = gestureExtraction/ml/nn/NN.h; sourceTree = "<group>"; };
+		7252AB8E1F347A6700521714 /* DataSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DataSet.cpp; path = gestureExtraction/ml/nn/DataSet.cpp; sourceTree = "<group>"; };
+		7252AB8F1F347A6700521714 /* DataSet.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = DataSet.hpp; path = gestureExtraction/ml/nn/DataSet.hpp; sourceTree = "<group>"; };
 		725B1B9B1ED18A800028AE34 /* gesturefabrique.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gesturefabrique.cpp; path = gestureExtraction/gesture/gesturefabrique.cpp; sourceTree = "<group>"; };
 		725B1B9C1ED18A800028AE34 /* gesturefabrique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gesturefabrique.h; path = gestureExtraction/gesture/gesturefabrique.h; sourceTree = "<group>"; };
 		725B1B9E1ED768A60028AE34 /* gestureStop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gestureStop.cpp; path = gestureExtraction/gesture/gestureStop.cpp; sourceTree = "<group>"; };
@@ -647,6 +656,27 @@
 			path = include;
 			sourceTree = SOURCE_ROOT;
 		};
+		7252AB831F3476C700521714 /* ml */ = {
+			isa = PBXGroup;
+			children = (
+				7252AB841F3476CF00521714 /* nn */,
+			);
+			name = ml;
+			sourceTree = "<group>";
+		};
+		7252AB841F3476CF00521714 /* nn */ = {
+			isa = PBXGroup;
+			children = (
+				7252AB8E1F347A6700521714 /* DataSet.cpp */,
+				7252AB8F1F347A6700521714 /* DataSet.hpp */,
+				7252AB851F3476E700521714 /* Neuron.cpp */,
+				7252AB861F3476E700521714 /* Neuron.hpp */,
+				7252AB871F3476E700521714 /* NN.cpp */,
+				7252AB881F3476E700521714 /* NN.h */,
+			);
+			name = nn;
+			sourceTree = "<group>";
+		};
 		7274B8C01F1F2B1C00F1D30D /* cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -705,6 +735,7 @@
 				72048F6F1EDA00BE006381E9 /* share.h */,
 				722141A51D9FC2BD00B697E8 /* blobs */,
 				728233201F07950D00B6E4D4 /* convex3d */,
+				7252AB831F3476C700521714 /* ml */,
 				720C228F1DF2EE820066104B /* tracking */,
 				7221419E1D9FB91400B697E8 /* visualization */,
 				7282333F1F0D4FC700B6E4D4 /* pcl */,
@@ -778,11 +809,13 @@
 				720C22951DF4236A0066104B /* gesture.cpp in Sources */,
 				728233C61F1153B100B6E4D4 /* pclnormals.cpp in Sources */,
 				720A04F31EE5B80400731552 /* config.cpp in Sources */,
+				7252AB901F347A6700521714 /* DataSet.cpp in Sources */,
 				728233421F0D4FFD00B6E4D4 /* pclplane.cpp in Sources */,
 				720C22921DF2EED10066104B /* tracking.cpp in Sources */,
 				720164BA1A6C058B00BC721A /* audio.c in Sources */,
 				720164BF1A6C058B00BC721A /* registration.c in Sources */,
 				720164BB1A6C058B00BC721A /* cameras.c in Sources */,
+				7252AB8A1F3476E700521714 /* NN.cpp in Sources */,
 				720164C01A6C058B00BC721A /* tilt.c in Sources */,
 				720164BE1A6C058B00BC721A /* loader.c in Sources */,
 				725B1BA01ED768A60028AE34 /* gestureStop.cpp in Sources */,
@@ -792,6 +825,7 @@
 				72799BA71DC61E5800BAC3DC /* extractframedata.cpp in Sources */,
 				728233C01F114CC200B6E4D4 /* pclutility.cpp in Sources */,
 				7207E6351EE2F5CC0021824C /* gestureAll.cpp in Sources */,
+				7252AB891F3476E700521714 /* Neuron.cpp in Sources */,
 				72048F8F1EDAD808006381E9 /* logs.cpp in Sources */,
 				7230289E1F247BB0003A8770 /* params.cpp in Sources */,
 			);

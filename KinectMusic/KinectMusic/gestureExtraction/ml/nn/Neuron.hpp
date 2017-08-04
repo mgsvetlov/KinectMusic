@@ -23,6 +23,7 @@ public:
     static double ActivateFunction(double v);
     static double ActivateFunctionDerivative(double v);
     void Init();
+    void Init(std::string& coeffStr);
 private:
 
     int _L;

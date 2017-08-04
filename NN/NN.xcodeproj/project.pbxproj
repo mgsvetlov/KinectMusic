@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7252AB811F3474EE00521714 /* Neuron.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB7D1F3474EE00521714 /* Neuron.cpp */; };
+		7252AB821F3474EE00521714 /* NN.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB7F1F3474EE00521714 /* NN.cpp */; };
+		7252AB8D1F3477DC00521714 /* DataSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB8B1F3477DC00521714 /* DataSet.cpp */; };
 		72C0EF3F1D0B15C400F2EF64 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72C0EF3E1D0B15C400F2EF64 /* main.cpp */; };
-		72C0EF471D0B163400F2EF64 /* NN.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72C0EF461D0B163400F2EF64 /* NN.cpp */; };
-		72C0EF4A1D0B170600F2EF64 /* Neuron.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72C0EF481D0B170600F2EF64 /* Neuron.cpp */; };
-		72C0EF4D1D0B2EA700F2EF64 /* DataSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72C0EF4B1D0B2EA700F2EF64 /* DataSet.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,14 +26,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7252AB7D1F3474EE00521714 /* Neuron.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Neuron.cpp; path = ../../KinectMusic/KinectMusic/gestureExtraction/ml/nn/Neuron.cpp; sourceTree = "<group>"; };
+		7252AB7E1F3474EE00521714 /* Neuron.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Neuron.hpp; path = ../../KinectMusic/KinectMusic/gestureExtraction/ml/nn/Neuron.hpp; sourceTree = "<group>"; };
+		7252AB7F1F3474EE00521714 /* NN.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NN.cpp; path = ../../KinectMusic/KinectMusic/gestureExtraction/ml/nn/NN.cpp; sourceTree = "<group>"; };
+		7252AB801F3474EE00521714 /* NN.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NN.h; path = ../../KinectMusic/KinectMusic/gestureExtraction/ml/nn/NN.h; sourceTree = "<group>"; };
+		7252AB8B1F3477DC00521714 /* DataSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DataSet.cpp; path = ../../KinectMusic/KinectMusic/gestureExtraction/ml/nn/DataSet.cpp; sourceTree = "<group>"; };
+		7252AB8C1F3477DC00521714 /* DataSet.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = DataSet.hpp; path = ../../KinectMusic/KinectMusic/gestureExtraction/ml/nn/DataSet.hpp; sourceTree = "<group>"; };
 		72C0EF3B1D0B15C400F2EF64 /* NN */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NN; sourceTree = BUILT_PRODUCTS_DIR; };
 		72C0EF3E1D0B15C400F2EF64 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		72C0EF451D0B161600F2EF64 /* NN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NN.h; sourceTree = "<group>"; };
-		72C0EF461D0B163400F2EF64 /* NN.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NN.cpp; sourceTree = "<group>"; };
-		72C0EF481D0B170600F2EF64 /* Neuron.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Neuron.cpp; sourceTree = "<group>"; };
-		72C0EF491D0B170600F2EF64 /* Neuron.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Neuron.hpp; sourceTree = "<group>"; };
-		72C0EF4B1D0B2EA700F2EF64 /* DataSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataSet.cpp; sourceTree = "<group>"; };
-		72C0EF4C1D0B2EA700F2EF64 /* DataSet.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DataSet.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +47,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7252AB7B1F34749E00521714 /* ml */ = {
+			isa = PBXGroup;
+			children = (
+				7252AB7C1F3474B000521714 /* nn */,
+			);
+			name = ml;
+			sourceTree = "<group>";
+		};
+		7252AB7C1F3474B000521714 /* nn */ = {
+			isa = PBXGroup;
+			children = (
+				7252AB8B1F3477DC00521714 /* DataSet.cpp */,
+				7252AB8C1F3477DC00521714 /* DataSet.hpp */,
+				7252AB7D1F3474EE00521714 /* Neuron.cpp */,
+				7252AB7E1F3474EE00521714 /* Neuron.hpp */,
+				7252AB7F1F3474EE00521714 /* NN.cpp */,
+				7252AB801F3474EE00521714 /* NN.h */,
+			);
+			name = nn;
+			sourceTree = "<group>";
+		};
 		72C0EF321D0B15C400F2EF64 = {
 			isa = PBXGroup;
 			children = (
@@ -67,12 +88,7 @@
 			isa = PBXGroup;
 			children = (
 				72C0EF3E1D0B15C400F2EF64 /* main.cpp */,
-				72C0EF451D0B161600F2EF64 /* NN.h */,
-				72C0EF461D0B163400F2EF64 /* NN.cpp */,
-				72C0EF481D0B170600F2EF64 /* Neuron.cpp */,
-				72C0EF491D0B170600F2EF64 /* Neuron.hpp */,
-				72C0EF4B1D0B2EA700F2EF64 /* DataSet.cpp */,
-				72C0EF4C1D0B2EA700F2EF64 /* DataSet.hpp */,
+				7252AB7B1F34749E00521714 /* ml */,
 			);
 			path = NN;
 			sourceTree = "<group>";
@@ -134,9 +150,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				72C0EF3F1D0B15C400F2EF64 /* main.cpp in Sources */,
-				72C0EF471D0B163400F2EF64 /* NN.cpp in Sources */,
-				72C0EF4D1D0B2EA700F2EF64 /* DataSet.cpp in Sources */,
-				72C0EF4A1D0B170600F2EF64 /* Neuron.cpp in Sources */,
+				7252AB811F3474EE00521714 /* Neuron.cpp in Sources */,
+				7252AB8D1F3477DC00521714 /* DataSet.cpp in Sources */,
+				7252AB821F3474EE00521714 /* NN.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +273,7 @@
 				72C0EF441D0B15C400F2EF64 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
