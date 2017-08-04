@@ -77,6 +77,13 @@ void ProcessFrameData::learnTest(){
     while(it != blobsExt.end()){
         it->computeFeatures(frameData.averagedBodyPoint);
         const auto& features = it->getFeatures();
+        double sum (0.);
+        for(const auto f : features)
+            sum += f;
+        if(sum > 2.5){
+            it = blobsExt.erase(it);
+            continue;
+        }
         if(Config::instance()->getIsLearning()){
             std::stringstream ss;
             ss << "features: ";

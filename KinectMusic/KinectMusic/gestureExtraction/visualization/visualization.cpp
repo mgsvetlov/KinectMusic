@@ -129,7 +129,7 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
             col = 0;
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (color[0] * col, color[1] * col, color[2] * col), -1);
     }
-    const auto& contour = blob.borderPtr->contourCompressed;
+    const auto& contour = blob.borderPtr->contour;
     for(const auto& cell : contour){
         cv::Scalar c = (cell.flags & FLAGS::ADJACENT_BODY) ? cv::Scalar (255.0f, 0.0f, 0) : cv::Scalar (0.0f, 0.0f, 255);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, c, -1);

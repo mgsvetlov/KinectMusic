@@ -101,8 +101,11 @@ size_t BlobExt<TContainer, T>::CreateBorder() {
 template<template<typename> class TContainer, typename T>
 void BlobExt<TContainer,T>::computeFeatures(const cv::Point3i& averagedBodyPoint) {
     averagePoint = AveragePoint();
-    //features.push_back(frameNum);
-    features.push_back(averagePoint.x);
+    features.push_back(static_cast<double>(averagePoint.z)/averagedBodyPoint.z);
+    int diff = averagePoint.y - averagedBodyPoint.y;
+    features.push_back((Params::getMatrixWidth()  - 2.0 * static_cast<double>(std::abs(diff))) / Params::getMatrixWidth());
+    features.push_back(static_cast<double>(borderPtr->bodyAdjacentCount)/borderPtr->nonBodyAdjacentCount);
+    /*features.push_back(averagePoint.x);
     features.push_back(averagePoint.y);
     for(auto& cell : borderPtr->contourCompressed){
         features.push_back(cell.x - averagedBodyPoint.x);
@@ -110,7 +113,7 @@ void BlobExt<TContainer,T>::computeFeatures(const cv::Point3i& averagedBodyPoint
         features.push_back(cell.val - averagedBodyPoint.z);
         bool isAdj = cell.flags & FLAGS::ADJACENT_BODY;
         features.push_back(isAdj ? -1 : 1);
-    }
+    }*/
 }
 
 template<template<typename> class TContainer, typename T>

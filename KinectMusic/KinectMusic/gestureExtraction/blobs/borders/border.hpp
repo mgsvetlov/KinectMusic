@@ -79,7 +79,7 @@ cells(cells)
     }
     eraseLoops();
     checkContour();
-    compressContour();
+    //compressContour();
 }
 
 template<template<typename> class TContainer, typename T>
