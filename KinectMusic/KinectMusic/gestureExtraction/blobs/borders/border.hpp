@@ -34,11 +34,14 @@ private:
     std::list<CellContour> contourCompressed;
     int bodyAdjacentCount = 0;
     int nonBodyAdjacentCount = 0;
+    cv::Point3i adjacentAveragePoint = cv::Point3i(0);
     static std::vector<std::pair<int, int>> int2pair;
     static std::map<std::pair<int, int>, int> pair2int;
     
     template<template<typename> class UContainer, typename U>
     friend class BlobExt;
+    template<typename U>
+    friend class BlobsFabrique;
     friend class Visualization;
 };
 
@@ -119,6 +122,11 @@ bool Border<TContainer,T>::createContour(){
         }
         contour.emplace_back(*next);
     }
+    if(bodyAdjacentCount){
+        adjacentAveragePoint.x /= bodyAdjacentCount;
+        adjacentAveragePoint.y /= bodyAdjacentCount;
+        adjacentAveragePoint.z /= bodyAdjacentCount;
+    }
     return nonBodyAdjacentCount > bodyAdjacentCount;
 }
 
@@ -145,6 +153,7 @@ T* Border<TContainer,T>::nextCell(const cv::Mat& matCells, CellContour& cell, in
             if( valDiff <= Params::getMaxHeighbDiffCoarse()) {
                 cell.flags |= FLAGS::ADJACENT_BODY;
                 ++bodyAdjacentCount;
+                adjacentAveragePoint += cv::Point3i(cell.x, cell.y, cell.val);
             }
             else {
                 ++nonBodyAdjacentCount;

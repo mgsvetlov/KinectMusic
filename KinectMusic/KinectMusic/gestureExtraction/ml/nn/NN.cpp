@@ -139,17 +139,13 @@ bool NN::Test(DataSet* dataSet, int numOut) {
         return false;
     }
     
-    //int counterRight (0);
+    int counter (0);
     for(int i = 0; i < dataSet->GetRows(); i++){
-        //counterRight += _Test(dataSet->GetEpoch(i));
         bool res = _Test(dataSet->GetEpoch(i));
         if( numOut == -1 || i < numOut){
-            std::cout << "\nres: " << res << " ";
-            //OutTestEpoch();
+            std::cout << "features: " <<  ++counter << " res: " << res << "\n";
         }
     }
-    //std::cout << "Total: " << dataSet->GetRows()
-    //<< "\nCorrect:" << counterRight << "\n";
     return true;
 }
 

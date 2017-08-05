@@ -19,7 +19,7 @@ std::map<std::string, double> Config::varmap =
 {
     { "depthFormat", 0 },
     { "matrixWidth", 640 },
-    { "isLearning", 0 },
+    { "isImwrite", 0 },
     { "isVisualisation", 0. },
     { "isCsound", 1. },
     { "gestureType", 0. }
@@ -28,7 +28,7 @@ std::map<std::string, double> Config::varmap =
 Config::Config() :
 depthFormat(static_cast<int>(varmap["depthFormat"])),
 matrixWidth(static_cast<int>(varmap["matrixWidth"])),
-isLearning(static_cast<bool>(varmap["isLearning"])),
+isImwrite(static_cast<bool>(varmap["isImwrite"])),
 isVisualisation(static_cast<bool>(varmap["isVisualisation"])),
 isCsound(static_cast<bool>(varmap["isCsound"])),
 gestureType(static_cast<int>(varmap["gestureType"]))
@@ -44,7 +44,7 @@ bool Config::parse()
         Logs::writeLog("gestures", ss.str());
    
         varmap["matrixWidth"] = 640;
-        varmap["isLearning"] = 0.;
+        varmap["isImwrite"] = 0.;
         varmap["isVisualisation"] = 0.;
         varmap["isCsound"] = 1.;
         varmap["gestureType"] = 0.;

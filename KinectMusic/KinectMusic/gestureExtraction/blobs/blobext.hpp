@@ -37,6 +37,8 @@ private:
     
     static std::vector<std::pair<int,int>> neighbours;
    
+    template<typename U>
+    friend class BlobsFabrique;
     friend class Visualization;
 };
 
@@ -59,16 +61,19 @@ mat(mat)
     int x = ind % w;
     int y = (ind - x)/ w;
     uint16_t firstVal = *(p_mat + ind);
-    double coeff = 1200. / firstVal;
+    double coeff = /*firstVal < 1200 ? */1200. / firstVal;// : 1.;
     int maxCount = coeff * coeff * Params::getBlobExtMaxSize();
     cells.All().reserve(maxCount);
     cells.AddCell(x, y, ind, firstVal);
+    std::list<Cell> lCells;
+    lCells.emplace_back(x, y, ind, firstVal);
     *(p_mat + ind) = maskValue;
-    auto it = cells.All().begin();
-    for(;it != cells.All().end();++it){
+    while(!lCells.empty()){
+        auto it = lCells.begin();
         const uint16_t val =  it->val;
         int x_ = it->x;
         int y_ = it->y;
+        lCells.pop_front();
         for(auto& neighb : neighbours){
             int xNeighb = x_ + neighb.first;
             int yNeighb = y_ + neighb.second;
@@ -87,6 +92,10 @@ mat(mat)
             cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
             if(cells.Size() == maxCount)
                 return;
+            if(valNeighb < val)
+                lCells.emplace_front(xNeighb, yNeighb, indNeighb, valNeighb);
+            else
+                lCells.emplace_back(xNeighb, yNeighb, indNeighb, valNeighb);
         }
     }
 }
@@ -101,19 +110,15 @@ size_t BlobExt<TContainer, T>::CreateBorder() {
 template<template<typename> class TContainer, typename T>
 void BlobExt<TContainer,T>::computeFeatures(const cv::Point3i& averagedBodyPoint) {
     averagePoint = AveragePoint();
-    features.push_back(static_cast<double>(averagePoint.z)/averagedBodyPoint.z);
-    int diff = averagePoint.y - averagedBodyPoint.y;
-    features.push_back((Params::getMatrixWidth()  - 2.0 * static_cast<double>(std::abs(diff))) / Params::getMatrixWidth());
-    features.push_back(static_cast<double>(borderPtr->bodyAdjacentCount)/borderPtr->nonBodyAdjacentCount);
+    features.push_back(borderPtr->bodyAdjacentCount);
+    features.push_back(cv::norm(averagePoint-borderPtr->adjacentAveragePoint));
     /*features.push_back(averagePoint.x);
     features.push_back(averagePoint.y);
-    for(auto& cell : borderPtr->contourCompressed){
-        features.push_back(cell.x - averagedBodyPoint.x);
-        features.push_back(cell.y - averagedBodyPoint.y);
-        features.push_back(cell.val - averagedBodyPoint.z);
-        bool isAdj = cell.flags & FLAGS::ADJACENT_BODY;
-        features.push_back(isAdj ? -1 : 1);
-    }*/
+    features.push_back(static_cast<double>(averagePoint.z)/averagedBodyPoint.z);
+    features.push_back((cells.MaxValCell()->val - cells.MinValCell()->val) * 1e-3);
+    int diff = averagePoint.x - averagedBodyPoint.x;
+    features.push_back(1.0  - 2.0 * static_cast<double>(std::abs(diff))/ Params::getMatrixWidth());
+    features.push_back(static_cast<double>(borderPtr->bodyAdjacentCount)/borderPtr->nonBodyAdjacentCount);*/
 }
 
 template<template<typename> class TContainer, typename T>

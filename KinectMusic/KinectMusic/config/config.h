@@ -42,7 +42,7 @@ public:
     int getDepthFormat() const { return depthFormat;}
     int  getMatrixWidth() const {return matrixWidth; }
     bool getIsVisualisation() const {return isVisualisation;}
-    bool getIsLearning() const {return isLearning; }
+    bool getIsImwrite() const {return isImwrite; }
     bool getIsCsound() const {return isCsound; }
     int  getGestureType() const {return gestureType; }
 private:
@@ -55,7 +55,7 @@ private:
     
     int depthFormat; //0 - FREENECT_DEPTH_REGISTERED, 1 - FREENECT_DEPTH_11BIT
     int matrixWidth;
-    bool isLearning;
+    bool isImwrite;
     bool isVisualisation;
     bool isCsound;
     int gestureType;

@@ -102,9 +102,9 @@ _outputs (2)
             }
             str.erase(str.begin(), str.begin() + pos + 1);
             std::stringstream ss(str);
-            int i, count(0);
+            double i, count(0);
             while( ss >> i) {
-                if((isTest && count > 2) || count > 3) {
+                if((isTest && count > 3) || count > 4) {
                     epoch._data.push_back(i);
                 }
                 else {
@@ -114,17 +114,14 @@ _outputs (2)
                             epoch._res.push_back(0);
                         }
                         else {
-                            if(i == 1) {
+                            if(i != 0) {
                                 epoch._res.push_back(1);
                                 epoch._res.push_back(0);
-                            }
-                            else if(i == 0) {
-                                epoch._res.push_back(0);
-                                epoch._res.push_back(1);
+                                ++count;
                             }
                             else {
-                                std::cout << "Result error: " << i << "\n";
-                                break;
+                                epoch._res.push_back(0);
+                                epoch._res.push_back(1);
                             }
                         }
                     }

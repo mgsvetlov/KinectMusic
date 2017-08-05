@@ -164,7 +164,7 @@ void Cells<TContainer,T>::CheckBackMinMax(){
     auto val = Value(cells.back(), std::is_pointer<T>());
     if(minValInd == NO_DATA_VALUE || val < Value(cells[minValInd], std::is_pointer<T>()))
         minValInd = static_cast<int>(cells.size() - 1);
-    if(maxValInd == NO_DATA_VALUE || val < Value(cells[maxValInd], std::is_pointer<T>()))
+    if(maxValInd == NO_DATA_VALUE || val > Value(cells[maxValInd], std::is_pointer<T>()))
         maxValInd = static_cast<int>(cells.size() - 1);
 }
 

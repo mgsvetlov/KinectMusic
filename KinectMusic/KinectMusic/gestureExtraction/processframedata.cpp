@@ -27,7 +27,6 @@ frameData(frameNum)
     filterFar();
     resize();
     createBlobsAndBorders();
-    learnTest();
     tracking();
     shareFrameData();
     visualize();
@@ -69,31 +68,7 @@ void ProcessFrameData::createBlobsAndBorders(){
     BlobsFabrique<BlobPrim> blobsFabrique1(1, matDst);
     
     //create blobs extended and borders
-    blobsFabrique1.constructBlobsExt(matFilt, blobsExt);
-}
-
-void ProcessFrameData::learnTest(){
-    auto it = blobsExt.begin();
-    while(it != blobsExt.end()){
-        it->computeFeatures(frameData.averagedBodyPoint);
-        const auto& features = it->getFeatures();
-        double sum (0.);
-        for(const auto f : features)
-            sum += f;
-        if(sum > 2.5){
-            it = blobsExt.erase(it);
-            continue;
-        }
-        if(Config::instance()->getIsLearning()){
-            std::stringstream ss;
-            ss << "features: ";
-            ss << frameData.frameNum << " ";
-            for(auto& feature : features)
-                ss << feature << " ";
-            Logs::writeLog("ann/train/", ss.str());
-        }
-        ++it;
-    }
+    blobsFabrique1.constructBlobsExt(matFilt, blobsExt, frameData.averagedBodyPoint);
 }
 
 void ProcessFrameData::tracking(){
@@ -133,8 +108,8 @@ void ProcessFrameData::visualize(){
         ss << frameData.frameNum;
         Visualization::drawText(img, ss.str(), 1.0, 1, cv::Scalar(0,0,255), cv::Point2f(0.5, 0.15));
         
-        //learning
-        if(Config::instance()->getIsLearning()) {
+        //write jpgs to disk
+        if(Config::instance()->getIsImwrite()) {
             static std::string dirName;
             static int status = -1;
             if(dirName == ""){

@@ -34,7 +34,6 @@ private:
     void filterFar();
     void resize();
     void createBlobsAndBorders();
-    void learnTest();
     void tracking();
     void shareFrameData();
     void visualize();

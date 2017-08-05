@@ -14,11 +14,12 @@
 #include "blobsclust.hpp"
 #include "../../log/logs.h"
 
-template<typename T> class BlobsFabrique {
+template<typename T>
+class BlobsFabrique {
 public:
     BlobsFabrique(int mode, cv::Mat mat, const std::list<int>& inds = std::list<int>());
     std::list<T>& getBlobs();
-    template<typename T1> std::list<T1>& constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt);
+    template<typename T1> std::list<T1>& constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt, const cv::Point3i& averagedBodyPoint);
     cv::Point3i getAveragedBodyPoint();
 private:
     void blobsFabrique0();
@@ -30,6 +31,7 @@ private:
     int mode = 0;
     std::list<T> blobs;
     cv::Point3i averagedBodyPoint = cv::Point3i(-1);
+    
 };
 
 template<typename T> BlobsFabrique<T>::BlobsFabrique(int mode, cv::Mat m, const std::list<int>& inds) :
@@ -107,7 +109,7 @@ template<typename T> std::list<T>& BlobsFabrique<T>::getBlobs(){
     return blobs;
 }
 
-template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt){
+template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt, const cv::Point3i& averagedBodyPoint){
     std::vector<int> inds;
     for(auto& blob  : blobs) {
         int ind = blob.indOriginNearest(origMat);
@@ -123,7 +125,12 @@ template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::cons
     for(auto& ind : inds) {
         blobsExt.emplace_back(origMat, origMatClone, ind, blobInd++);
         auto& blobExt = blobsExt.back();
-        if(blobExt.CreateBorder() == 0) {
+        if( blobExt.cells.Size() == 0
+           ||blobExt.cells.MaxValCell()->val < 800
+           || blobExt.CreateBorder() == 0
+           || (blobExt.borderPtr->bodyAdjacentCount != 0
+               && cv::norm(blobExt.AveragePoint()-blobExt.borderPtr->adjacentAveragePoint) < 100 )
+           ) {
             blobsExt.pop_back();
             continue;
         }

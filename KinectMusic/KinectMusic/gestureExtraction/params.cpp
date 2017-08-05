@@ -30,7 +30,7 @@ void Params::Init(){
     int depthFormatIndex = Config::instance()->getDepthFormat();
     MAX_KINECT_VALUE = depthFormatIndex == 0 ? 10000 : 2018;
     MAX_NEIGHB_DIFF_COARSE = depthFormatIndex == 0 ? 80 : 4;
-    MAX_KINECT_DEPTH = depthFormatIndex == 0 ? 2000 : 900;
+    MAX_KINECT_DEPTH = depthFormatIndex == 0 ? 2500 : 900;
     MATRIX_WIDTH = Config::instance()->getMatrixWidth();
     BLOBS_RESIZE_POW = MATRIX_WIDTH == 640 ? 3 : 2;
     BLOB_MIN_SIZE = (MATRIX_WIDTH >> BLOBS_RESIZE_POW)  * 0.15625 * 0.5;
