@@ -9,6 +9,7 @@
 #ifndef blobsfabrique_hpp
 #define blobsfabrique_hpp
 
+#include <limits>
 #include "../params.h"
 #include "blobext.hpp"
 #include "blobsclust.hpp"
@@ -19,8 +20,9 @@ class BlobsFabrique {
 public:
     BlobsFabrique(int mode, cv::Mat mat, const std::list<int>& inds = std::list<int>());
     std::list<T>& getBlobs();
-    template<typename T1> std::list<T1>& constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt, const cv::Point3i& averagedBodyPoint);
     cv::Point3i getAveragedBodyPoint();
+    void checkConnectivity(cv::Mat mat, const cv::Point3i& averagedBodyPoint);
+    template<typename T1> std::list<T1>& constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt, const cv::Point3i& averagedBodyPoint);
 private:
     void blobsFabrique0();
     void blobsFabrique1();
@@ -34,7 +36,8 @@ private:
     
 };
 
-template<typename T> BlobsFabrique<T>::BlobsFabrique(int mode, cv::Mat m, const std::list<int>& inds) :
+template<typename T>
+BlobsFabrique<T>::BlobsFabrique(int mode, cv::Mat m, const std::list<int>& inds) :
 mat(m.clone()),
 mode(mode)
 {
@@ -50,7 +53,8 @@ mode(mode)
     }
 }
 
-template<typename T> void BlobsFabrique<T>::blobsFabrique0(){
+template<typename T>
+void BlobsFabrique<T>::blobsFabrique0(){
     int largeBlobMaxVal(NO_DATA_VALUE);
     while(true){
         int ind = minCellIndex();
@@ -88,7 +92,8 @@ template<typename T> void BlobsFabrique<T>::blobsFabrique0(){
         computeAveragedBodyPoint();
 }
 
-template<typename T> void BlobsFabrique<T>::blobsFabrique1(){
+template<typename T>
+void BlobsFabrique<T>::blobsFabrique1(){
     while(true){
         int ind = minCellIndex();
         if(ind == -1)
@@ -105,11 +110,60 @@ template<typename T> void BlobsFabrique<T>::blobsFabrique1(){
     blobs = std::move(blobsClust.getBlobsClust());
 }
 
-template<typename T> std::list<T>& BlobsFabrique<T>::getBlobs(){
+template<typename T>
+std::list<T>& BlobsFabrique<T>::getBlobs(){
     return blobs;
 }
 
-template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt, const cv::Point3i& averagedBodyPoint){
+template<typename T>
+cv::Point3i BlobsFabrique<T>::getAveragedBodyPoint(){
+    return averagedBodyPoint;
+}
+
+template<typename T>
+void BlobsFabrique<T>::checkConnectivity(cv::Mat mat, const cv::Point3i& averagedBodyPoint){
+    int averagedBodyPointInd = averagedBodyPoint.y * mat.cols + averagedBodyPoint.x;
+    T blobBody (mat.clone(), averagedBodyPointInd);
+    cv::Mat matBodyBlob = blobBody.blob2mat();
+    blobBody.computeBorderCells(matBodyBlob);
+    const auto& bodyBorderCont = blobBody.getBorderCellsConst().AllConst();
+    auto it = blobs.begin();
+    while(it != blobs.end()){
+        if(it->getCellsConst().Size() == 0){
+            it = blobs.erase(it);
+            continue;
+        }
+        int ind = it->getCellsConst().MinValCell()->ind;
+        T blob (mat.clone(), ind);
+        cv::Mat matBlob = blob.blob2mat();
+        blob.computeBorderCells(matBlob);
+        const auto& blobBorderCont = blob.getBorderCellsConst().AllConst();
+        int xyDist = INT_MAX;
+        for(const auto& cell : blobBorderCont){
+            for(const auto& cellBody : bodyBorderCont){
+                int dx = cell.x - cellBody.x;
+                int dy = cell.y - cellBody.y;
+                int dist = dx*dx + dy* dy;
+                if(dist < xyDist)
+                    xyDist = dist;
+            }
+        }
+         int depthDist = blob.getCellsConst().MinValCell()->val - blobBody.getCellsConst().MinValCell()->val;
+        
+        if((xyDist > 9 && depthDist > -20)
+           || xyDist > 16
+           ){
+            it = blobs.erase(it);
+            continue;
+        }
+            
+       
+        ++it;
+    }
+}
+
+template<typename T>
+template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt, const cv::Point3i& averagedBodyPoint){
     std::vector<int> inds;
     for(auto& blob  : blobs) {
         int ind = blob.indOriginNearest(origMat);
@@ -139,11 +193,8 @@ template<typename T> template<typename T1> std::list<T1>& BlobsFabrique<T>::cons
 }
 
 
-template<typename T> cv::Point3i BlobsFabrique<T>::getAveragedBodyPoint(){
-    return averagedBodyPoint;
-}
-
-template<typename T> int BlobsFabrique<T>::minCellIndex(){
+template<typename T>
+int BlobsFabrique<T>::minCellIndex(){
     double minVal = Params::getMaxKinectValue();
     int ind (-1);
     uint16_t* p = (uint16_t*)(mat.data);
@@ -157,8 +208,8 @@ template<typename T> int BlobsFabrique<T>::minCellIndex(){
     return ind;
 }
 
-template<typename T> void BlobsFabrique<T>::computeAveragedBodyPoint(){
-    
+template<typename T>
+void BlobsFabrique<T>::computeAveragedBodyPoint(){
     auto it = blobs.begin();
     T* largestBlob = &(*it++);
     for(; it != blobs.end(); ++it){

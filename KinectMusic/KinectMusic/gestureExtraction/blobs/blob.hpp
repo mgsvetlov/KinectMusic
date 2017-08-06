@@ -31,17 +31,18 @@ public:
     
     Cells<TContainer,T>& getCells() {return cells;}
     const Cells<TContainer,T>& getCellsConst() const {return cells;}
+    const Cells<TContainer,T>& getBorderCellsConst() const {return borderCells;}
     const cv::Size& getMatSize() const {return this->matSize;}
     void setMatSize(cv::Size size) {this->matSize = size;}
     int indOriginNearest(cv::Mat originalMat) const;
     
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
-    
-private:
     cv::Mat blob2mat();
+    void computeBorderCells(cv::Mat mat);
     
 protected:
     Cells<TContainer,T> cells;
+    Cells<TContainer,T> borderCells;
     cv::Size matSize;
 
 private:
@@ -157,6 +158,30 @@ cv::Mat Blob<TContainer,T>::blobs2mat(const std::list<Blob<TContainer,T>>& lBlob
     }
     
     return mat;
+}
+
+template<template<typename> class TContainer, typename T>
+void Blob<TContainer,T>::computeBorderCells(cv::Mat mat){
+    int w = mat.cols;
+    int h = mat.rows;
+    uint16_t* p_mat = (uint16_t*)(mat.data);
+    auto it = cells.All().begin();
+    for( ;it != cells.All().end(); ++it){
+        int x_ = it->x;
+        int y_ = it->y;
+        for(auto& neighb : neighbours){
+            int xNeighb = x_ + neighb.first;
+            int yNeighb = y_ + neighb.second;
+            if(xNeighb < 0 || xNeighb >= w || yNeighb < 0 || yNeighb >= h)
+                continue;
+            int indNeighb = yNeighb * w + xNeighb;
+            uint16_t valNeighb =  *(p_mat + indNeighb);
+            if(valNeighb == 0){
+                borderCells.AddCell(*it);
+                break;
+            }
+        }
+    }
 }
 
 using BlobPrim = Blob<Vector, Cell>;
