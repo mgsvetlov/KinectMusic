@@ -122,7 +122,8 @@ cv::Point3i BlobsFabrique<T>::getAveragedBodyPoint(){
 template<typename T>
 void BlobsFabrique<T>::checkConnectivity(cv::Mat mat, const cv::Point3i& averagedBodyPoint){
     int averagedBodyPointInd = averagedBodyPoint.y * mat.cols + averagedBodyPoint.x;
-    T blobBody (mat.clone(), averagedBodyPointInd);
+    auto mClone = mat.clone();
+    T blobBody (mClone, averagedBodyPointInd);
     cv::Mat matBodyBlob = blobBody.blob2mat();
     blobBody.computeBorderCells(matBodyBlob);
     const auto& bodyBorderCont = blobBody.getBorderCellsConst().AllConst();
@@ -133,7 +134,8 @@ void BlobsFabrique<T>::checkConnectivity(cv::Mat mat, const cv::Point3i& average
             continue;
         }
         int ind = it->getCellsConst().MinValCell()->ind;
-        T blob (mat.clone(), ind);
+        auto mClone = mat.clone();
+        T blob (mClone, ind);
         cv::Mat matBlob = blob.blob2mat();
         blob.computeBorderCells(matBlob);
         const auto& blobBorderCont = blob.getBorderCellsConst().AllConst();
@@ -155,8 +157,6 @@ void BlobsFabrique<T>::checkConnectivity(cv::Mat mat, const cv::Point3i& average
             it = blobs.erase(it);
             continue;
         }
-            
-       
         ++it;
     }
 }

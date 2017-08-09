@@ -57,19 +57,18 @@ void ProcessFrameData::createBlobsAndBorders(){
     //extract all the blobs up to person
     BlobsFabrique<BlobPrim> blobsFabrique(0, matResized);
     auto& blobs = blobsFabrique.getBlobs();
+    if(blobs.size() == 0)
+        return;
     frameData.averagedBodyPoint = blobsFabrique.getAveragedBodyPoint();
-    
     //extract 3d convexes
     cv::Mat matBlobsPrim = BlobPrim::blobs2mat(blobs, matResized.size());
     cv::Mat matDst = Convex3d::extractConvexities(matBlobsPrim, Params::getConvex3dFilterSize(), Params::getConvex3dFilterDepth(), Params::getConvex3dCoreHalfSize());
     BlobsFabrique<BlobPrim> blobsFabrique1(1, matDst);
     blobsFabrique1.checkConnectivity(matResized, frameData.averagedBodyPoint);
-    
     //create blobs extended and borders
     frameData.averagedBodyPoint.x <<= Params::getBlobResizePow();
     frameData.averagedBodyPoint.y <<= Params::getBlobResizePow();
     blobsFabrique1.constructBlobsExt(matFilt, blobsExt, frameData.averagedBodyPoint);
-    
 }
 
 void ProcessFrameData::tracking(){
