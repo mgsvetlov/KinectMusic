@@ -100,7 +100,7 @@ int Blob<TContainer,T>::indOriginNearest(cv::Mat originalMat) const{
     int ind = cells.MinValCell()->ind;
     int x = ind % this->matSize.width;
     int y = (ind-x) /this->matSize.width;
-    static const int resizePow(Params::getBlobsResizePow());
+    static const int resizePow(Params::getBlobResizePow());
     x <<= resizePow;
     y <<= resizePow;
     

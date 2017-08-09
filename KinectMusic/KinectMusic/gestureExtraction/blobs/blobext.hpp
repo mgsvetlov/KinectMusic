@@ -23,8 +23,6 @@ public:
     BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd);
     
     size_t CreateBorder();
-    const std::vector<double>& getFeatures() const {return features;}
-    void computeFeatures(const cv::Point3i& averagedBodyPoint);
     const cv::Point3i& AveragePoint();
 private:
     void computeAngle();
@@ -33,7 +31,6 @@ private:
     const cv::Mat mat;
     std::unique_ptr<Border<TContainer, T>> borderPtr;
     cv::Point3i averagePoint = cv::Point3i(-1);
-    std::vector<double> features;
     
     static std::vector<std::pair<int,int>> neighbours;
    
@@ -61,7 +58,7 @@ mat(mat)
     int x = ind % w;
     int y = (ind - x)/ w;
     uint16_t firstVal = *(p_mat + ind);
-    double coeff = /*firstVal < 1200 ? */1200. / firstVal;// : 1.;
+    double coeff = static_cast<double>(Params::getBlobExtDepthCoeff()) / firstVal;
     int maxCount = coeff * coeff * Params::getBlobExtMaxSize();
     cells.All().reserve(maxCount);
     cells.AddCell(x, y, ind, firstVal);
@@ -107,25 +104,12 @@ size_t BlobExt<TContainer, T>::CreateBorder() {
     return borderPtr->getContour().size();
 }
 
-template<template<typename> class TContainer, typename T>
-void BlobExt<TContainer,T>::computeFeatures(const cv::Point3i& averagedBodyPoint) {
-    averagePoint = AveragePoint();
-    features.push_back(borderPtr->bodyAdjacentCount);
-    features.push_back(cv::norm(averagePoint-borderPtr->adjacentAveragePoint));
-    /*features.push_back(averagePoint.x);
-    features.push_back(averagePoint.y);
-    features.push_back(static_cast<double>(averagePoint.z)/averagedBodyPoint.z);
-    features.push_back((cells.MaxValCell()->val - cells.MinValCell()->val) * 1e-3);
-    int diff = averagePoint.x - averagedBodyPoint.x;
-    features.push_back(1.0  - 2.0 * static_cast<double>(std::abs(diff))/ Params::getMatrixWidth());
-    features.push_back(static_cast<double>(borderPtr->bodyAdjacentCount)/borderPtr->nonBodyAdjacentCount);*/
-}
 
 template<template<typename> class TContainer, typename T>
 const cv::Point3i& BlobExt<TContainer,T>::AveragePoint() {
     if(averagePoint != cv::Point3i(-1))
         return averagePoint;
-    averagePoint = cells.AveragedMinPoint(Params::getBlobFrontCellsCount());
+    averagePoint = cells.AveragedMinPoint(Params::getBlobExtFrontCellsCount());
     return averagePoint;
 }
 

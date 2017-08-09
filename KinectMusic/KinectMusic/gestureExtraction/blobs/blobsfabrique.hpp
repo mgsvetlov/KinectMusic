@@ -67,14 +67,14 @@ void BlobsFabrique<T>::blobsFabrique0(){
         
         T nearestBlob(mat, ind);
         
-        if(nearestBlob.getCellsConst().Size() < Params::getBlobsMinSize())
+        if(nearestBlob.getCellsConst().Size() < Params::getBlobMinSize())
             continue;
         
         if(largeBlobMaxVal != NO_DATA_VALUE && nearestBlob.getCellsConst().MinValCell() && nearestBlob.getCellsConst().MinValCell()->val > largeBlobMaxVal){
             break;
         }
         
-        if(nearestBlob.getCellsConst().Size() > Params::getBlobsMinSizeLast() && nearestBlob.getCellsConst().MaxValCell()){
+        if(nearestBlob.getCellsConst().Size() > Params::getBlobMinSizeLast() && nearestBlob.getCellsConst().MaxValCell()){
             if(nearestBlob.getCellsConst().MaxValCell()->val < Params::getMaxKinectDepth()){
                 largeBlobMaxVal = nearestBlob.getCellsConst().MaxValCell()->val;
                 blobs.push_front(std::move(nearestBlob));
@@ -105,8 +105,7 @@ void BlobsFabrique<T>::blobsFabrique1(){
         blobs.emplace_back(mat, ind);
         continue;
     }
-    int xyThresh(mat.cols / 8), depthThresh(100);
-    BlobsClust<T> blobsClust(blobs, xyThresh, depthThresh);
+    BlobsClust<T> blobsClust(blobs, Params::getBlobClustXYThresh(), Params::getBlobClustDepthThresh());
     blobs = std::move(blobsClust.getBlobsClust());
 }
 
@@ -143,15 +142,15 @@ void BlobsFabrique<T>::checkConnectivity(cv::Mat mat, const cv::Point3i& average
             for(const auto& cellBody : bodyBorderCont){
                 int dx = cell.x - cellBody.x;
                 int dy = cell.y - cellBody.y;
-                int dist = dx*dx + dy* dy;
+                int dist = dx*dx + dy*dy;
                 if(dist < xyDist)
                     xyDist = dist;
             }
         }
          int depthDist = blob.getCellsConst().MinValCell()->val - blobBody.getCellsConst().MinValCell()->val;
         
-        if((xyDist > 9 && depthDist > -20)
-           || xyDist > 16
+        if((xyDist > Params::getBlobConnectivityXYThresh1() && depthDist > Params::getBlobConnectivityDepthThresh())
+           || xyDist > Params::getBlobConnectivityXYThresh2()
            ){
             it = blobs.erase(it);
             continue;
@@ -180,10 +179,10 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
         blobsExt.emplace_back(origMat, origMatClone, ind, blobInd++);
         auto& blobExt = blobsExt.back();
         if( blobExt.cells.Size() == 0
-           ||blobExt.cells.MaxValCell()->val < 800
+           ||blobExt.cells.MaxValCell()->val < Params::getBlobExtMaxDepthThresh()
            || blobExt.CreateBorder() == 0
            || (blobExt.borderPtr->bodyAdjacentCount != 0
-               && cv::norm(blobExt.AveragePoint()-blobExt.borderPtr->adjacentAveragePoint) < 100 )
+               && cv::norm(blobExt.AveragePoint()-blobExt.borderPtr->adjacentAveragePoint) < Params::getBlobExtDistToAdjacentBorderThresh() )
            ) {
             blobsExt.pop_back();
             continue;

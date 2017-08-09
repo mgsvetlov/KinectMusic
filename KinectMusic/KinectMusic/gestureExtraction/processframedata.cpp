@@ -49,7 +49,7 @@ void ProcessFrameData::filterFar(){
 
 void ProcessFrameData::resize(){
     //resize
-    const static int blobsResizePow(Params::getBlobsResizePow());
+    const static int blobsResizePow(Params::getBlobResizePow());
     cv::resize(matFilt, matResized, cv::Size(Params::getMatrixWidth()>>blobsResizePow, Params::getMatrixHeight()>>blobsResizePow));
 }
 
@@ -61,19 +61,13 @@ void ProcessFrameData::createBlobsAndBorders(){
     
     //extract 3d convexes
     cv::Mat matBlobsPrim = BlobPrim::blobs2mat(blobs, matResized.size());
-    static int filt_size(matResized.cols / 20), filt_depth(matResized.cols / 10), core_half_size(2);
-    cv::Mat matDst = Convex3d::extractConvexities(matBlobsPrim, filt_size, filt_depth, core_half_size);
+    cv::Mat matDst = Convex3d::extractConvexities(matBlobsPrim, Params::getConvex3dFilterSize(), Params::getConvex3dFilterDepth(), Params::getConvex3dCoreHalfSize());
     BlobsFabrique<BlobPrim> blobsFabrique1(1, matDst);
     blobsFabrique1.checkConnectivity(matResized, frameData.averagedBodyPoint);
-    //temp checkConnectivity visualisation
-    /*auto& bls = blobsFabrique1.getBlobs();
-    cv::Mat matBls = BlobPrim::blobs2mat(bls, matResized.size());
-    cv::resize(matBls, mat, cv::Size(Params::getMatrixWidth(), Params::getMatrixHeight()));*/
-    //~temp
     
     //create blobs extended and borders
-    frameData.averagedBodyPoint.x <<= Params::getBlobsResizePow();
-    frameData.averagedBodyPoint.y <<= Params::getBlobsResizePow();
+    frameData.averagedBodyPoint.x <<= Params::getBlobResizePow();
+    frameData.averagedBodyPoint.y <<= Params::getBlobResizePow();
     blobsFabrique1.constructBlobsExt(matFilt, blobsExt, frameData.averagedBodyPoint);
     
 }

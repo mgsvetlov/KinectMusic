@@ -655,7 +655,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "98"
             endingLineNumber = "98"
-            landmarkName = "ProcessFrameData::visualize()"
+            landmarkName = "ProcessFrameData::shareFrameData()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -671,7 +671,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "97"
             endingLineNumber = "97"
-            landmarkName = "ProcessFrameData::visualize()"
+            landmarkName = "ProcessFrameData::shareFrameData()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
