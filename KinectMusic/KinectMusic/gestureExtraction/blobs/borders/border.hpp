@@ -12,6 +12,7 @@
 #include <map>
 #include "../blobext.hpp"
 #include "../../params.h"
+#include "../../angles3d/angles3d.h"
 
 template<typename T>
 using List = std::list<T>;
@@ -19,22 +20,24 @@ using List = std::list<T>;
 template<template<typename> class TContainer, typename T> class Border {
 public:
     Border(const cv::Mat& mat, Cells<TContainer,T>& cells);
-    bool isNotHandContour();
     const std::list<CellContour>& getContour() const { return contour;}
+    void computeAngles();
 private:
     bool createContour();
     T* nextCell(const cv::Mat& matCells, CellContour& cell, int indDiff);
     int eraseLoops();
     bool checkContour();
-    void compressContour();
+    //void compressContour();
 private:
     const cv::Mat mat;
     Cells<TContainer,T>& cells;
     std::list<CellContour> contour;
-    std::list<CellContour> contourCompressed;
+    //std::list<CellContour> contourCompressed;
     int bodyAdjacentCount = 0;
     int nonBodyAdjacentCount = 0;
     cv::Point3i adjacentAveragePoint = cv::Point3i(0);
+    std::unique_ptr<Angles3d> angles3dPtr;
+    
     static std::vector<std::pair<int, int>> int2pair;
     static std::map<std::pair<int, int>, int> pair2int;
     
@@ -247,7 +250,7 @@ bool Border<TContainer,T>::checkContour(){
     return true;
 }
 
-template<template<typename> class TContainer, typename T>
+/*template<template<typename> class TContainer, typename T>
 void Border<TContainer,T>::compressContour(){
     static size_t size(256);
     contourCompressed = contour;
@@ -287,6 +290,18 @@ void Border<TContainer,T>::compressContour(){
             ++it;
         }
     }
+}
+*/
+template<template<typename> class TContainer, typename T>
+void Border<TContainer,T>::computeAngles(){
+    if(angles3dPtr)
+        return;
+    std::list<cv::Point3i> points;
+    for(const auto& cell : contour){
+        if(!(cell.flags & FLAGS::ADJACENT_BODY))
+            points.emplace_back(cell.x, cell.y, cell.val);
+    }
+    angles3dPtr = std::unique_ptr<Angles3d>(new Angles3d(points));
 }
 
 #endif /* border_hpp */

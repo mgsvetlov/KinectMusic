@@ -24,6 +24,7 @@
 		720C22951DF4236A0066104B /* gesture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 720C22931DF4236A0066104B /* gesture.cpp */; };
 		723028981F23BB04003A8770 /* processframedata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 723028961F23BB04003A8770 /* processframedata.cpp */; };
 		7230289E1F247BB0003A8770 /* params.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7230289C1F247BB0003A8770 /* params.cpp */; };
+		72424B071F3C445D006F1AF5 /* angles3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72424B051F3C445D006F1AF5 /* angles3d.cpp */; };
 		7252AB891F3476E700521714 /* Neuron.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB851F3476E700521714 /* Neuron.cpp */; };
 		7252AB8A1F3476E700521714 /* NN.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB871F3476E700521714 /* NN.cpp */; };
 		7252AB901F347A6700521714 /* DataSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB8E1F347A6700521714 /* DataSet.cpp */; };
@@ -180,6 +181,8 @@
 		723028971F23BB04003A8770 /* processframedata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = processframedata.h; path = gestureExtraction/processframedata.h; sourceTree = "<group>"; };
 		7230289C1F247BB0003A8770 /* params.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = params.cpp; path = gestureExtraction/params.cpp; sourceTree = "<group>"; };
 		7230289D1F247BB0003A8770 /* params.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = params.h; path = gestureExtraction/params.h; sourceTree = "<group>"; };
+		72424B051F3C445D006F1AF5 /* angles3d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = angles3d.cpp; path = gestureExtraction/angles3d/angles3d.cpp; sourceTree = "<group>"; };
+		72424B061F3C445D006F1AF5 /* angles3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = angles3d.h; path = gestureExtraction/angles3d/angles3d.h; sourceTree = "<group>"; };
 		7252AB851F3476E700521714 /* Neuron.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Neuron.cpp; path = gestureExtraction/ml/nn/Neuron.cpp; sourceTree = "<group>"; };
 		7252AB861F3476E700521714 /* Neuron.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Neuron.hpp; path = gestureExtraction/ml/nn/Neuron.hpp; sourceTree = "<group>"; };
 		7252AB871F3476E700521714 /* NN.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NN.cpp; path = gestureExtraction/ml/nn/NN.cpp; sourceTree = "<group>"; };
@@ -248,7 +251,7 @@
 		728233311F0D4B2400B6E4D4 /* libpcl_surface.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_surface.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_surface.1.7.2.dylib; sourceTree = "<group>"; };
 		728233321F0D4B2400B6E4D4 /* libpcl_tracking.1.7.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcl_tracking.1.7.2.dylib; path = ../../../../../../../usr/local/lib/libpcl_tracking.1.7.2.dylib; sourceTree = "<group>"; };
 		728233401F0D4FFD00B6E4D4 /* pclplane.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclplane.cpp; path = gestureExtraction/pcl/pclplane.cpp; sourceTree = "<group>"; };
-		728233411F0D4FFD00B6E4D4 /* pclplane.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclplane.hpp; path = gestureExtraction/pcl/pclplane.hpp; sourceTree = "<group>"; };
+		728233411F0D4FFD00B6E4D4 /* pclplane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pclplane.h; path = gestureExtraction/pcl/pclplane.h; sourceTree = "<group>"; };
 		728233431F0D534400B6E4D4 /* libboost_atomic-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_atomic-mt.dylib"; path = "../../../../../../../usr/local/lib/libboost_atomic-mt.dylib"; sourceTree = "<group>"; };
 		728233441F0D534400B6E4D4 /* libboost_chrono-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_chrono-mt.dylib"; path = "../../../../../../../usr/local/lib/libboost_chrono-mt.dylib"; sourceTree = "<group>"; };
 		728233451F0D534400B6E4D4 /* libboost_chrono.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_chrono.dylib; path = ../../../../../../../usr/local/lib/libboost_chrono.dylib; sourceTree = "<group>"; };
@@ -312,7 +315,7 @@
 		728233BB1F11390400B6E4D4 /* pcldownsample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pcldownsample.cpp; path = gestureExtraction/pcl/pcldownsample.cpp; sourceTree = "<group>"; };
 		728233BC1F11390400B6E4D4 /* pcldownsample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pcldownsample.hpp; path = gestureExtraction/pcl/pcldownsample.hpp; sourceTree = "<group>"; };
 		728233BE1F114CC200B6E4D4 /* pclutility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclutility.cpp; path = gestureExtraction/pcl/pclutility.cpp; sourceTree = "<group>"; };
-		728233BF1F114CC200B6E4D4 /* pclutility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclutility.hpp; path = gestureExtraction/pcl/pclutility.hpp; sourceTree = "<group>"; };
+		728233BF1F114CC200B6E4D4 /* pclutility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pclutility.h; path = gestureExtraction/pcl/pclutility.h; sourceTree = "<group>"; };
 		728233C11F11525700B6E4D4 /* pclsegmentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclsegmentation.cpp; path = gestureExtraction/pcl/pclsegmentation.cpp; sourceTree = "<group>"; };
 		728233C21F11525700B6E4D4 /* pclsegmentation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclsegmentation.hpp; path = gestureExtraction/pcl/pclsegmentation.hpp; sourceTree = "<group>"; };
 		728233C41F1153B100B6E4D4 /* pclnormals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclnormals.cpp; path = gestureExtraction/pcl/pclnormals.cpp; sourceTree = "<group>"; };
@@ -656,6 +659,15 @@
 			path = include;
 			sourceTree = SOURCE_ROOT;
 		};
+		72424B081F3C446C006F1AF5 /* angles3d */ = {
+			isa = PBXGroup;
+			children = (
+				72424B051F3C445D006F1AF5 /* angles3d.cpp */,
+				72424B061F3C445D006F1AF5 /* angles3d.h */,
+			);
+			name = angles3d;
+			sourceTree = "<group>";
+		};
 		7252AB831F3476C700521714 /* ml */ = {
 			isa = PBXGroup;
 			children = (
@@ -708,11 +720,11 @@
 			isa = PBXGroup;
 			children = (
 				728233401F0D4FFD00B6E4D4 /* pclplane.cpp */,
-				728233411F0D4FFD00B6E4D4 /* pclplane.hpp */,
+				728233411F0D4FFD00B6E4D4 /* pclplane.h */,
 				728233BB1F11390400B6E4D4 /* pcldownsample.cpp */,
 				728233BC1F11390400B6E4D4 /* pcldownsample.hpp */,
 				728233BE1F114CC200B6E4D4 /* pclutility.cpp */,
-				728233BF1F114CC200B6E4D4 /* pclutility.hpp */,
+				728233BF1F114CC200B6E4D4 /* pclutility.h */,
 				728233C11F11525700B6E4D4 /* pclsegmentation.cpp */,
 				728233C21F11525700B6E4D4 /* pclsegmentation.hpp */,
 				728233C41F1153B100B6E4D4 /* pclnormals.cpp */,
@@ -735,6 +747,7 @@
 				72048F6F1EDA00BE006381E9 /* share.h */,
 				722141A51D9FC2BD00B697E8 /* blobs */,
 				728233201F07950D00B6E4D4 /* convex3d */,
+				72424B081F3C446C006F1AF5 /* angles3d */,
 				7252AB831F3476C700521714 /* ml */,
 				720C228F1DF2EE820066104B /* tracking */,
 				7221419E1D9FB91400B697E8 /* visualization */,
@@ -821,6 +834,7 @@
 				725B1BA01ED768A60028AE34 /* gestureStop.cpp in Sources */,
 				720164BD1A6C058B00BC721A /* flags.c in Sources */,
 				7274B8C41F1F2B3800F1D30D /* cell.cpp in Sources */,
+				72424B071F3C445D006F1AF5 /* angles3d.cpp in Sources */,
 				728233C31F11525700B6E4D4 /* pclsegmentation.cpp in Sources */,
 				72799BA71DC61E5800BAC3DC /* extractframedata.cpp in Sources */,
 				728233C01F114CC200B6E4D4 /* pclutility.cpp in Sources */,

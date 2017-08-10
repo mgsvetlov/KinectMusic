@@ -25,7 +25,7 @@ public:
     size_t CreateBorder();
     const cv::Point3i& AveragePoint();
 private:
-    void computeAngle();
+    void computeAngles();
 
 private:
     const cv::Mat mat;
@@ -114,7 +114,10 @@ const cv::Point3i& BlobExt<TContainer,T>::AveragePoint() {
 }
 
 template<template<typename> class  TContainer, typename T>
-void BlobExt<TContainer, T>::computeAngle(){
+void BlobExt<TContainer, T>::computeAngles(){
+    if(borderPtr){
+        borderPtr->computeAngles();
+    }
     /*if( cells.Size() < 3){
      this->angle = 0.0f;
      return;

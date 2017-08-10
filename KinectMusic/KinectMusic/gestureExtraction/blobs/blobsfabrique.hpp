@@ -187,6 +187,7 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
             blobsExt.pop_back();
             continue;
         }
+        blobExt.computeAngles();
     }
     return blobsExt;
 }

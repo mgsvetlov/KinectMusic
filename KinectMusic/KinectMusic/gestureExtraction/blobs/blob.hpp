@@ -16,7 +16,6 @@
 #include "cells/cells.hpp"
 
 #include "../../log/logs.h"
-#include  "../pcl/pclplane.hpp"
 #include  "../pcl/pcldownsample.hpp"
 #ifdef USE_CELL_NORMAL
 #include "../pcl/pclnormals.hpp"
