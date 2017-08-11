@@ -64,7 +64,8 @@ void Theremin::mappingData() {
             else {
                 //amp
                 if(frameDataPrev.frameNum != NO_DATA_VALUE){
-                    double dy = std::abs(frameData.hands[i].y - frameDataPrev.hands[i].y);
+                    double amp = frameData.hands[i].n_y < 0 ? 1.0 : 0.0;
+                    /*double dy = std::abs(frameData.hands[i].y - frameDataPrev.hands[i].y);
                     double dx = std::abs(frameData.hands[i].x - frameDataPrev.hands[i].x);
                     double amp = dy + dx;// > 0.01 ? 1.0 : 0.0;
                     static double thresh = 0.01;
@@ -73,12 +74,12 @@ void Theremin::mappingData() {
                     }
                     if(amp > 1)
                         amp = 1;
-                    amp *= (1.0 - frameData.hands[i].y);
+                    amp *= (1.0 - frameData.hands[i].y);*/
                     csound_data["amp0"].param = csound_data["amp1"].param = amp;
                 }
                 //csound_data["amp0"].param = csound_data["amp1"].param =  sqrt(frameData.hands[i].y);
                 //side mod
-                float mod = 0.0f;//frameData.hands[i].angle;
+                float mod = 0.0f;
                 if(mod < -50.f)
                     mod = -50.f;
                 else if(mod > 50.f)

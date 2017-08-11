@@ -23,6 +23,7 @@ public:
     BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd);
     
     size_t CreateBorder();
+    std::unique_ptr<Border<TContainer, T>>& getBorderPtr() { return borderPtr; }
     const cv::Point3i& AveragePoint();
 private:
     void computeAngles();

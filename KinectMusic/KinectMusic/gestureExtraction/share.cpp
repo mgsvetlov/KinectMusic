@@ -45,7 +45,7 @@ void Share::destroy(){
 
 Share::Share(const FrameData& frameData){
 
-    SIZE = static_cast<int>(4 * sizeof(int) + 4 * sizeof(int) * frameData.data.size());
+    SIZE = static_cast<int>(4 * sizeof(int) + 8 * sizeof(int) * frameData.data.size());
     
     if ((shm_id = shmget( key, SIZE, IPC_CREAT | 0666)) < 0){
         Logs::writeLog("gestures","shmget error");
@@ -94,6 +94,10 @@ bool Share::share_data(const FrameData& frameData){
         *intPtr++ = gestureData.keyPoint.x;
         *intPtr++ = gestureData.keyPoint.y;
         *intPtr++ = gestureData.keyPoint.z;
+        *intPtr++ = NO_DATA_VALUE;
+        *intPtr++ = static_cast<int>(gestureData.normal[0] *1e6);
+        *intPtr++ = static_cast<int>(gestureData.normal[1] *1e6);
+        *intPtr++ = static_cast<int>(gestureData.normal[2] *1e6);
     }
     sem_post(sem);
     return true;

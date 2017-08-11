@@ -92,8 +92,6 @@ matSize(mat.size())
     }
 }
 
-
-
 template<template<typename> class TContainer, typename T>
 int Blob<TContainer,T>::indOriginNearest(cv::Mat originalMat) const{
     int ind = cells.MinValCell()->ind;

@@ -14,8 +14,12 @@
 
 struct HandData {
     cv::Point3i keyPoint;
-    HandData() : keyPoint (cv::Point3i(NO_DATA_VALUE)){}
-    HandData(const cv::Point3i& point) : keyPoint (point){}
+    cv::Vec3f normal;
+    HandData() :
+    keyPoint (cv::Point3i(NO_DATA_VALUE, NO_DATA_VALUE, NO_DATA_VALUE)),
+    normal (cv::Vec3f(NO_DATA_VALUE, NO_DATA_VALUE, NO_DATA_VALUE))
+    {}
+    HandData(const cv::Point3i& point, const cv::Vec3f& normal) : keyPoint (point), normal(normal){}
    
 };
 

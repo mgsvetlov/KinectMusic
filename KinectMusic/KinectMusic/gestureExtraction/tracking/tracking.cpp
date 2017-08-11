@@ -88,7 +88,19 @@ double Track::dist2blob(const BlobFinal& blob){
 
 void Track::addHandData(BlobFinal& blob){
     const cv::Point3i& averagePoint = blob.AveragePoint();
-    handHistory.push_back(HandData(averagePoint));
+    cv::Vec3f normal (0.0f, 0.0f, 0.0f);
+    auto& borderPtr = blob.getBorderPtr();
+    if(borderPtr){
+        auto& angles3dPtr = borderPtr->getAngles3dPtr();
+        if(angles3dPtr){
+            const auto& anglesData = angles3dPtr->getDataConst();
+            if(!anglesData.empty()){
+                auto& pl = std::get<0>(anglesData.front());
+                normal = cv::Vec3f(pl.x, pl.y, pl.z);
+            }
+        }
+    }
+    handHistory.push_back(HandData(averagePoint, normal));
     isHandFound = true;
 }
 

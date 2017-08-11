@@ -13,6 +13,8 @@ Angles3d::Angles3d(std::list<cv::Point3i>& points){
     float x(0.f), y(0.f), z(0.f), w(0.f);
     if(points.size() > 2){
         PclPlane::fitPlane(points, x, y, z, w);
+        if(z > 0)
+            x = -x, y = -y, z = -z;
         /*std::stringstream ss;
         ss << "plane " << x << " " << y << " " << z << " " << w << " " ;
         Logs::writeLog("gestures", ss.str());*/
@@ -32,3 +34,4 @@ cv::Point3i Angles3d::averagePoint(std::list<cv::Point3i>& points){
     avgPoint.z /= count;
     return avgPoint;
 }
+

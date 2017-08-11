@@ -22,6 +22,7 @@ public:
     Border(const cv::Mat& mat, Cells<TContainer,T>& cells);
     const std::list<CellContour>& getContour() const { return contour;}
     void computeAngles();
+    std::unique_ptr<Angles3d>& getAngles3dPtr() { return angles3dPtr;}
 private:
     bool createContour();
     T* nextCell(const cv::Mat& matCells, CellContour& cell, int indDiff);

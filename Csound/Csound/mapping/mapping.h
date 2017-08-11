@@ -22,7 +22,7 @@ struct HandData{
     double x;
     double y;
     int z;
-    int angle = NO_DATA_VALUE;
+    double n_x, n_y, n_z;
     HandData() : z(NO_DATA_VALUE){}
     HandData(int phase, double x, double y, int z) :
     phase(phase), x(x), y(y), z(z){}

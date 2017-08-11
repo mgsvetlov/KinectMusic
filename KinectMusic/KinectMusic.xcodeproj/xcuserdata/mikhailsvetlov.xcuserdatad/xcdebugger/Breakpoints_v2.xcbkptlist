@@ -354,11 +354,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/blobs/borders/border.hpp"
-            timestampString = "523623727.183715"
+            timestampString = "524161526.199637"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "84"
-            endingLineNumber = "84"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
             landmarkName = "cells(cells)"
             landmarkType = "7">
             <Locations>

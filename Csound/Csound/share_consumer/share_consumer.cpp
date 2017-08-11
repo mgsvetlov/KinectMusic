@@ -44,7 +44,7 @@ void ShareConsumer::destroy(){
 
 ShareConsumer::ShareConsumer() {
     
-    SIZE = static_cast<int>(4 * sizeof(int) + 4 * sizeof(int) * 2);
+    SIZE = static_cast<int>(4 * sizeof(int) + 8 * sizeof(int) * 2);
     
     if ((shm_id = shmget( key, SIZE,  0666)) < 0){
         Logs::writeLog("csound","shmget error");
@@ -94,10 +94,8 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
                 frameData.bodyDepth = *intPtr;
                 break;
             case 2:
-                frameData.hands[0].angle = *intPtr;
                 break;
             case 3:
-                frameData.hands[1].angle = *intPtr;
                 break;
             case 4:
                 frameData.hands[0].phase = *intPtr;
@@ -112,16 +110,38 @@ bool ShareConsumer::share_data_consume(Mapping* mapping){
                 frameData.hands[0].z = *intPtr;
                 break;
             case 8:
-                frameData.hands[1].phase = *intPtr;
                 break;
             case 9:
-                frameData.hands[1].x = *intPtr == NO_DATA_VALUE ? NO_DATA_VALUE : *intPtr / screen_width;
+                frameData.hands[0].n_x = *intPtr;
                 break;
             case 10:
-                frameData.hands[1].y = *intPtr == NO_DATA_VALUE ? NO_DATA_VALUE : (screen_height - *intPtr) / screen_height;
+                frameData.hands[0].n_y = *intPtr;
                 break;
             case 11:
+                frameData.hands[0].n_z = *intPtr;
+                break;
+            case 12:
+                frameData.hands[1].phase = *intPtr;
+                break;
+            case 13:
+                frameData.hands[1].x = *intPtr == NO_DATA_VALUE ? NO_DATA_VALUE : *intPtr / screen_width;
+                break;
+            case 14:
+                frameData.hands[1].y = *intPtr == NO_DATA_VALUE ? NO_DATA_VALUE : (screen_height - *intPtr) / screen_height;
+                break;
+            case 15:
                 frameData.hands[1].z = *intPtr;
+                break;
+            case 16:
+                break;
+            case 17:
+                frameData.hands[1].n_x = *intPtr;
+                break;
+            case 18:
+                frameData.hands[1].n_y = *intPtr;
+                break;
+            case 19:
+                frameData.hands[1].n_z = *intPtr;
                 break;
             default:
                 break;
