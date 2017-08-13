@@ -116,8 +116,37 @@ void ProcessFrameData::visualize(){
                 dirName = "ann/train/" + Logs::getCurrentTime();
                 status = mkdir(dirName.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
             }
-            if(status == 0)
+            if(status == 0){
                 cv::imwrite( dirName + "/" + ss.str() + ".jpg", img );
+                int blobCount(-1);
+                for(auto& blob : blobsExt){
+                    ++blobCount;
+                    const auto& projPoints = blob.getBorderPtr()->getProjPointsConst();
+                    float maxX(-FLT_MAX), maxY(-FLT_MAX);
+                    if(projPoints.empty())
+                        continue;
+                    for(const auto& p : projPoints){
+                        if(p.x > maxX)
+                            maxX = p.x;
+                        if(p.y > maxY)
+                            maxY = p.y;
+                    }
+                    int w = maxX + 2;
+                    int h = maxY + 2;
+                    cv::Mat img = cv::Mat_<unsigned char>::zeros(cv::Size(w, h));
+                    unsigned char* p_img = (unsigned char*)(img.data);
+                    int count(0);
+                    for(auto& p : projPoints){
+                        *(p_img + static_cast<int>(p.y + 1)* w + static_cast<int>(p.x + 1)) = 255;
+                        if(count)
+                        cv::line(img, cv::Point(p.x + 1, p.y + 1), cv::Point(projPoints[count-1].x+1,projPoints[count-1].y+1), cv::Scalar (255), 1);
+                        count++;
+                    }
+                    std::stringstream ss;
+                    ss << frameData.frameNum << "_" << blobCount;
+                    cv::imwrite( dirName + "/" + ss.str() + ".jpg", img );
+                }
+            }
         }
         
         pthread_mutex_lock(&visualisation_mutex);

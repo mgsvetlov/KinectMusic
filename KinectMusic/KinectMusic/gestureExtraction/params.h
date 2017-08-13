@@ -33,6 +33,7 @@ public:
     static int getBlobConnectivityDepthThresh() {return BLOB_CONNECTIVITY_DEPTH_THRESH; }
     static int getBlobExtDepthCoeff() { return BLOB_EXT_DEPTH_COEFF;}
     static int getBlobExtMaxSize() { return BLOB_EXT_MAX_SIZE;}
+    static int getBlobExtMaxDepthRange() { return BLOB_EXT_MAX_DEPTH_RANGE;}
     static int getBlobExtMaxDepthThresh() { return BLOB_EXT_MAX_DEPTH_THRESH;}
     static int getBlobExtDistToAdjacentBorderThresh() { return BLOB_EXT_DIST_TO_ADJACENT_BORDER_THRESH;}
     static int getBlobExtFrontCellsCount() { return BLOB_EXT_FRONT_CELLS_COUNT;}
@@ -59,6 +60,7 @@ private:
     static int BLOB_CONNECTIVITY_DEPTH_THRESH;
     static int BLOB_EXT_DEPTH_COEFF;
     static int BLOB_EXT_MAX_SIZE;
+    static int BLOB_EXT_MAX_DEPTH_RANGE;
     static int BLOB_EXT_MAX_DEPTH_THRESH;
     static int BLOB_EXT_DIST_TO_ADJACENT_BORDER_THRESH;
     static int BLOB_EXT_FRONT_CELLS_COUNT;

@@ -27,6 +27,7 @@ int Params::BLOB_CONNECTIVITY_XY_THRESH1;
 int Params::BLOB_CONNECTIVITY_XY_THRESH2;
 int Params::BLOB_CONNECTIVITY_DEPTH_THRESH;
 int Params::BLOB_EXT_MAX_SIZE;
+int Params::BLOB_EXT_MAX_DEPTH_RANGE;
 int Params::BLOB_EXT_DEPTH_COEFF;
 int Params::BLOB_EXT_MAX_DEPTH_THRESH;
 int Params::BLOB_EXT_DIST_TO_ADJACENT_BORDER_THRESH;
@@ -41,7 +42,7 @@ void Params::Init(){
     //1 FREENECT_DEPTH_11BIT     MAX_KINECT_VALUE  2018 MAX_NEIGHB_DIFF_COARSE 4
     int depthFormatIndex = Config::instance()->getDepthFormat();
     MAX_KINECT_VALUE = depthFormatIndex == 0 ? 10000 : 2018;
-    MAX_NEIGHB_DIFF_COARSE = depthFormatIndex == 0 ? 120 : 6;//80 : 4
+    MAX_NEIGHB_DIFF_COARSE = depthFormatIndex == 0 ? 80 : 6;//80 : 4
     MAX_KINECT_DEPTH = depthFormatIndex == 0 ? 2500 : 900;
     MATRIX_WIDTH = Config::instance()->getMatrixWidth();
     BLOB_RESIZE_POW = MATRIX_WIDTH == 640 ? 3 : 2;
@@ -57,6 +58,7 @@ void Params::Init(){
     BLOB_CONNECTIVITY_XY_THRESH2 = (MATRIX_WIDTH >> BLOB_RESIZE_POW) * 0.2;
     BLOB_CONNECTIVITY_DEPTH_THRESH = depthFormatIndex == 0 ? -20 : -8;
     BLOB_EXT_MAX_SIZE = MATRIX_WIDTH * 6;
+    BLOB_EXT_MAX_DEPTH_RANGE = depthFormatIndex == 0 ? 250 : 90;
     BLOB_EXT_MAX_DEPTH_THRESH = depthFormatIndex == 0 ? 800 : 300;
     BLOB_EXT_DIST_TO_ADJACENT_BORDER_THRESH = MATRIX_WIDTH * 0.15625;
     BLOB_EXT_FRONT_CELLS_COUNT = MATRIX_WIDTH * 1.5625;

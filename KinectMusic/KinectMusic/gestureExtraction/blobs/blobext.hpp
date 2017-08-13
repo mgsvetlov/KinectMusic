@@ -103,8 +103,9 @@ mat(mat)
             break;
     }
     cells.All().reserve(lCells_1.size());
+    static const int maxDepthRange = Params::getBlobExtMaxDepthRange();
     for(auto& cell : lCells_1){
-        if(cell.val - minVal < 250)
+        if(cell.val - minVal < maxDepthRange)
             cells.AddCell(cell);
     }
 }

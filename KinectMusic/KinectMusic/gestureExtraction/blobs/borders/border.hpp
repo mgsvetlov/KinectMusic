@@ -20,7 +20,8 @@ using List = std::list<T>;
 template<template<typename> class TContainer, typename T> class Border {
 public:
     Border(const cv::Mat& mat, Cells<TContainer,T>& cells);
-    const std::list<CellContour>& getContour() const { return contour;}
+    const std::vector<CellContour>& getContour() const { return contour;}
+    const std::vector<cv::Point2f>& getProjPointsConst() const {return projPoints;}
     void computeAngles();
     std::unique_ptr<Angles3d>& getAngles3dPtr() { return angles3dPtr;}
 private:
@@ -28,15 +29,16 @@ private:
     T* nextCell(const cv::Mat& matCells, CellContour& cell, int indDiff);
     int eraseLoops();
     bool checkContour();
-    //void compressContour();
+    void findFingers();
 private:
     const cv::Mat mat;
     Cells<TContainer,T>& cells;
-    std::list<CellContour> contour;
-    //std::list<CellContour> contourCompressed;
+    std::vector<CellContour> contour;
     int bodyAdjacentCount = 0;
     int nonBodyAdjacentCount = 0;
     cv::Point3i adjacentAveragePoint = cv::Point3i(0);
+    std::vector<cv::Point2f> projPoints;
+    std::vector<int> fingerInds;
     std::unique_ptr<Angles3d> angles3dPtr;
     
     static std::vector<std::pair<int, int>> int2pair;
@@ -86,11 +88,11 @@ cells(cells)
     }
     eraseLoops();
     checkContour();
-    //compressContour();
 }
 
 template<template<typename> class TContainer, typename T>
 bool Border<TContainer,T>::createContour(){
+    contour.reserve(cells.Size());
     cv::Mat matCells  = cv::Mat_<T*>::zeros(mat.size());
     T** p_matCells = (T**)(matCells.data);
     for(auto& cell : cells.All()){
@@ -126,6 +128,7 @@ bool Border<TContainer,T>::createContour(){
         }
         contour.emplace_back(*next);
     }
+    contour.shrink_to_fit();
     if(bodyAdjacentCount){
         adjacentAveragePoint.x /= bodyAdjacentCount;
         adjacentAveragePoint.y /= bodyAdjacentCount;
@@ -251,48 +254,6 @@ bool Border<TContainer,T>::checkContour(){
     return true;
 }
 
-/*template<template<typename> class TContainer, typename T>
-void Border<TContainer,T>::compressContour(){
-    static size_t size(256);
-    contourCompressed = contour;
-    if(contourCompressed.size() == size){
-        return;
-    }
-    else if(contourCompressed.size() > size){
-        size_t rem = contourCompressed.size() - size;
-        const size_t step = contourCompressed.size()  / rem;
-        auto it = contourCompressed.begin();
-        size_t count(0);
-        while(it != contourCompressed.end()){
-            ++count;
-            if(count >= step){
-                count = 0;
-                it = contourCompressed.erase(it);
-                if(contourCompressed.size() == size)
-                    return;
-                continue;
-            }
-            ++it;
-        }
-    }
-    else {
-        size_t rem = - contourCompressed.size() + size;
-        const size_t step = contourCompressed.size()  / rem;
-        auto it = contourCompressed.begin();
-        size_t count(0);
-        while(it != contourCompressed.end()){
-            ++count;
-            if(count >= step){
-                count = 0;
-                it = contourCompressed.insert(it, *it);
-                if(contourCompressed.size() == size)
-                    return;
-            }
-            ++it;
-        }
-    }
-}
-*/
 template<template<typename> class TContainer, typename T>
 void Border<TContainer,T>::computeAngles(){
     if(angles3dPtr)
@@ -303,6 +264,62 @@ void Border<TContainer,T>::computeAngles(){
             points.emplace_back(cell.x, cell.y, cell.val);
     }
     angles3dPtr = std::unique_ptr<Angles3d>(new Angles3d(points));
+    findFingers();
+}
+
+template<template<typename> class TContainer, typename T>
+void Border<TContainer,T>::findFingers(){
+    static const double spaceCoeff(9./6400);
+    std::vector<cv::Point3f> contourReal;
+    contourReal.reserve(contour.size());
+    for(auto& cell : contour){
+        if(cell.flags & FLAGS::ADJACENT_BODY)
+            continue;
+        contourReal.emplace_back(cell.x * cell.val * spaceCoeff, cell.y * cell.val * spaceCoeff, cell.val);
+    }
+    contourReal.shrink_to_fit();
+    auto& anglesData = angles3dPtr->getDataConst();
+    if(anglesData.empty())
+        return;
+    auto& plane = std::get<0>(anglesData.front());
+    projPoints = Angles3d::projectPointsToPlane(contourReal, plane);
+    
+    /*
+     static int filterHalfSize(30);
+     if(contour.size() < filterHalfSize * 2)
+        return;
+     static double minThresh1(15.), maxThresh2(30.);
+     
+     for(int i = 0; i < contourReal.size(); ++i){
+        if(contour[i].flags & FLAGS::ADJACENT_BODY)
+            continue;
+        auto& point = contourReal[i];
+        for(int j = 5; j < filterHalfSize; ++j){
+            int i1 = i - j;
+            if(i1 < 0)
+                i1 = static_cast<int>(contourReal.size()) - i1;
+            if(contour[i1].flags & FLAGS::ADJACENT_BODY)
+                continue;
+            auto& point1 = contourReal[i1];
+            int i2 = i + j;
+            if(contour[i2].flags & FLAGS::ADJACENT_BODY)
+                continue;
+            if(i2 >= contourReal.size())
+                i2 = i2 - static_cast<int>(contourReal.size());
+            auto& point2 = contourReal[i2];
+            double dist1 = cv::norm(point - point1);
+            if(dist1 < minThresh1)
+                continue;
+            double dist2 = cv::norm(point - point2);
+            if(dist2 < minThresh1)
+                continue;
+            double dist12 = cv::norm(point1 - point2);
+            if(dist12 > maxThresh2)
+                continue;
+            fingerInds.push_back(i);
+            break;
+        }
+    }*/
 }
 
 #endif /* border_hpp */

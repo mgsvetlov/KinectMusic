@@ -21,10 +21,13 @@ class Angles3d {
 public:
     Angles3d(std::list<cv::Point3i>& points);
     const std::list<std::tuple<Plane, cv::Point3i, std::list<cv::Point3i>>>& getDataConst() const { return data;}
+   static std::vector<cv::Point2f> projectPointsToPlane(std::vector<cv::Point3f>& points, const Plane& plane);
 private:
     cv::Point3i averagePoint(std::list<cv::Point3i>& points);
+    static float coordinate(const cv::Point3f& point, const cv::Vec3f& axe, const cv::Point3f& origin);
 private:
     std::list<std::tuple<Plane, cv::Point3i, std::list<cv::Point3i>>> data;
+    
 };
 
 #endif /* angles3d_hpp */
