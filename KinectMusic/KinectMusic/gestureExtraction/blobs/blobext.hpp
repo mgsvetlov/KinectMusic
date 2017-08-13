@@ -51,7 +51,6 @@ template<template<typename> class  TContainer, typename T>
 BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd) :
 mat(mat)
 {
-    
     const uint16_t maskValue = 65535 - blobInd;
     int w = matClone.cols;
     int h = matClone.rows;
@@ -61,17 +60,18 @@ mat(mat)
     uint16_t firstVal = *(p_mat + ind);
     double coeff = static_cast<double>(Params::getBlobExtDepthCoeff()) / firstVal;
     int maxCount = coeff * coeff * Params::getBlobExtMaxSize();
-    cells.All().reserve(maxCount);
-    cells.AddCell(x, y, ind, firstVal);
-    std::list<Cell> lCells;
+    std::list<Cell> lCells, lCells_1;
+    int minVal = firstVal;
     lCells.emplace_back(x, y, ind, firstVal);
+    lCells_1.emplace_back(x, y, ind, firstVal);
     *(p_mat + ind) = maskValue;
     while(!lCells.empty()){
-        auto it = lCells.begin();
-        const uint16_t val =  it->val;
-        int x_ = it->x;
-        int y_ = it->y;
+        auto cell = lCells.front();
+        const uint16_t val =  cell.val;
+        int x_ = cell.x;
+        int y_ = cell.y;
         lCells.pop_front();
+        bool isEnd(false);
         for(auto& neighb : neighbours){
             int xNeighb = x_ + neighb.first;
             int yNeighb = y_ + neighb.second;
@@ -87,14 +87,25 @@ mat(mat)
                 continue;
             }
             *(p_mat + indNeighb) = maskValue;
-            cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
-            if(cells.Size() == maxCount)
-                return;
-            if(valNeighb < val)
+            lCells_1.emplace_back(xNeighb, yNeighb, indNeighb, valNeighb);
+            if(valNeighb < minVal)
+                minVal = valNeighb;
+            if(lCells_1.size() == maxCount){
+                isEnd = true;
+                break;
+            }
+            else if(valNeighb < val)
                 lCells.emplace_front(xNeighb, yNeighb, indNeighb, valNeighb);
             else
                 lCells.emplace_back(xNeighb, yNeighb, indNeighb, valNeighb);
         }
+        if(isEnd)
+            break;
+    }
+    cells.All().reserve(lCells_1.size());
+    for(auto& cell : lCells_1){
+        if(cell.val - minVal < 250)
+            cells.AddCell(cell);
     }
 }
 
