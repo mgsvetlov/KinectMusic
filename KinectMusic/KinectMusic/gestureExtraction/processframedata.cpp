@@ -118,7 +118,7 @@ void ProcessFrameData::visualize(){
             }
             if(status == 0){
                 cv::imwrite( dirName + "/" + ss.str() + ".jpg", img );
-                int blobCount(-1);
+                /*int blobCount(-1);
                 for(auto& blob : blobsExt){
                     ++blobCount;
                     const auto& projPoints = blob.getBorderPtr()->getProjPointsConst();
@@ -145,7 +145,7 @@ void ProcessFrameData::visualize(){
                     std::stringstream ss;
                     ss << frameData.frameNum << "_" << blobCount;
                     cv::imwrite( dirName + "/" + ss.str() + ".jpg", img );
-                }
+                }*/
             }
         }
         

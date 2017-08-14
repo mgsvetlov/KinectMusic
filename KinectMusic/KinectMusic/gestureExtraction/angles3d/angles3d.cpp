@@ -58,8 +58,8 @@ std::vector<cv::Point2f>  Angles3d::projectPointsToPlane(std::vector<cv::Point3f
     cv::Point3f origin (points.front());
     float minX(FLT_MAX), minY(FLT_MAX);
     for(auto& p : points){
-        float x = coordinate(p, axe1, origin);
-        float y = coordinate(p, axe2, origin);
+        float x = p.z;//coordinate(p, axe1, origin);
+        float y = p.y;//coordinate(p, axe2, origin);
         if(x < minX)
             minX = x;
         

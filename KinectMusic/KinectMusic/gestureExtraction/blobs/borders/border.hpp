@@ -270,56 +270,55 @@ void Border<TContainer,T>::computeAngles(){
 template<template<typename> class TContainer, typename T>
 void Border<TContainer,T>::findFingers(){
     static const double spaceCoeff(9./6400);
-    std::vector<cv::Point3f> contourReal;
+    std::vector<cv::Point2f> contourReal;
     contourReal.reserve(contour.size());
     for(auto& cell : contour){
         if(cell.flags & FLAGS::ADJACENT_BODY)
             continue;
-        contourReal.emplace_back(cell.x * cell.val * spaceCoeff, cell.y * cell.val * spaceCoeff, cell.val);
+        contourReal.emplace_back(cell.x, cell.y);
+        //contourReal.emplace_back(cell.x * cell.val * spaceCoeff, cell.y * cell.val * spaceCoeff, cell.val);
     }
     contourReal.shrink_to_fit();
-    auto& anglesData = angles3dPtr->getDataConst();
+    /*auto& anglesData = angles3dPtr->getDataConst();
     if(anglesData.empty())
         return;
     auto& plane = std::get<0>(anglesData.front());
-    projPoints = Angles3d::projectPointsToPlane(contourReal, plane);
+    projPoints = Angles3d::projectPointsToPlane(contourReal, plane);*/
     
-    /*
-     static int filterHalfSize(30);
-     if(contour.size() < filterHalfSize * 2)
+    
+    static int filterHalfSize(80);
+    if(contour.size() < filterHalfSize * 2)
         return;
-     static double minThresh1(15.), maxThresh2(30.);
-     
-     for(int i = 0; i < contourReal.size(); ++i){
-        if(contour[i].flags & FLAGS::ADJACENT_BODY)
-            continue;
+    static double minThresh1(20.), maxThresh2(40.);
+
+    for(int i = 0; i < contourReal.size(); ++i){
         auto& point = contourReal[i];
-        for(int j = 5; j < filterHalfSize; ++j){
+        for(int j = 3; j < filterHalfSize; ++j){
             int i1 = i - j;
             if(i1 < 0)
                 i1 = static_cast<int>(contourReal.size()) - i1;
-            if(contour[i1].flags & FLAGS::ADJACENT_BODY)
-                continue;
             auto& point1 = contourReal[i1];
             int i2 = i + j;
-            if(contour[i2].flags & FLAGS::ADJACENT_BODY)
-                continue;
             if(i2 >= contourReal.size())
                 i2 = i2 - static_cast<int>(contourReal.size());
             auto& point2 = contourReal[i2];
             double dist1 = cv::norm(point - point1);
-            if(dist1 < minThresh1)
-                continue;
+            //if(dist1 < minThresh1)
+                //continue;
             double dist2 = cv::norm(point - point2);
-            if(dist2 < minThresh1)
-                continue;
+            //if(dist2 < minThresh1)
+                //continue;
             double dist12 = cv::norm(point1 - point2);
-            if(dist12 > maxThresh2)
+            //if(dist12 > maxThresh2)
+                //continue;
+            if(dist12 > dist1)
+                continue;
+            if(dist12 > dist2)
                 continue;
             fingerInds.push_back(i);
             break;
         }
-    }*/
+    }
 }
 
 #endif /* border_hpp */
