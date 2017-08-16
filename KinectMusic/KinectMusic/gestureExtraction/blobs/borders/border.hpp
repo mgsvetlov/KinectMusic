@@ -270,13 +270,13 @@ void Border<TContainer,T>::computeAngles(){
 template<template<typename> class TContainer, typename T>
 void Border<TContainer,T>::findFingers(){
     static const double spaceCoeff(9./6400);
-    std::vector<cv::Point2f> contourReal;
+    std::vector<cv::Point3f> contourReal;
     contourReal.reserve(contour.size());
     for(auto& cell : contour){
-        if(cell.flags & FLAGS::ADJACENT_BODY)
-            continue;
-        contourReal.emplace_back(cell.x, cell.y);
-        //contourReal.emplace_back(cell.x * cell.val * spaceCoeff, cell.y * cell.val * spaceCoeff, cell.val);
+        //if(cell.flags & FLAGS::ADJACENT_BODY)
+            //continue;
+        //contourReal.emplace_back(cell.x, cell.y);
+        contourReal.emplace_back(cell.x * cell.val * spaceCoeff, cell.y * cell.val * spaceCoeff, cell.val);
     }
     contourReal.shrink_to_fit();
     /*auto& anglesData = angles3dPtr->getDataConst();
@@ -286,14 +286,13 @@ void Border<TContainer,T>::findFingers(){
     projPoints = Angles3d::projectPointsToPlane(contourReal, plane);*/
     
     
-    static int filterHalfSize(80);
-    if(contour.size() < filterHalfSize * 2)
+    static int filterMinHalfSize(30),filterMaxHalfSize(40);
+    if(contourReal.size() < filterMaxHalfSize * 2)
         return;
-    static double minThresh1(20.), maxThresh2(40.);
 
     for(int i = 0; i < contourReal.size(); ++i){
         auto& point = contourReal[i];
-        for(int j = 3; j < filterHalfSize; ++j){
+        for(int j = filterMinHalfSize; j < filterMaxHalfSize; ++j){
             int i1 = i - j;
             if(i1 < 0)
                 i1 = static_cast<int>(contourReal.size()) - i1;
@@ -302,18 +301,12 @@ void Border<TContainer,T>::findFingers(){
             if(i2 >= contourReal.size())
                 i2 = i2 - static_cast<int>(contourReal.size());
             auto& point2 = contourReal[i2];
-            double dist1 = cv::norm(point - point1);
-            //if(dist1 < minThresh1)
-                //continue;
-            double dist2 = cv::norm(point - point2);
-            //if(dist2 < minThresh1)
-                //continue;
-            double dist12 = cv::norm(point1 - point2);
-            //if(dist12 > maxThresh2)
-                //continue;
-            if(dist12 > dist1)
-                continue;
-            if(dist12 > dist2)
+            cv::Vec3f v1 = point1 - point;
+            cv::Vec3f v2 = point2 - point;
+            v1 = cv::normalize(v1);
+            v2 = cv::normalize(v2);
+            auto cosAngle = v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2];
+            if(cosAngle < 0.7)
                 continue;
             fingerInds.push_back(i);
             break;
