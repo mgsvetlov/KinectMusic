@@ -14,6 +14,7 @@
 #include "blob.hpp"
 #include "borders/border.hpp"
 #include "../params.h"
+#include "../convex3d/convex3d.h"
 
 
 template<template<typename> class  TContainer, typename T> class BlobExt : public Blob<TContainer,  T> {
@@ -32,6 +33,7 @@ private:
     const cv::Mat mat;
     std::unique_ptr<Border<TContainer, T>> borderPtr;
     cv::Point3i averagePoint = cv::Point3i(-1);
+    std::list<int> convexInds;
     
     static std::vector<std::pair<int,int>> neighbours;
    
@@ -130,6 +132,24 @@ template<template<typename> class  TContainer, typename T>
 void BlobExt<TContainer, T>::computeAngles(){
     if(borderPtr){
         borderPtr->computeAngles();
+    }
+    cv::Mat matBlob = cv::Mat_<uint16_t>::zeros(this->mat.size());
+    static int val = Params::getMaxKinectDepth();
+    matBlob  = cv::Scalar::all(val);
+    for(auto& cell : cells.All()) {
+        int ind = cell.ind;
+        uint16_t* p_mat = (uint16_t*)(matBlob.data) + ind;
+        *p_mat = cell.val;
+    }
+    int filterSize(mat.cols * 0.02);
+    int filterDepth(mat.cols * 0.1);
+    int coreHalfSize(1);
+    cv::Mat matDst = Convex3d::extractConvexities(matBlob, filterSize, filterDepth, coreHalfSize);
+    
+    uint16_t* p_mat = (uint16_t*)(matDst.data);
+    for(int i = 0; i < matDst.total(); ++i, ++p_mat){
+        if(*p_mat)
+            convexInds.push_back(i);
     }
     /*if( cells.Size() < 3){
      this->angle = 0.0f;
