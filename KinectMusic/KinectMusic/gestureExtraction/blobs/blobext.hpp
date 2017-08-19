@@ -133,18 +133,14 @@ void BlobExt<TContainer, T>::computeAngles(){
     if(borderPtr){
         borderPtr->computeAngles();
     }
-    cv::Mat matBlob = cv::Mat_<uint16_t>::zeros(this->mat.size());
-    static int val = Params::getMaxKinectDepth();
-    matBlob  = cv::Scalar::all(val);
+    std::list<int> inds;
     for(auto& cell : cells.All()) {
-        int ind = cell.ind;
-        uint16_t* p_mat = (uint16_t*)(matBlob.data) + ind;
-        *p_mat = cell.val;
+        inds.push_back(cell.ind);
     }
-    int filterSize(mat.cols * 0.02);
+    int filterSize(mat.cols * 0.01);
     int filterDepth(mat.cols * 0.1);
-    int coreHalfSize(1);
-    cv::Mat matDst = Convex3d::extractConvexities(matBlob, filterSize, filterDepth, coreHalfSize);
+    int coreHalfSize(2);
+    cv::Mat matDst = Convex3d::extractConvexities1(mat, inds, filterSize, filterDepth, coreHalfSize);
     
     uint16_t* p_mat = (uint16_t*)(matDst.data);
     for(int i = 0; i < matDst.total(); ++i, ++p_mat){
