@@ -111,7 +111,6 @@ void ProcessFrameData::createBlobsAndBorders(){
     BlobsFabrique<BlobPrim> blobsFabrique1(1, matDst);
     //auto& blobsClust = blobsFabrique1.getBlobs();
     //matConvex = BlobPrim::blobs2mat(blobsClust, matResized.size());
-    blobsFabrique1.checkConnectivity(matResized, frameData.averagedBodyPoint);
     //create blobs extended and borders
     frameData.averagedBodyPoint.x <<= Params::getBlobResizePow();
     frameData.averagedBodyPoint.y <<= Params::getBlobResizePow();
@@ -144,7 +143,7 @@ void ProcessFrameData::visualize(){
     if(Config::instance()->getIsVisualisation()){
         cv::Mat img;
         //cv::resize(matConvex, matConvex, mat.size());
-        Visualization::mat2img(mat, img);
+        Visualization::mat2img(matFilt, img);
         const auto& point = frameData.averagedBodyPoint;
         cv::circle(img, cv::Point(point.x , point.y), 5,  cv::Scalar(255, 0, 255), -1);
         Visualization::blobs2img( blobsExt, img, false);

@@ -129,30 +129,32 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
             col = 0;
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (color[0] * col, color[1] * col, color[2] * col), -1);
     }
-    const auto& contour = blob.borderPtr->contour;
+    //const auto& contour = blob.borderPtr->contour;
     /*for(const auto& cell : contour){
         cv::Scalar c = (cell.flags & FLAGS::ADJACENT_BODY) ? cv::Scalar (255.0f, 0.0f, 0) : cv::Scalar (0.0f, 0.0f, 255);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, c, -1);
     }*/
-    auto fingerInds = blob.borderPtr->fingerInds;
+    /*auto fingerInds = blob.borderPtr->fingerInds;
     for(auto ind : fingerInds){
         auto& cell = contour[ind];
         cv::Scalar c = (cell.flags & FLAGS::ADJACENT_BODY) ? cv::Scalar (255.0f, 0.0f, 0) : cv::Scalar (0.0f, 0.0f, 255);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, c, -1);
-    }
+    }*/
     for(auto ind : blob.convexInds){
         int x = ind % matImg.cols;
         int y = (ind - x) / matImg.cols;
         cv::circle(matImg, cv::Point(x, y), 1, cv::Scalar (255.0f, 0.0f, 255.0f), -1);
     }
-    const auto& anglesData = blob.borderPtr->angles3dPtr->getDataConst();
-    for(auto& d : anglesData){
-        auto& p = std::get<1>(d);
-        cv::circle(matImg, cv::Point(p.x, p.y), 5, cv::Scalar (0.0f, 127, 196), -1);
-        auto& pl = std::get<0>(d);
-        cv::Point p1 (p.x + pl.x * 40, p.y + pl.y * 40);
-        cv::circle(matImg, cv::Point(p1.x, p1.y), 5, cv::Scalar (255, 255, 0), -1);
-        cv::line(matImg, cv::Point(p.x, p.y), p1, cv::Scalar (255, 255, 0), 3);
+    if(blob.borderPtr){
+        const auto& anglesData = blob.borderPtr->angles3dPtr->getDataConst();
+        for(auto& d : anglesData){
+            auto& p = std::get<1>(d);
+            cv::circle(matImg, cv::Point(p.x, p.y), 5, cv::Scalar (0.0f, 127, 196), -1);
+            auto& pl = std::get<0>(d);
+            cv::Point p1 (p.x + pl.x * 40, p.y + pl.y * 40);
+            cv::circle(matImg, cv::Point(p1.x, p1.y), 5, cv::Scalar (255, 255, 0), -1);
+            cv::line(matImg, cv::Point(p.x, p.y), p1, cv::Scalar (255, 255, 0), 3);
+        }
     }
     /*auto& borderClusts = blob.borderPtr->borderClusts;
     for(auto& row : borderClusts){

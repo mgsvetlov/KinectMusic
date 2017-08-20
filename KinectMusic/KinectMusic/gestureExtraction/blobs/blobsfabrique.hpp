@@ -21,7 +21,6 @@ public:
     BlobsFabrique(int mode, cv::Mat mat, const std::list<int>& inds = std::list<int>());
     std::list<T>& getBlobs();
     cv::Point3i getAveragedBodyPoint();
-    void checkConnectivity(cv::Mat mat, const cv::Point3i& averagedBodyPoint);
     template<typename T1> std::list<T1>& constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt, const cv::Point3i& averagedBodyPoint);
 private:
     void blobsFabrique0();
@@ -121,48 +120,6 @@ cv::Point3i BlobsFabrique<T>::getAveragedBodyPoint(){
 }
 
 template<typename T>
-void BlobsFabrique<T>::checkConnectivity(cv::Mat mat, const cv::Point3i& averagedBodyPoint){
-    int averagedBodyPointInd = averagedBodyPoint.y * mat.cols + averagedBodyPoint.x;
-    auto mClone = mat.clone();
-    T blobBody (mClone, averagedBodyPointInd);
-    cv::Mat matBodyBlob = blobBody.blob2mat();
-    blobBody.computeBorderCells(matBodyBlob);
-    const auto& bodyBorderCont = blobBody.getBorderCellsConst().AllConst();
-    auto it = blobs.begin();
-    while(it != blobs.end()){
-        if(it->getCellsConst().Size() == 0){
-            it = blobs.erase(it);
-            continue;
-        }
-        int ind = it->getCellsConst().MinValCell()->ind;
-        auto mClone = mat.clone();
-        T blob (mClone, ind);
-        cv::Mat matBlob = blob.blob2mat();
-        blob.computeBorderCells(matBlob);
-        const auto& blobBorderCont = blob.getBorderCellsConst().AllConst();
-        int xyDist = INT_MAX;
-        for(const auto& cell : blobBorderCont){
-            for(const auto& cellBody : bodyBorderCont){
-                int dx = cell.x - cellBody.x;
-                int dy = cell.y - cellBody.y;
-                int dist = dx*dx + dy*dy;
-                if(dist < xyDist)
-                    xyDist = dist;
-            }
-        }
-         int depthDist = blob.getCellsConst().MinValCell()->val - blobBody.getCellsConst().MinValCell()->val;
-        
-        if((xyDist > Params::getBlobConnectivityXYThresh1() && depthDist > Params::getBlobConnectivityDepthThresh())
-           || xyDist > Params::getBlobConnectivityXYThresh2()
-           ){
-            it = blobs.erase(it);
-            continue;
-        }
-        ++it;
-    }
-}
-
-template<typename T>
 template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt, const cv::Point3i& averagedBodyPoint){
     std::vector<int> inds;
     for(auto& blob  : blobs) {
@@ -181,14 +138,11 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
         auto& blobExt = blobsExt.back();
         if( blobExt.cells.Size() == 0
            ||blobExt.cells.MaxValCell()->val < Params::getBlobExtMaxDepthThresh()
-           || blobExt.CreateBorder() == 0
-           /*|| (blobExt.borderPtr->bodyAdjacentCount != 0
-               && cv::norm(blobExt.AveragePoint()-blobExt.borderPtr->adjacentAveragePoint) < Params::getBlobExtDistToAdjacentBorderThresh() )*/
+           || blobExt.FindFingerCells() < 10
            ) {
             blobsExt.pop_back();
             continue;
         }
-        blobExt.computeAngles();
     }
     return blobsExt;
 }

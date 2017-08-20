@@ -22,12 +22,11 @@ template<template<typename> class  TContainer, typename T> class BlobExt : publi
 public:
     BlobExt() = delete;
     BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd);
-    
+    size_t FindFingerCells();
     size_t CreateBorder();
     std::unique_ptr<Border<TContainer, T>>& getBorderPtr() { return borderPtr; }
     const cv::Point3i& AveragePoint();
 private:
-    void computeAngles();
 
 private:
     const cv::Mat mat;
@@ -129,24 +128,23 @@ const cv::Point3i& BlobExt<TContainer,T>::AveragePoint() {
 }
 
 template<template<typename> class  TContainer, typename T>
-void BlobExt<TContainer, T>::computeAngles(){
-    if(borderPtr){
-        borderPtr->computeAngles();
-    }
+size_t BlobExt<TContainer, T>::FindFingerCells(){
     std::list<int> inds;
     for(auto& cell : cells.All()) {
         inds.push_back(cell.ind);
     }
-    int filterSize(mat.cols * 0.01);
-    int filterDepth(mat.cols * 0.1);
-    int coreHalfSize(2);
-    cv::Mat matDst = Convex3d::extractConvexities1(mat, inds, filterSize, filterDepth, coreHalfSize);
+    int filterSize(mat.cols * 0.015); //0.01
+    int filterDepth(mat.cols * 0.05); //0.1
+    int coreHalfSize(1); //2
+    int countFalsePercent(37);
+    cv::Mat matDst = Convex3d::extractConvexities(mat, filterSize, filterDepth, coreHalfSize, countFalsePercent, inds);
     
     uint16_t* p_mat = (uint16_t*)(matDst.data);
     for(int i = 0; i < matDst.total(); ++i, ++p_mat){
         if(*p_mat)
             convexInds.push_back(i);
     }
+    return convexInds.size();
     /*if( cells.Size() < 3){
      this->angle = 0.0f;
      return;
