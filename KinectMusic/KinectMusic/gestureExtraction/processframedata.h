@@ -36,6 +36,7 @@ public:
 
 private:
     void filterFar();
+    void markEdges();
     void resize();
     void createBlobsAndBorders();
     void tracking();
@@ -46,6 +47,7 @@ private:
      static pthread_mutex_t visualisation_mutex;
     
     cv::Mat mat;
+    //cv::Mat matConvex;
     FrameData frameData;
     cv::Mat matFilt;
     cv::Mat matResized;

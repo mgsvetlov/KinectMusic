@@ -26,8 +26,10 @@ public:
     static int getConvex3dFilterSize() { return CONVEX3D_FILTER_SIZE; }
     static int getConvex3dFilterDepth() { return CONVEX3D_FILTER_DEPTH; }
     static int getConvex3dCoreHalfSize() { return CONVEX3D_CORE_HALF_SIZE; }
+    static int getConvex3dCountFalsePercent() { return CONVEX3D_COUNT_FALSE_PERCENT; }
     static int getBlobClustXYThresh() {return BLOB_CLUST_XY_THRESH; }
      static int getBlobClustDepthThresh() {return BLOB_CLUST_XY_THRESH; }
+    static int getBlobClustMinSize() {return BLOB_CLUST_MIN_SIZE; }
     static int getBlobConnectivityXYThresh1() {return BLOB_CONNECTIVITY_XY_THRESH1; }
     static int getBlobConnectivityXYThresh2() {return BLOB_CONNECTIVITY_XY_THRESH2; }
     static int getBlobConnectivityDepthThresh() {return BLOB_CONNECTIVITY_DEPTH_THRESH; }
@@ -53,8 +55,10 @@ private:
     static int CONVEX3D_FILTER_SIZE;
     static int CONVEX3D_FILTER_DEPTH;
     static int CONVEX3D_CORE_HALF_SIZE;
+    static int CONVEX3D_COUNT_FALSE_PERCENT;
     static int BLOB_CLUST_XY_THRESH;
     static int BLOB_CLUST_DEPTH_THRESH;
+    static int BLOB_CLUST_MIN_SIZE;
     static int BLOB_CONNECTIVITY_XY_THRESH1;
     static int BLOB_CONNECTIVITY_XY_THRESH2;
     static int BLOB_CONNECTIVITY_DEPTH_THRESH;

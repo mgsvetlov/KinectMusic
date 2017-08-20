@@ -105,7 +105,8 @@ void BlobsFabrique<T>::blobsFabrique1(){
         blobs.emplace_back(mat, ind);
         continue;
     }
-    BlobsClust<T> blobsClust(blobs, Params::getBlobClustXYThresh(), Params::getBlobClustDepthThresh());
+    BlobsClust<T> blobsClust(blobs, Params::getBlobClustXYThresh(), Params::getBlobClustDepthThresh(), Params::getBlobClustMinSize());
+    
     blobs = std::move(blobsClust.getBlobsClust());
 }
 

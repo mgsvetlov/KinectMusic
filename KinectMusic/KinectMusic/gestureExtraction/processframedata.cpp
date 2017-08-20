@@ -25,6 +25,7 @@ frameData(frameNum)
     if(!Params::getIsInit())
         Params::Init();
     filterFar();
+    markEdges();
     resize();
     createBlobsAndBorders();
     tracking();
@@ -38,12 +39,51 @@ void ProcessFrameData::filterFar(){
     static const int maxKinectDepth(Params::getMaxKinectDepth());
     static const int minKinectDepth(Params::getMinKinectDepth());
     matFilt = mat.clone();
-    uint16_t* p_mat = (uint16_t*)(matFilt.data);
-    for(size_t i = 0; i < matFilt.total(); i++, p_mat++)
+    uint16_t* p_matFilt = (uint16_t*)(matFilt.data);
+    for(size_t i = 0; i < matFilt.total(); i++, p_matFilt++)
     {
-        uint16_t val = *p_mat;
+        uint16_t val = *p_matFilt;
         if( val > maxKinectDepth || val < minKinectDepth)
-            *p_mat = maxKinectDepth;
+            *p_matFilt = maxKinectDepth;
+    }
+}
+
+void ProcessFrameData::markEdges(){
+    uint16_t* p_mat = (uint16_t*)(mat.data);
+    uint16_t* p_matFilt = (uint16_t*)(matFilt.data);
+    uint16_t* p_mat1 = (uint16_t*)(mat.data) + mat.total() - 1;
+    uint16_t* p_matFilt1 = (uint16_t*)(matFilt.data) + matFilt.total() - 1;
+    for(int j = 0; j < mat.rows; ++j){
+        for(int i = 0; i < mat.cols; ++i){
+            if(*(p_mat +i))
+                break;
+            *(p_matFilt + i) = 0;
+        }
+        p_mat += mat.cols;
+        p_matFilt += mat.cols;
+        for(int i = 0; i < mat.cols; ++i){
+            if(*(p_mat1 - i))
+                break;
+            *(p_matFilt1 - i) = 0;
+        }
+        p_mat1 -= mat.cols;
+        p_matFilt1 -= mat.cols;
+    }
+    for(int i = 0; i < mat.cols; ++i){
+        uint16_t* p_mat = (uint16_t*)(mat.data) + i;
+        uint16_t* p_matFilt = (uint16_t*)(matFilt.data) + i;
+        for(int j = 0; j < mat.rows; ++j, p_mat += mat.cols, p_matFilt += mat.cols){
+            if(*p_mat)
+                break;
+            *p_matFilt = 0;
+        }
+        p_mat = (uint16_t*)(mat.data) + mat.total() - 1 - i;
+        p_matFilt = (uint16_t*)(matFilt.data) + mat.total() - 1 - i;
+        for(int j = 0; j < mat.rows; ++j, p_mat -= mat.cols, p_matFilt -= mat.cols){
+            if(*p_mat)
+                break;
+            *p_matFilt = 0;
+        }
     }
 }
 
@@ -54,6 +94,7 @@ void ProcessFrameData::resize(){
 }
 
 void ProcessFrameData::createBlobsAndBorders(){
+    //matConvex = matResized.clone();
     //extract all the blobs up to person
     BlobsFabrique<BlobPrim> blobsFabrique(0, matResized);
     auto& blobs = blobsFabrique.getBlobs();
@@ -61,9 +102,15 @@ void ProcessFrameData::createBlobsAndBorders(){
         return;
     frameData.averagedBodyPoint = blobsFabrique.getAveragedBodyPoint();
     //extract 3d convexes
-    cv::Mat matBlobsPrim = BlobPrim::blobs2mat(blobs, matResized.size());
-    cv::Mat matDst = Convex3d::extractConvexities(matBlobsPrim, Params::getConvex3dFilterSize(), Params::getConvex3dFilterDepth(), Params::getConvex3dCoreHalfSize());
+    cv::Mat matDst = Convex3d::extractConvexities(matResized, Params::getConvex3dFilterSize(), Params::getConvex3dFilterDepth(), Params::getConvex3dCoreHalfSize(), Params::getConvex3dCountFalsePercent());
+    uint16_t* p_mat = (uint16_t*)(matDst.data);
+    for(int i = 0; i < matDst.total(); ++i, ++p_mat){
+        if(*p_mat > frameData.averagedBodyPoint.z)
+            *p_mat = 0;
+    }
     BlobsFabrique<BlobPrim> blobsFabrique1(1, matDst);
+    //auto& blobsClust = blobsFabrique1.getBlobs();
+    //matConvex = BlobPrim::blobs2mat(blobsClust, matResized.size());
     blobsFabrique1.checkConnectivity(matResized, frameData.averagedBodyPoint);
     //create blobs extended and borders
     frameData.averagedBodyPoint.x <<= Params::getBlobResizePow();
@@ -96,6 +143,7 @@ void ProcessFrameData::shareFrameData(){
 void ProcessFrameData::visualize(){
     if(Config::instance()->getIsVisualisation()){
         cv::Mat img;
+        //cv::resize(matConvex, matConvex, mat.size());
         Visualization::mat2img(mat, img);
         const auto& point = frameData.averagedBodyPoint;
         cv::circle(img, cv::Point(point.x , point.y), 5,  cv::Scalar(255, 0, 255), -1);

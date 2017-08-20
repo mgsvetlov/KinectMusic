@@ -13,7 +13,7 @@
 
 template<typename T> class BlobsClust {
 public:
-    BlobsClust( std::list<T>& blobs, int xyThresh, int depthThresh);
+    BlobsClust( std::list<T>& blobs, int xyThresh, int depthThresh, int blobMinSize = -1);
     std::list<T>& getBlobsClust();
 private:
     bool isBlobNear(const T& blob1, const T& blob2);
@@ -25,7 +25,7 @@ private:
 };
 
 
-template<typename T> BlobsClust<T>::BlobsClust( std::list<T>& blobs, int xyThresh, int depthThresh) :
+template<typename T> BlobsClust<T>::BlobsClust( std::list<T>& blobs, int xyThresh, int depthThresh, int blobMinSize) :
 blobs (blobs),
 xyThresh(xyThresh),
 depthThresh(depthThresh)
@@ -65,6 +65,19 @@ depthThresh(depthThresh)
             }
             it++;
         }
+    }
+    
+    //filter small blobs
+    if(blobMinSize == -1)
+        return;
+    
+    auto it = blobsClust.begin();
+    while(it != blobsClust.end()){
+        if(it->getCellsConst().Size() < blobMinSize){
+            it = blobsClust.erase(it);
+            continue;
+        }
+        ++it;
     }
 }
 
