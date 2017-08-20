@@ -140,10 +140,13 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
         cv::Scalar c = (cell.flags & FLAGS::ADJACENT_BODY) ? cv::Scalar (255.0f, 0.0f, 0) : cv::Scalar (0.0f, 0.0f, 255);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, c, -1);
     }*/
-    for(auto ind : blob.convexInds){
+    for(auto pair : blob.convexInds){
+        if(pair.second <= 1)
+            continue;
+        auto ind = pair.first;
         int x = ind % matImg.cols;
         int y = (ind - x) / matImg.cols;
-        cv::circle(matImg, cv::Point(x, y), 1, cv::Scalar (255.0f, 0.0f, 255.0f), -1);
+        cv::circle(matImg, cv::Point(x, y), 1, cv::Scalar (0, 0.0f, pair.second * 16), -1);
     }
     if(blob.borderPtr){
         const auto& anglesData = blob.borderPtr->angles3dPtr->getDataConst();

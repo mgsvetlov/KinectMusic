@@ -138,7 +138,7 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
         auto& blobExt = blobsExt.back();
         if( blobExt.cells.Size() == 0
            ||blobExt.cells.MaxValCell()->val < Params::getBlobExtMaxDepthThresh()
-           || blobExt.FindFingerCells() < 10
+           || blobExt.FindFingerCells() < 100
            ) {
             blobsExt.pop_back();
             continue;

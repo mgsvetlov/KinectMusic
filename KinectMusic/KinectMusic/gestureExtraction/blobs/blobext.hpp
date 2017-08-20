@@ -32,7 +32,7 @@ private:
     const cv::Mat mat;
     std::unique_ptr<Border<TContainer, T>> borderPtr;
     cv::Point3i averagePoint = cv::Point3i(-1);
-    std::list<int> convexInds;
+    std::list<std::pair<int, int>> convexInds;
     
     static std::vector<std::pair<int,int>> neighbours;
    
@@ -133,16 +133,16 @@ size_t BlobExt<TContainer, T>::FindFingerCells(){
     for(auto& cell : cells.All()) {
         inds.push_back(cell.ind);
     }
-    int filterSize(mat.cols * 0.015); //0.01
-    int filterDepth(mat.cols * 0.05); //0.1
-    int coreHalfSize(1); //2
+    int filterSize(mat.cols * 0.02); //0.01
+    int filterDepth(64); //0.1
+    int coreHalfSize(2); //2
     int countFalsePercent(37);
-    cv::Mat matDst = Convex3d::extractConvexities(mat, filterSize, filterDepth, coreHalfSize, countFalsePercent, inds);
+    cv::Mat matDst = Convex3d::extractConvexities(mat, filterSize, filterDepth, coreHalfSize, countFalsePercent, true, inds);
     
     uint16_t* p_mat = (uint16_t*)(matDst.data);
     for(int i = 0; i < matDst.total(); ++i, ++p_mat){
         if(*p_mat)
-            convexInds.push_back(i);
+            convexInds.emplace_back(i, *p_mat);
     }
     return convexInds.size();
     /*if( cells.Size() < 3){

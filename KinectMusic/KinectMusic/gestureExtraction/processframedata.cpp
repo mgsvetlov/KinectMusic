@@ -102,7 +102,7 @@ void ProcessFrameData::createBlobsAndBorders(){
         return;
     frameData.averagedBodyPoint = blobsFabrique.getAveragedBodyPoint();
     //extract 3d convexes
-    cv::Mat matDst = Convex3d::extractConvexities(matResized, Params::getConvex3dFilterSize(), Params::getConvex3dFilterDepth(), Params::getConvex3dCoreHalfSize(), Params::getConvex3dCountFalsePercent());
+    cv::Mat matDst = Convex3d::extractConvexities(matResized, Params::getConvex3dFilterSize(), Params::getConvex3dFilterDepth(), Params::getConvex3dCoreHalfSize(), Params::getConvex3dCountFalsePercent(), false);
     uint16_t* p_mat = (uint16_t*)(matDst.data);
     for(int i = 0; i < matDst.total(); ++i, ++p_mat){
         if(*p_mat > frameData.averagedBodyPoint.z)
