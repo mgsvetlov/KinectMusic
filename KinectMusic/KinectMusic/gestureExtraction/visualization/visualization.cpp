@@ -140,15 +140,12 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
         cv::Scalar c = (cell.flags & FLAGS::ADJACENT_BODY) ? cv::Scalar (255.0f, 0.0f, 0) : cv::Scalar (0.0f, 0.0f, 255);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, c, -1);
     }*/
-    for(auto pair : blob.convexInds){
-        if(pair.second <= 1)
-            continue;
-        auto ind = pair.first;
+    for(auto ind : blob.featureIndsFine){
         int x = ind % matImg.cols;
         int y = (ind - x) / matImg.cols;
-        cv::circle(matImg, cv::Point(x, y), 1, cv::Scalar (0, 0.0f, pair.second * 16), -1);
+        cv::circle(matImg, cv::Point(x, y), 1, cv::Scalar (0, 0.0f, 255), -1);
     }
-    if(blob.borderPtr){
+    /*if(blob.borderPtr){
         const auto& anglesData = blob.borderPtr->angles3dPtr->getDataConst();
         for(auto& d : anglesData){
             auto& p = std::get<1>(d);
@@ -158,7 +155,7 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
             cv::circle(matImg, cv::Point(p1.x, p1.y), 5, cv::Scalar (255, 255, 0), -1);
             cv::line(matImg, cv::Point(p.x, p.y), p1, cv::Scalar (255, 255, 0), 3);
         }
-    }
+    }*/
     /*auto& borderClusts = blob.borderPtr->borderClusts;
     for(auto& row : borderClusts){
         for(auto& clust : row.clusts){

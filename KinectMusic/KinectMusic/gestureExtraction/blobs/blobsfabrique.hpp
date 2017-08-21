@@ -127,22 +127,35 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
         if(ind != NO_DATA_VALUE)
             inds.push_back(ind);
     }
-    const uint16_t* const p_mat = (uint16_t*)(origMat.data);
-    std::sort(inds.begin(), inds.end(),
-              [p_mat](int ind1, int ind2)
-              {return *(p_mat + ind1) < *(p_mat + ind2);});
     int blobInd(0);
-    cv::Mat origMatClone = origMat.clone();
     for(auto& ind : inds) {
-        blobsExt.emplace_back(origMat, origMatClone, ind, blobInd++);
+        blobsExt.emplace_back(origMat, ind, blobInd++);
         auto& blobExt = blobsExt.back();
         if( blobExt.cells.Size() == 0
            ||blobExt.cells.MaxValCell()->val < Params::getBlobExtMaxDepthThresh()
-           || blobExt.FindFingerCells() < 100
            ) {
             blobsExt.pop_back();
             continue;
         }
+        std::list<int> cellInds;
+        for(auto& cell : blobExt.cells.All()) {
+            cellInds.push_back(cell.ind);
+        }
+        blobExt.getFeatureIndsCoarse() = blobExt.FindFeatureInds(cellInds,
+            Params::GET_BLOB_EXT_CONVEX3D_FILTER_SIZE_COARSE(),
+            Params::GET_BLOB_EXT_CONVEX3D_FILTER_DEPTH_COARSE(),
+            Params::GET_BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_COARSE(),
+            Params::GET_BLOB_EXT_CONVEX3D_COUNT_FALSE_PERCENT_COARSE());
+        
+        if(blobExt.getFeatureIndsCoarse().size() < Params::GET_BLOB_EXT_FEATURE_INDS_COARSE_MIN_SIZE()){
+            blobsExt.pop_back();
+            continue;
+        }
+        blobExt.getFeatureIndsFine() = blobExt.FindFeatureInds(blobExt.getFeatureIndsCoarse(),
+            Params::GET_BLOB_EXT_CONVEX3D_FILTER_SIZE_FINE(),
+            Params::GET_BLOB_EXT_CONVEX3D_FILTER_DEPTH_FINE(),
+            Params::GET_BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_FINE(),
+            Params::GET_BLOB_EXT_CONVEX3D_COUNT_FALSE_PERCENT_FINE());
     }
     return blobsExt;
 }

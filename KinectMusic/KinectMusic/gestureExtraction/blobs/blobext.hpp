@@ -21,18 +21,21 @@ template<template<typename> class  TContainer, typename T> class BlobExt : publi
     using Blob<TContainer,T>::cells;
 public:
     BlobExt() = delete;
-    BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd);
-    size_t FindFingerCells();
-    size_t CreateBorder();
-    std::unique_ptr<Border<TContainer, T>>& getBorderPtr() { return borderPtr; }
+    BlobExt(const cv::Mat mat, int ind, int blobInd);
+    std::list<int> FindFeatureInds(const std::list<int>& inds, int filterSize, int filterDepth, int coreHalfSize, int countFalsePercent);
+    //size_t CreateBorder();
+    //std::unique_ptr<Border<TContainer, T>>& getBorderPtr() { return borderPtr; }
     const cv::Point3i& AveragePoint();
+    std::list<int>& getFeatureIndsCoarse(){return featureIndsCoarse;}
+    std::list<int>& getFeatureIndsFine(){return featureIndsFine;}
 private:
 
 private:
     const cv::Mat mat;
-    std::unique_ptr<Border<TContainer, T>> borderPtr;
+    //std::unique_ptr<Border<TContainer, T>> borderPtr;
     cv::Point3i averagePoint = cv::Point3i(-1);
-    std::list<std::pair<int, int>> convexInds;
+    std::list<int> featureIndsCoarse;
+    std::list<int> featureIndsFine;
     
     static std::vector<std::pair<int,int>> neighbours;
    
@@ -49,9 +52,10 @@ std::vector<std::pair<int,int>> BlobExt<TContainer, T>::neighbours {
 
 //blob extended
 template<template<typename> class  TContainer, typename T>
-BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, cv::Mat matClone, int ind, int blobInd) :
+BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, int ind, int blobInd) :
 mat(mat)
 {
+    cv::Mat matClone = mat.clone();
     const uint16_t maskValue = 65535 - blobInd;
     int w = matClone.cols;
     int h = matClone.rows;
@@ -112,11 +116,12 @@ mat(mat)
 }
 
 
+/*
 template<template<typename> class  TContainer,  typename T>
 size_t BlobExt<TContainer, T>::CreateBorder() {
     borderPtr = std::unique_ptr<Border<TContainer, T>>(new Border<TContainer, T>(mat, cells));
     return borderPtr->getContour().size();
-}
+}*/
 
 
 template<template<typename> class TContainer, typename T>
@@ -128,36 +133,15 @@ const cv::Point3i& BlobExt<TContainer,T>::AveragePoint() {
 }
 
 template<template<typename> class  TContainer, typename T>
-size_t BlobExt<TContainer, T>::FindFingerCells(){
-    std::list<int> inds;
-    for(auto& cell : cells.All()) {
-        inds.push_back(cell.ind);
-    }
-    int filterSize(mat.cols * 0.02); //0.01
-    int filterDepth(64); //0.1
-    int coreHalfSize(2); //2
-    int countFalsePercent(37);
+std::list<int> BlobExt<TContainer, T>::FindFeatureInds(const std::list<int>& inds, int filterSize, int filterDepth, int coreHalfSize, int countFalsePercent){
+    std::list<int> featureInds;
     cv::Mat matDst = Convex3d::extractConvexities(mat, filterSize, filterDepth, coreHalfSize, countFalsePercent, true, inds);
-    
     uint16_t* p_mat = (uint16_t*)(matDst.data);
     for(int i = 0; i < matDst.total(); ++i, ++p_mat){
         if(*p_mat)
-            convexInds.emplace_back(i, *p_mat);
+            featureInds.push_back(i);
     }
-    return convexInds.size();
-    /*if( cells.Size() < 3){
-     this->angle = 0.0f;
-     return;
-     }
-     float x(0.0), y(0.0), z(0.0), w(0.0);
-     PclPlane::fitPlane(*this, x, y, z, w);
-     float angle = std::abs(z);
-     float norm = sqrt(y*y + z*z);
-     if( norm != 0.0f)
-     angle /= norm;
-     if(z * y < 0)
-     angle *= -1;
-     this->angle = angle * 100.f;*/
+    return featureInds;
 }
 
 
