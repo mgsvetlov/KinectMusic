@@ -15,6 +15,7 @@
 #include "borders/border.hpp"
 #include "../params.h"
 #include "../convex3d/convex3d.h"
+#include "../angles3d/angles3d.h"
 
 
 template<template<typename> class  TContainer, typename T> class BlobExt : public Blob<TContainer,  T> {
@@ -23,6 +24,7 @@ public:
     BlobExt() = delete;
     BlobExt(const cv::Mat mat, int ind, int blobInd);
     std::list<int> FindFeatureInds(const std::list<int>& inds, int filterSize, int filterDepth, int coreHalfSize, int countFalsePercent);
+    void ComputeAngle();
     //size_t CreateBorder();
     //std::unique_ptr<Border<TContainer, T>>& getBorderPtr() { return borderPtr; }
     const cv::Point3i& AveragePoint();
@@ -36,6 +38,7 @@ private:
     cv::Point3i averagePoint = cv::Point3i(-1);
     std::list<int> featureIndsCoarse;
     std::list<int> featureIndsFine;
+    std::unique_ptr<Angles3d> angles3dPtr;
     
     static std::vector<std::pair<int,int>> neighbours;
    
@@ -142,6 +145,19 @@ std::list<int> BlobExt<TContainer, T>::FindFeatureInds(const std::list<int>& ind
             featureInds.push_back(i);
     }
     return featureInds;
+}
+
+template<template<typename> class  TContainer, typename T>
+void BlobExt<TContainer, T>::ComputeAngle(){
+    std::list<cv::Point3i> points;
+    for(auto ind : featureIndsFine){
+        int x = ind % mat.cols;
+        int y = (ind - x ) / mat.cols;
+        int z = *((uint16_t*)(mat.data) + ind);
+        points.emplace_back(x, y, z);
+    }
+    angles3dPtr = std::unique_ptr<Angles3d>(new Angles3d(points));
+ 
 }
 
 
