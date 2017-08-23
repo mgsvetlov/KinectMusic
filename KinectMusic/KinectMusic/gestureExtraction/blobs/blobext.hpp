@@ -40,6 +40,8 @@ private:
     std::list<int> featureIndsFine;
     std::unique_ptr<Angles3d> angles3dPtr;
     
+    bool testFeature;
+    
     static std::vector<std::pair<int,int>> neighbours;
    
     template<typename U>
@@ -157,7 +159,25 @@ void BlobExt<TContainer, T>::ComputeAngle(){
         points.emplace_back(x, y, z);
     }
     angles3dPtr = std::unique_ptr<Angles3d>(new Angles3d(points));
- 
+    const auto& anglesData = angles3dPtr->getDataConst();
+    if(anglesData.empty())
+        return;
+    const auto& plane = std::get<0>(anglesData.front());
+    const auto& point = std::get<1>(anglesData.front());
+    int count1(0), count2(0);
+    for(const auto& cell : cells.AllConst()){
+        int x = cell.x;
+        int y = cell.y;
+        int z = cell.val;
+        if(abs(x - point.x) > 50 || abs(y - point.y) > 50|| abs(z - point.z) > 30)
+            continue;
+        float crossZ = -(plane.w + plane.x*x + plane.y*y) / static_cast<float>(plane.z);
+        if(crossZ < z)
+            ++count1;
+        else
+            ++count2;
+    }
+    testFeature = (count1  < count2) ? true : false;
 }
 
 
