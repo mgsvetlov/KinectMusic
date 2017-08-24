@@ -25,7 +25,7 @@ frameData(frameNum)
     if(!Params::getIsInit())
         Params::Init();
     filterFar();
-    markEdges();
+    //markEdges();
     resize();
     createBlobsAndBorders();
     tracking();
@@ -147,7 +147,7 @@ void ProcessFrameData::visualize(){
         const auto& point = frameData.averagedBodyPoint;
         cv::circle(img, cv::Point(point.x , point.y), 5,  cv::Scalar(255, 0, 255), -1);
         Visualization::blobs2img( blobsExt, img, false);
-        Visualization::tracks2img(Track::getTracksConst(), img);
+        //Visualization::tracks2img(Track::getTracksConst(), img);
         //Visualization::gestures2img(GestureFabrique::getGestures(), img);
         
         cv::flip(img, img, 1);

@@ -156,7 +156,7 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
             Params::GET_BLOB_EXT_CONVEX3D_FILTER_DEPTH_FINE(),
             Params::GET_BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_FINE(),
             Params::GET_BLOB_EXT_CONVEX3D_COUNT_FALSE_PERCENT_FINE());
-        blobExt.ComputeAngle();
+        //blobExt.ComputeAngle();
     }
     return blobsExt;
 }
