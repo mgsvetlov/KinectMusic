@@ -76,7 +76,7 @@ cv::Mat Convex3d::extractConvexities1(cv::Mat mat, int filt_size, int filt_depth
         int y = (ind - x) / mat.cols;
         uint16_t val = *((uint16_t*)(mat.data) + ind);
         if(val){
-            int filt_size_ = sqrt(static_cast<double>(Params::getMaxKinectDepth()) /val)* filt_size;
+            int filt_size_ = /*sqrt(static_cast<double>(Params::getMaxKinectDepth()) /val)* */filt_size;
             int count(0);
             for(size_t j = 0; j  < (neighbours.size() >> 1); j +=2){
                 std::vector<size_t> neighbInds { j, j + (neighbours.size() >> 1) };

@@ -145,7 +145,7 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
     for(int i = 0; i < matDst.total(); ++i, ++p_mat){
         if(!*p_mat)
             continue;
-        blobsFingers.emplace_back(mat, i, 40, 15);
+        blobsFingers.emplace_back(mat, i, 40, 10);
         auto& blobFingers = blobsFingers.back();
         auto& cellsFing = blobFingers.getCellsConst();
         std::list<int> inds1;
@@ -154,8 +154,8 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
             inds1.push_back(cell.ind);
         }
         
-        Convex3d::extractConvexities1(mat, 1, filterDepth, 1, inds1);
-        if(inds.size() < (cellsFing.Size() >> 1)){
+        Convex3d::extractConvexities1(mat, 1, filterDepth, 2, inds1);
+        if(inds1.size() < (cellsFing.Size() >> 2)){
             blobsFingers.pop_back();
             continue;
         }
@@ -182,7 +182,8 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
                 break;
             }
         }
-    }    
+    }
+    blobsFingers.sort([](const BlobExt<TContainer,T>& bl1, const BlobExt<TContainer,T>& bl2){return bl1.getCellsConst().MinValCell()->x < bl2.getCellsConst().MinValCell()->x;});
 }
 
 template<template<typename> class  TContainer, typename T>
