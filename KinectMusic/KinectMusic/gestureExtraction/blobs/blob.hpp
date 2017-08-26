@@ -26,7 +26,7 @@ template<template<typename> class TContainer, typename T>
 class Blob {
 public:
     Blob();
-    Blob(cv::Mat mat, int ind);
+    Blob(cv::Mat mat, int ind, size_t maxNeighbDiff = Params::getMaxNeighbDiffCoarse());
     
     Cells<TContainer,T>& getCells() {return cells;}
     const Cells<TContainer,T>& getCellsConst() const {return cells;}
@@ -61,7 +61,7 @@ Blob<TContainer, T>::Blob()
 {}
 
 template<template<typename> class TContainer, typename T>
-Blob<TContainer,T>::Blob(cv::Mat mat, int ind) :
+Blob<TContainer,T>::Blob(cv::Mat mat, int ind, size_t maxNeighbDiff) :
 matSize(mat.size())
 {
     cells.All().reserve(mat.total());
@@ -84,7 +84,7 @@ matSize(mat.size())
                 continue;
             int indNeighb = yNeighb * w + xNeighb;
             uint16_t valNeighb =  *(p_mat + indNeighb);
-            if(valNeighb >= Params::getMaxKinectValue() || valNeighb == 0 || abs(valNeighb-val) >= Params::getMaxHeighbDiffCoarse())
+            if(valNeighb >= Params::getMaxKinectValue() || valNeighb == 0 || abs(valNeighb-val) >= maxNeighbDiff)
                 continue;
             *(p_mat + indNeighb) = Params::getMaxKinectValue();
             cells.AddCell(xNeighb, yNeighb, indNeighb, valNeighb);
@@ -97,7 +97,7 @@ int Blob<TContainer,T>::indOriginNearest(cv::Mat originalMat) const{
     int ind = cells.MinValCell()->ind;
     int x = ind % this->matSize.width;
     int y = (ind-x) /this->matSize.width;
-    static const int resizePow(Params::getBlobResizePow());
+    static const int resizePow = log2(originalMat.cols/this->matSize.width);
     x <<= resizePow;
     y <<= resizePow;
     

@@ -47,10 +47,10 @@ private:
      static pthread_mutex_t visualisation_mutex;
     
     cv::Mat mat;
-    //cv::Mat matConvex;
     FrameData frameData;
     cv::Mat matFilt;
     cv::Mat matResized;
+    cv::Mat matResized1;
     std::list<BlobFinal> blobsExt;
     
     friend class Visualization;

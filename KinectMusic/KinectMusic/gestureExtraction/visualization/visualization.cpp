@@ -140,10 +140,19 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
         cv::Scalar c = (cell.flags & FLAGS::ADJACENT_BODY) ? cv::Scalar (255.0f, 0.0f, 0) : cv::Scalar (0.0f, 0.0f, 255);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, c, -1);
     }*/
-    for(auto ind : blob.featureIndsFine){
-        int x = ind % matImg.cols;
-        int y = (ind - x) / matImg.cols;
-        cv::circle(matImg, cv::Point(x, y), 1, cv::Scalar (0, 0.0f, 255), -1);
+    int fingerCount(0);
+    for(const auto& blob : blob.blobsFingers){
+        int rem = fingerCount % 6;
+        cv::Scalar color = rem == 0 ? cv::Scalar (255, 0, 0) :
+        rem == 1 ? cv::Scalar (0, 255, 0) :
+        rem == 2 ? cv::Scalar (0, 0, 255) :
+        rem == 3 ? cv::Scalar (255, 255, 0) :
+        rem == 4 ? cv::Scalar (255, 0, 255) :
+        cv::Scalar (0, 255, 255);
+        for(const auto& cell : blob.cells.AllConst()){
+            cv::circle(matImg, cv::Point(cell.x, cell.y), 2, color, -1);
+        }
+        ++fingerCount;
     }
     if(blob.angles3dPtr){
         const auto& anglesData = blob.angles3dPtr->getDataConst();

@@ -16,28 +16,27 @@
 #include "../params.h"
 #include "../convex3d/convex3d.h"
 #include "../angles3d/angles3d.h"
-
+#include "blobsfabrique.hpp"
 
 template<template<typename> class  TContainer, typename T> class BlobExt : public Blob<TContainer,  T> {
     using Blob<TContainer,T>::cells;
 public:
     BlobExt() = delete;
-    BlobExt(const cv::Mat mat, int ind, int blobInd);
-    std::list<int> FindFeatureInds(const std::list<int>& inds, int filterSize, int filterDepth, int coreHalfSize, int countFalsePercent);
+    BlobExt(const cv::Mat mat, int ind, size_t maxNeighbDiff = Params::getMaxNeighbDiffCoarse(), int maxCount = -1, int maxDepthRange = -1);
+    void CreateBlobsFingers();
     void ComputeAngle();
     //size_t CreateBorder();
     //std::unique_ptr<Border<TContainer, T>>& getBorderPtr() { return borderPtr; }
     const cv::Point3i& AveragePoint();
-    std::list<int>& getFeatureIndsCoarse(){return featureIndsCoarse;}
-    std::list<int>& getFeatureIndsFine(){return featureIndsFine;}
+    void Enlarge(int width);
 private:
 
 private:
     const cv::Mat mat;
+    cv::Mat matBlob;
     //std::unique_ptr<Border<TContainer, T>> borderPtr;
     cv::Point3i averagePoint = cv::Point3i(-1);
-    std::list<int> featureIndsCoarse;
-    std::list<int> featureIndsFine;
+    std::list<BlobExt<TContainer,T>> blobsFingers;
     std::unique_ptr<Angles3d> angles3dPtr;
     
     bool testFeature;
@@ -57,24 +56,22 @@ std::vector<std::pair<int,int>> BlobExt<TContainer, T>::neighbours {
 
 //blob extended
 template<template<typename> class  TContainer, typename T>
-BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, int ind, int blobInd) :
+BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, int ind, size_t maxNeighbDiff, int maxCount, int maxDepthRange) :
 mat(mat)
 {
-    cv::Mat matClone = mat.clone();
-    const uint16_t maskValue = 65535 - blobInd;
-    int w = matClone.cols;
-    int h = matClone.rows;
-    uint16_t* p_mat = (uint16_t*)(matClone.data);
+    matBlob = cv::Mat_<uint16_t>::zeros(cv::Size(mat.cols, mat.rows));
+    int w = mat.cols;
+    int h = mat.rows;
+    uint16_t* p_mat = (uint16_t*)(mat.data);
+    uint16_t* p_matBlob = (uint16_t*)(matBlob.data);
     int x = ind % w;
     int y = (ind - x)/ w;
     uint16_t firstVal = *(p_mat + ind);
-    double coeff = static_cast<double>(Params::getBlobExtDepthCoeff()) / firstVal;
-    int maxCount = coeff * coeff * Params::getBlobExtMaxSize();
     std::list<Cell> lCells, lCells_1;
     int minVal = firstVal;
     lCells.emplace_back(x, y, ind, firstVal);
     lCells_1.emplace_back(x, y, ind, firstVal);
-    *(p_mat + ind) = maskValue;
+    *(p_matBlob + ind) = firstVal;
     while(!lCells.empty()){
         auto cell = lCells.front();
         const uint16_t val =  cell.val;
@@ -88,15 +85,13 @@ mat(mat)
             if(xNeighb < 0 || xNeighb >= w || yNeighb < 0 || yNeighb >= h)
                 continue;
             int indNeighb = yNeighb * w + xNeighb;
+            if(*(p_matBlob + indNeighb))
+                continue;
             uint16_t valNeighb =  *(p_mat + indNeighb);
-            if(valNeighb >= Params::getMaxKinectDepth()  || valNeighb == 0 || abs(valNeighb-val) >= Params::getMaxHeighbDiffCoarse()){
-                if(valNeighb > maskValue ){
-                    cells.Clear();
-                    return;
-                }
+            if(valNeighb >= Params::getMaxKinectDepth()  || valNeighb == 0 || abs(valNeighb-val) >= maxNeighbDiff){
                 continue;
             }
-            *(p_mat + indNeighb) = maskValue;
+            *(p_matBlob + indNeighb) = valNeighb;
             lCells_1.emplace_back(xNeighb, yNeighb, indNeighb, valNeighb);
             if(valNeighb < minVal)
                 minVal = valNeighb;
@@ -113,9 +108,8 @@ mat(mat)
             break;
     }
     cells.All().reserve(lCells_1.size());
-    static const int maxDepthRange = Params::getBlobExtMaxDepthRange();
     for(auto& cell : lCells_1){
-        if(cell.val - minVal < maxDepthRange)
+        if(maxDepthRange <= 0 || cell.val - minVal < maxDepthRange)
             cells.AddCell(cell);
     }
 }
@@ -138,25 +132,66 @@ const cv::Point3i& BlobExt<TContainer,T>::AveragePoint() {
 }
 
 template<template<typename> class  TContainer, typename T>
-std::list<int> BlobExt<TContainer, T>::FindFeatureInds(const std::list<int>& inds, int filterSize, int filterDepth, int coreHalfSize, int countFalsePercent){
-    std::list<int> featureInds;
+void BlobExt<TContainer, T>::CreateBlobsFingers(){
+    int filterSize = Params::GET_BLOB_EXT_CONVEX3D_FILTER_SIZE_FINE();
+    int filterDepth = Params::GET_BLOB_EXT_CONVEX3D_FILTER_DEPTH_FINE();
+    int coreHalfSize = Params::GET_BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_FINE();
+    int countFalsePercent = Params::GET_BLOB_EXT_CONVEX3D_COUNT_FALSE_PERCENT_FINE();
+    std::list<int> inds;
+    for(auto& cell : cells.All())
+        inds.push_back(cell.ind);
     cv::Mat matDst = Convex3d::extractConvexities(mat, filterSize, filterDepth, coreHalfSize, countFalsePercent, true, inds);
     uint16_t* p_mat = (uint16_t*)(matDst.data);
     for(int i = 0; i < matDst.total(); ++i, ++p_mat){
-        if(*p_mat)
-            featureInds.push_back(i);
-    }
-    return featureInds;
+        if(!*p_mat)
+            continue;
+        blobsFingers.emplace_back(mat, i, 40, 15);
+        auto& blobFingers = blobsFingers.back();
+        auto& cellsFing = blobFingers.getCellsConst();
+        std::list<int> inds1;
+        for(const auto& cell : cellsFing.AllConst()){
+            *((uint16_t*)(matDst.data) + cell.ind) = 0;
+            inds1.push_back(cell.ind);
+        }
+        
+        Convex3d::extractConvexities1(mat, 1, filterDepth, 1, inds1);
+        if(inds.size() < (cellsFing.Size() >> 1)){
+            blobsFingers.pop_back();
+            continue;
+        }
+        
+        for(auto& blob : blobsFingers){
+            bool isNear(false);
+            if (&blob == &blobFingers)
+                break;
+            auto& cellsFing1 = blob.getCells();
+            for(const auto& cell : cellsFing.AllConst()){
+                for(auto& cell1 : cellsFing1.AllConst()){
+                    if(std::abs(cell.x - cell1.x) <= 1 && std::abs(cell.y - cell1.y) <= 1){
+                        isNear = true;
+                        break;
+                    }
+                }
+                if(isNear)
+                    break;
+            }
+            if(isNear){
+                for(const auto& cell : cellsFing.AllConst())
+                    cellsFing1.AddCell(cell);
+                blobsFingers.pop_back();
+                break;
+            }
+        }
+    }    
 }
 
 template<template<typename> class  TContainer, typename T>
 void BlobExt<TContainer, T>::ComputeAngle(){
     std::list<cv::Point3i> points;
-    for(auto ind : featureIndsFine){
-        int x = ind % mat.cols;
-        int y = (ind - x ) / mat.cols;
-        int z = *((uint16_t*)(mat.data) + ind);
-        points.emplace_back(x, y, z);
+    for(const auto& blob : blobsFingers){
+        for(const auto& cell : blob.cells.AllConst()){
+            points.emplace_back(cell.x, cell.y, cell.val);
+        }
     }
     angles3dPtr = std::unique_ptr<Angles3d>(new Angles3d(points));
     const auto& anglesData = angles3dPtr->getDataConst();
@@ -188,6 +223,24 @@ void BlobExt<TContainer, T>::ComputeAngle(){
     testFeature = (count1  < count2) ? true : false;
 }
 
+template<template<typename> class  TContainer, typename T>
+void BlobExt<TContainer, T>::Enlarge(int width){
+    static const int resizePow = log2(width/this->mat.cols);
+    if(resizePow == 0)
+        return;
+    for(auto& cell : cells.All()){
+        cell.x <<= resizePow;
+        cell.y <<= resizePow;
+        cell.ind = cell.y * width + cell.x;
+    }
+    for(auto& blob : blobsFingers){
+        for(auto& cell : blob.getCells().All()){
+            cell.x <<= resizePow;
+            cell.y <<= resizePow;
+            cell.ind = cell.y * width + cell.x;
+        }
+    }
+}
 
 using BlobFinal = BlobExt<Vector, Cell>;
 

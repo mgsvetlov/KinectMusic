@@ -27,6 +27,8 @@ volatile int ExtractFrameData::die_gesture = 0;
 void *ExtractFrameData::threadfunc(void *arg) {
     static volatile int frameNumExtract = 0;
     startLog();
+    if(!Params::getIsInit())
+        Params::Init();
     while (!ExtractFrameData::die_gesture){
         pthread_mutex_lock(&Sensor::depthMutex);
         //check if new frame is available

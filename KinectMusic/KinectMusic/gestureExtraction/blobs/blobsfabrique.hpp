@@ -18,13 +18,13 @@
 template<typename T>
 class BlobsFabrique {
 public:
-    BlobsFabrique(int mode, cv::Mat mat, const std::list<int>& inds = std::list<int>());
+    BlobsFabrique(int mode, cv::Mat mat, int xyThresh = 0, int depthThresh = 0, int blobMinSize = -1, size_t maxNeighbDiff = Params::getMaxNeighbDiffCoarse());
     std::list<T>& getBlobs();
     cv::Point3i getAveragedBodyPoint();
-    template<typename T1> std::list<T1>& constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt, const cv::Point3i& averagedBodyPoint);
+    template<typename T1> std::list<T1>& constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt);
 private:
     void blobsFabrique0();
-    void blobsFabrique1();
+    void blobsFabrique1(int xyThresh, int depthThresh, int blobMinSize, size_t maxNeighbDiff);
     int minCellIndex();
     void computeAveragedBodyPoint();
 private:
@@ -36,7 +36,7 @@ private:
 };
 
 template<typename T>
-BlobsFabrique<T>::BlobsFabrique(int mode, cv::Mat m, const std::list<int>& inds) :
+BlobsFabrique<T>::BlobsFabrique(int mode, cv::Mat m, int xyThresh, int depthThresh, int blobMinSize, size_t maxNeighbDiff) :
 mat(m.clone()),
 mode(mode)
 {
@@ -45,7 +45,7 @@ mode(mode)
             blobsFabrique0(); //extract evrything up to body
             break;
         case 1 :
-            blobsFabrique1(); //hands and head matrix segmentation
+            blobsFabrique1(xyThresh, depthThresh, blobMinSize, maxNeighbDiff); //hands and head matrix segmentation
             break;
         default:
             break;
@@ -92,7 +92,7 @@ void BlobsFabrique<T>::blobsFabrique0(){
 }
 
 template<typename T>
-void BlobsFabrique<T>::blobsFabrique1(){
+void BlobsFabrique<T>::blobsFabrique1(int xyThresh, int depthThresh, int blobMinSize, size_t maxNeighbDiff){
     while(true){
         int ind = minCellIndex();
         if(ind == -1)
@@ -101,12 +101,13 @@ void BlobsFabrique<T>::blobsFabrique1(){
         int minVal = *((uint16_t*)(mat.data) + ind);
         if(minVal == Params::getMaxKinectValue())
             return;
-        blobs.emplace_back(mat, ind);
+        blobs.emplace_back(mat, ind, maxNeighbDiff);
         continue;
     }
-    BlobsClust<T> blobsClust(blobs, Params::getBlobClustXYThresh(), Params::getBlobClustDepthThresh(), Params::getBlobClustMinSize());
-    
-    blobs = std::move(blobsClust.getBlobsClust());
+    if(xyThresh > 0 && depthThresh > 0) {
+        BlobsClust<T> blobsClust(blobs, xyThresh, depthThresh, blobMinSize);
+        blobs = std::move(blobsClust.getBlobsClust());
+    }
 }
 
 template<typename T>
@@ -120,16 +121,18 @@ cv::Point3i BlobsFabrique<T>::getAveragedBodyPoint(){
 }
 
 template<typename T>
-template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt, const cv::Point3i& averagedBodyPoint){
+template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat origMat, std::list<T1>& blobsExt){
     std::vector<int> inds;
     for(auto& blob  : blobs) {
         int ind = blob.indOriginNearest(origMat);
         if(ind != NO_DATA_VALUE)
             inds.push_back(ind);
     }
-    int blobInd(0);
     for(auto& ind : inds) {
-        blobsExt.emplace_back(origMat, ind, blobInd++);
+        uint16_t firstVal = *((uint16_t*)(origMat.data) + ind);
+        double coeff = static_cast<double>(Params::getBlobExtDepthCoeff()) / firstVal;
+        int maxCount = coeff * coeff * Params::getBlobExtMaxSize();
+        blobsExt.emplace_back(origMat, ind, Params::getMaxNeighbDiffCoarse(), maxCount, Params::getBlobExtMaxDepthRange());
         auto& blobExt = blobsExt.back();
         if( blobExt.cells.Size() == 0
            ||blobExt.cells.MaxValCell()->val < Params::getBlobExtMaxDepthThresh()
@@ -141,22 +144,16 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
         for(auto& cell : blobExt.cells.All()) {
             cellInds.push_back(cell.ind);
         }
-        blobExt.getFeatureIndsCoarse() = blobExt.FindFeatureInds(cellInds,
+        cv::Mat matDst = Convex3d::extractConvexities(origMat,
             Params::GET_BLOB_EXT_CONVEX3D_FILTER_SIZE_COARSE(),
             Params::GET_BLOB_EXT_CONVEX3D_FILTER_DEPTH_COARSE(),
             Params::GET_BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_COARSE(),
-            Params::GET_BLOB_EXT_CONVEX3D_COUNT_FALSE_PERCENT_COARSE());
-        
-        if(blobExt.getFeatureIndsCoarse().size() < Params::GET_BLOB_EXT_FEATURE_INDS_COARSE_MIN_SIZE()){
+            Params::GET_BLOB_EXT_CONVEX3D_COUNT_FALSE_PERCENT_COARSE(), true, cellInds);
+        if(cellInds.size() < Params::GET_BLOB_EXT_FEATURE_INDS_COARSE_MIN_SIZE()){
             blobsExt.pop_back();
             continue;
         }
-        blobExt.getFeatureIndsFine() = blobExt.FindFeatureInds(blobExt.getFeatureIndsCoarse(),
-            Params::GET_BLOB_EXT_CONVEX3D_FILTER_SIZE_FINE(),
-            Params::GET_BLOB_EXT_CONVEX3D_FILTER_DEPTH_FINE(),
-            Params::GET_BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_FINE(),
-            Params::GET_BLOB_EXT_CONVEX3D_COUNT_FALSE_PERCENT_FINE());
-        //blobExt.ComputeAngle();
+        blobExt.CreateBlobsFingers();
     }
     return blobsExt;
 }

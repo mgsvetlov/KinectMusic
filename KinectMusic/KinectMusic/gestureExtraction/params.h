@@ -15,7 +15,7 @@ class Params {
 public:
     static void Init();
     static int getMaxKinectValue(){return MAX_KINECT_VALUE;}
-    static int getMaxHeighbDiffCoarse(){return MAX_NEIGHB_DIFF_COARSE;}
+    static size_t getMaxNeighbDiffCoarse(){return MAX_NEIGHB_DIFF_COARSE;}
     static int getMatrixWidth() { return MATRIX_WIDTH;}
     static int getMatrixHeight() { return MATRIX_HEIGHT;}
     static int getMaxKinectDepth() { return MAX_KINECT_DEPTH;}
@@ -33,6 +33,7 @@ public:
     static int getBlobConnectivityXYThresh1() {return BLOB_CONNECTIVITY_XY_THRESH1; }
     static int getBlobConnectivityXYThresh2() {return BLOB_CONNECTIVITY_XY_THRESH2; }
     static int getBlobConnectivityDepthThresh() {return BLOB_CONNECTIVITY_DEPTH_THRESH; }
+    static int GET_BLOB_EXT_RESIZE_POW() { return BLOB_EXT_RESIZE_POW; }
     static int getBlobExtDepthCoeff() { return BLOB_EXT_DEPTH_COEFF;}
     static int getBlobExtMaxSize() { return BLOB_EXT_MAX_SIZE;}
     static int getBlobExtMaxDepthRange() { return BLOB_EXT_MAX_DEPTH_RANGE;}
@@ -54,7 +55,7 @@ public:
     static size_t getTrackingDistThresh() { return TRACKING_DIST_THRESH;}
 private:
     static int MAX_KINECT_VALUE;
-    static int MAX_NEIGHB_DIFF_COARSE;
+    static size_t MAX_NEIGHB_DIFF_COARSE;
     static int MATRIX_WIDTH;
     static int MATRIX_HEIGHT;
     static int MAX_KINECT_DEPTH;
@@ -72,6 +73,7 @@ private:
     static int BLOB_CONNECTIVITY_XY_THRESH1;
     static int BLOB_CONNECTIVITY_XY_THRESH2;
     static int BLOB_CONNECTIVITY_DEPTH_THRESH;
+    static int BLOB_EXT_RESIZE_POW;
     static int BLOB_EXT_DEPTH_COEFF;
     static int BLOB_EXT_MAX_SIZE;
     static int BLOB_EXT_MAX_DEPTH_RANGE;

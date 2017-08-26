@@ -157,7 +157,7 @@ T* Border<TContainer,T>::nextCell(const cv::Mat& matCells, CellContour& cell, in
             next = pcell;
             cell.valOut = valOutMin;
             int valDiff = abs(cell.val - cell.valOut);
-            if( valDiff <= Params::getMaxHeighbDiffCoarse()) {
+            if( valDiff <= Params::getMaxNeighbDiffCoarse()) {
                 cell.flags |= FLAGS::ADJACENT_BODY;
                 ++bodyAdjacentCount;
                 adjacentAveragePoint += cv::Point3i(cell.x, cell.y, cell.val);

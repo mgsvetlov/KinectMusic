@@ -18,14 +18,12 @@
 
 pthread_mutex_t ProcessFrameData::visualisation_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-ProcessFrameData::ProcessFrameData(cv::Mat mat, int frameNum) :
-mat(mat),
+ProcessFrameData::ProcessFrameData(cv::Mat mat_, int frameNum) :
+mat(mat_),
 frameData(frameNum)
 {
-    if(!Params::getIsInit())
-        Params::Init();
     filterFar();
-    //markEdges();
+    markEdges();
     resize();
     createBlobsAndBorders();
     tracking();
@@ -102,28 +100,26 @@ void ProcessFrameData::createBlobsAndBorders(){
         return;
     frameData.averagedBodyPoint = blobsFabrique.getAveragedBodyPoint();
     //extract 3d convexes
-    cv::Mat matDst = Convex3d::extractConvexities(matResized, Params::getConvex3dFilterSize(), Params::getConvex3dFilterDepth(), Params::getConvex3dCoreHalfSize(), Params::getConvex3dCountFalsePercent(), false);
+    std::list<int> inds;
+    cv::Mat matDst = Convex3d::extractConvexities(matResized, Params::getConvex3dFilterSize(), Params::getConvex3dFilterDepth(), Params::getConvex3dCoreHalfSize(), Params::getConvex3dCountFalsePercent(), false, inds);
     uint16_t* p_mat = (uint16_t*)(matDst.data);
     for(int i = 0; i < matDst.total(); ++i, ++p_mat){
         if(*p_mat > frameData.averagedBodyPoint.z)
             *p_mat = 0;
     }
-    BlobsFabrique<BlobPrim> blobsFabrique1(1, matDst);
-    //auto& blobsClust = blobsFabrique1.getBlobs();
-    //matConvex = BlobPrim::blobs2mat(blobsClust, matResized.size());
-    //create blobs extended and borders
-    frameData.averagedBodyPoint.x <<= Params::getBlobResizePow();
-    frameData.averagedBodyPoint.y <<= Params::getBlobResizePow();
-    blobsFabrique1.constructBlobsExt(matFilt, blobsExt, frameData.averagedBodyPoint);
+    BlobsFabrique<BlobPrim> blobsFabrique1(1, matDst, Params::getBlobClustXYThresh(), Params::getBlobClustDepthThresh(), Params::getBlobClustMinSize());
+    cv::resize(matFilt, matResized1, cv::Size(Params::getMatrixWidth() >> Params::GET_BLOB_EXT_RESIZE_POW(), Params::getMatrixHeight()>>Params::GET_BLOB_EXT_RESIZE_POW()));
+    blobsFabrique1.constructBlobsExt(matResized1, blobsExt);
 }
 
 void ProcessFrameData::tracking(){
     //tracking hands
      Track::analyzeFrame(blobsExt);
-    
 }
 
 void ProcessFrameData::shareFrameData(){
+    frameData.averagedBodyPoint.x <<= Params::getBlobResizePow();
+    frameData.averagedBodyPoint.y <<= Params::getBlobResizePow();
     if(Config::instance()->getIsCsound()){
         const auto& tracks = Track::getTracksConst();
         for(const auto& track : tracks){
@@ -142,10 +138,11 @@ void ProcessFrameData::shareFrameData(){
 void ProcessFrameData::visualize(){
     if(Config::instance()->getIsVisualisation()){
         cv::Mat img;
-        //cv::resize(matConvex, matConvex, mat.size());
-        Visualization::mat2img(matFilt, img);
+        Visualization::mat2img(mat, img);
         const auto& point = frameData.averagedBodyPoint;
         cv::circle(img, cv::Point(point.x , point.y), 5,  cv::Scalar(255, 0, 255), -1);
+        for(auto& blob : blobsExt)
+            blob.Enlarge(img.cols);
         Visualization::blobs2img( blobsExt, img, false);
         //Visualization::tracks2img(Track::getTracksConst(), img);
         //Visualization::gestures2img(GestureFabrique::getGestures(), img);
