@@ -183,6 +183,7 @@
 		7230289D1F247BB0003A8770 /* params.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = params.h; path = gestureExtraction/params.h; sourceTree = "<group>"; };
 		72424B051F3C445D006F1AF5 /* angles3d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = angles3d.cpp; path = gestureExtraction/angles3d/angles3d.cpp; sourceTree = "<group>"; };
 		72424B061F3C445D006F1AF5 /* angles3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = angles3d.h; path = gestureExtraction/angles3d/angles3d.h; sourceTree = "<group>"; };
+		72424B1E1F54853F006F1AF5 /* shortestpath.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = shortestpath.hpp; path = gestureExtraction/graphs/shortestpath.hpp; sourceTree = "<group>"; };
 		7252AB851F3476E700521714 /* Neuron.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Neuron.cpp; path = gestureExtraction/ml/nn/Neuron.cpp; sourceTree = "<group>"; };
 		7252AB861F3476E700521714 /* Neuron.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Neuron.hpp; path = gestureExtraction/ml/nn/Neuron.hpp; sourceTree = "<group>"; };
 		7252AB871F3476E700521714 /* NN.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NN.cpp; path = gestureExtraction/ml/nn/NN.cpp; sourceTree = "<group>"; };
@@ -645,6 +646,7 @@
 				728233D11F1B7EFE00B6E4D4 /* blobsclust.hpp */,
 				7274B8C61F1F2D3800F1D30D /* borders */,
 				7274B8C01F1F2B1C00F1D30D /* cells */,
+				72424B1D1F5482D8006F1AF5 /* graphs */,
 			);
 			name = blobs;
 			sourceTree = "<group>";
@@ -666,6 +668,14 @@
 				72424B061F3C445D006F1AF5 /* angles3d.h */,
 			);
 			name = angles3d;
+			sourceTree = "<group>";
+		};
+		72424B1D1F5482D8006F1AF5 /* graphs */ = {
+			isa = PBXGroup;
+			children = (
+				72424B1E1F54853F006F1AF5 /* shortestpath.hpp */,
+			);
+			name = graphs;
 			sourceTree = "<group>";
 		};
 		7252AB831F3476C700521714 /* ml */ = {
@@ -937,6 +947,7 @@
 					"/usr/local/include/pcl-1.7",
 					/usr/local/include/eigen3,
 					/usr/local/include,
+					/usr/local/boost,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					/opt/local/lib,
@@ -944,6 +955,7 @@
 					"$(PROJECT_DIR)/opencv/lib",
 					"$(PROJECT_DIR)/lib",
 					/usr/local/lib,
+					/usr/local/boost/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "${SRCROOT}/opencv/include/**";
@@ -968,6 +980,7 @@
 					"/usr/local/include/pcl-1.7",
 					/usr/local/include/eigen3,
 					/usr/local/include,
+					/usr/local/boost,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					/opt/local/lib,
@@ -975,6 +988,7 @@
 					"$(PROJECT_DIR)/opencv/lib",
 					"$(PROJECT_DIR)/lib",
 					/usr/local/lib,
+					/usr/local/boost/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "${SRCROOT}/opencv/include/**";

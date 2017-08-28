@@ -50,7 +50,7 @@ int main(int argc, char **argv)
     Config* config = Config::instance();
     if(config == nullptr){
         Logs::closeLogs();
-        return -1;
+        return 1;
     }
     
     printf("Kinect camera test\n");
