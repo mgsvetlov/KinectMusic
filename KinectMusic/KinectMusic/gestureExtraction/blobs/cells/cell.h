@@ -18,6 +18,7 @@ struct FLAGS {
 struct Cell {
     Cell(uint16_t x, uint16_t y, int ind, int val);
     static float Distance(const Cell& cell1, const Cell& cell2);
+    static float Distance(const Cell& cell1, int x, int y, int val);
     
     uint16_t x = 0;
     uint16_t y = 0;

@@ -17,6 +17,7 @@
 #include "../convex3d/convex3d.h"
 #include "../angles3d/angles3d.h"
 #include "blobsfabrique.hpp"
+#include "../graphs/shortestpath.hpp"
 
 template<template<typename> class  TContainer, typename T> class BlobExt : public Blob<TContainer,  T> {
     using Blob<TContainer,T>::cells;
@@ -30,10 +31,14 @@ public:
     const cv::Point3i& AveragePoint();
     void Enlarge(int width);
 private:
-
+    void CheckBlobFingers();
+    void CreateGraph();
+    
 private:
     const cv::Mat mat;
     cv::Mat matBlob;
+    std::map<int, int> cellsMap;
+    Graph graph;
     //std::unique_ptr<Border<TContainer, T>> borderPtr;
     cv::Point3i averagePoint = cv::Point3i(-1);
     std::list<BlobExt<TContainer,T>> blobsFingers;
@@ -50,8 +55,8 @@ private:
 
 template<template<typename> class  TContainer, typename T>
 std::vector<std::pair<int,int>> BlobExt<TContainer, T>::neighbours {
-    {-1,0}, {0, -1}, {1,0}, {0,1},
-    {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+    {-1, 0}, {-1, 1}, {0, 1}, {1, 1},
+    {1, 0}, {1, -1},  {0, -1},  {-1, -1}
 };
 
 //blob extended
@@ -146,7 +151,7 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
         if(!*p_mat)
             continue;
         blobsFingers.emplace_back(mat, i, 40, 10);
-        auto& blobFingers = blobsFingers.back();
+        /*auto& blobFingers = blobsFingers.back();
         auto& cellsFing = blobFingers.getCellsConst();
         std::list<int> inds1;
         for(const auto& cell : cellsFing.AllConst()){
@@ -181,9 +186,59 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
                 blobsFingers.pop_back();
                 break;
             }
-        }
+        }*/
     }
+    if(blobsFingers.empty())
+        return;
+    CheckBlobFingers();
+}
+
+template<template<typename> class  TContainer, typename T>
+void BlobExt<TContainer, T>::CheckBlobFingers(){
+    CreateGraph();
+    //ShortestPath shortestPath(graph, 0);
+    /*auto it = blobsFingers.begin();
+    while(it != blobsFingers.end()){
+        auto it1 = it;
+        ++it1;
+        ShortestPath shortestPath(graph, 0);
+        while(it1 != blobsFingers.end()){
+            ++it1;
+        }
+        ++it;
+    }*/
     blobsFingers.sort([](const BlobExt<TContainer,T>& bl1, const BlobExt<TContainer,T>& bl2){return bl1.getCellsConst().MinValCell()->x < bl2.getCellsConst().MinValCell()->x;});
+}
+
+template<template<typename> class  TContainer, typename T>
+void BlobExt<TContainer, T>::CreateGraph(){
+    int i = 0;
+    for(auto& cell : cells.AllConst()){
+        cellsMap[cell.ind] = i++;
+    }
+    int w = matBlob.cols;
+    int h = matBlob.rows;
+    uint16_t* p_matBlob = (uint16_t*)(matBlob.data);
+    graph.verts_count = cells.Size();
+    i = 0;
+    for(auto& cell : cells.AllConst()){
+        int x_ = cell.x;
+        int y_ = cell.y;
+        for(int i = 0; i < (neighbours.size() >> 1); ++i){
+            int xNeighb = x_ + neighbours[i].first;
+            int yNeighb = y_ + neighbours[i].second;
+            if(xNeighb < 0 || xNeighb >= w || yNeighb < 0 || yNeighb >= h)
+                continue;
+            int indNeighb = yNeighb * w + xNeighb;
+            int valNeighb = *(p_matBlob + indNeighb);
+            if(valNeighb == 0)
+                continue;
+            int iNeighb  = cellsMap[indNeighb];
+            graph.edges.emplace_back(i, iNeighb);
+            graph.weights.push_back(static_cast<int>(Cell::Distance(cell, xNeighb, yNeighb, indNeighb )));
+        }
+        ++i;
+    }
 }
 
 template<template<typename> class  TContainer, typename T>

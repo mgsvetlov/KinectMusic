@@ -42,10 +42,21 @@
 #include "share.h"
 #include "log/logs.h"
 #include "config/config.h"
-
+//#include "gestureExtraction/graphs/shortestpath.hpp"
 
 int main(int argc, char **argv)
 {
+    /*Graph graph;
+    graph.verts_count = 6;
+    graph.edges = { Edge(0, 2), Edge(1, 1), Edge(1, 3), Edge(1, 4), Edge(2, 1), Edge(2, 3), Edge(3, 4), Edge(4, 0), Edge(4, 1)};
+    graph.weights = { 1, 2, 1, 2, 7, 3, 1, 1, 1 };
+    ShortestPath shortestPath(graph, 0);
+    for(int dst = 0; dst < graph.verts_count; ++dst){
+        shortestPath.GetDistance(dst);
+        shortestPath.GetPath(dst);
+    }
+    return 0;*/
+    
     Config::setFileName("../../../config.ini");
     Config* config = Config::instance();
     if(config == nullptr){

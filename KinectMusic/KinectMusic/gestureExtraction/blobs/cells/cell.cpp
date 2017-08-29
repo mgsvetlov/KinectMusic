@@ -23,6 +23,14 @@ float Cell::Distance(const Cell& cell1, const Cell& cell2){
     return sqrt(dx*dx + dy*dy + dz*dz);
 }
 
+float Cell::Distance(const Cell& cell1, int x, int y, int val){
+    static constexpr float spaceCoeff(9./6400);
+    float dx = (cell1.x * cell1.val - x * val) * spaceCoeff;
+    float dy = (cell1.y * cell1.val - y * val) * spaceCoeff;
+    int dz = cell1.val - val;
+    return sqrt(dx*dx + dy*dy + dz*dz);
+}
+
 CellContour::CellContour(const Cell& cell) :
 Cell(cell)
 {

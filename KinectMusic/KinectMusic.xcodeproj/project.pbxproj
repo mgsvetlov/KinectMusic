@@ -25,6 +25,7 @@
 		723028981F23BB04003A8770 /* processframedata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 723028961F23BB04003A8770 /* processframedata.cpp */; };
 		7230289E1F247BB0003A8770 /* params.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7230289C1F247BB0003A8770 /* params.cpp */; };
 		72424B071F3C445D006F1AF5 /* angles3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72424B051F3C445D006F1AF5 /* angles3d.cpp */; };
+		72424B201F55D46D006F1AF5 /* shortestpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72424B1F1F55D46D006F1AF5 /* shortestpath.cpp */; };
 		7252AB891F3476E700521714 /* Neuron.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB851F3476E700521714 /* Neuron.cpp */; };
 		7252AB8A1F3476E700521714 /* NN.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB871F3476E700521714 /* NN.cpp */; };
 		7252AB901F347A6700521714 /* DataSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7252AB8E1F347A6700521714 /* DataSet.cpp */; };
@@ -184,6 +185,7 @@
 		72424B051F3C445D006F1AF5 /* angles3d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = angles3d.cpp; path = gestureExtraction/angles3d/angles3d.cpp; sourceTree = "<group>"; };
 		72424B061F3C445D006F1AF5 /* angles3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = angles3d.h; path = gestureExtraction/angles3d/angles3d.h; sourceTree = "<group>"; };
 		72424B1E1F54853F006F1AF5 /* shortestpath.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = shortestpath.hpp; path = gestureExtraction/graphs/shortestpath.hpp; sourceTree = "<group>"; };
+		72424B1F1F55D46D006F1AF5 /* shortestpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shortestpath.cpp; path = gestureExtraction/graphs/shortestpath.cpp; sourceTree = "<group>"; };
 		7252AB851F3476E700521714 /* Neuron.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Neuron.cpp; path = gestureExtraction/ml/nn/Neuron.cpp; sourceTree = "<group>"; };
 		7252AB861F3476E700521714 /* Neuron.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Neuron.hpp; path = gestureExtraction/ml/nn/Neuron.hpp; sourceTree = "<group>"; };
 		7252AB871F3476E700521714 /* NN.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NN.cpp; path = gestureExtraction/ml/nn/NN.cpp; sourceTree = "<group>"; };
@@ -646,7 +648,6 @@
 				728233D11F1B7EFE00B6E4D4 /* blobsclust.hpp */,
 				7274B8C61F1F2D3800F1D30D /* borders */,
 				7274B8C01F1F2B1C00F1D30D /* cells */,
-				72424B1D1F5482D8006F1AF5 /* graphs */,
 			);
 			name = blobs;
 			sourceTree = "<group>";
@@ -674,6 +675,7 @@
 			isa = PBXGroup;
 			children = (
 				72424B1E1F54853F006F1AF5 /* shortestpath.hpp */,
+				72424B1F1F55D46D006F1AF5 /* shortestpath.cpp */,
 			);
 			name = graphs;
 			sourceTree = "<group>";
@@ -757,6 +759,7 @@
 				72048F6F1EDA00BE006381E9 /* share.h */,
 				722141A51D9FC2BD00B697E8 /* blobs */,
 				728233201F07950D00B6E4D4 /* convex3d */,
+				72424B1D1F5482D8006F1AF5 /* graphs */,
 				72424B081F3C446C006F1AF5 /* angles3d */,
 				7252AB831F3476C700521714 /* ml */,
 				720C228F1DF2EE820066104B /* tracking */,
@@ -840,6 +843,7 @@
 				720164BB1A6C058B00BC721A /* cameras.c in Sources */,
 				7252AB8A1F3476E700521714 /* NN.cpp in Sources */,
 				720164C01A6C058B00BC721A /* tilt.c in Sources */,
+				72424B201F55D46D006F1AF5 /* shortestpath.cpp in Sources */,
 				720164BE1A6C058B00BC721A /* loader.c in Sources */,
 				725B1BA01ED768A60028AE34 /* gestureStop.cpp in Sources */,
 				720164BD1A6C058B00BC721A /* flags.c in Sources */,
