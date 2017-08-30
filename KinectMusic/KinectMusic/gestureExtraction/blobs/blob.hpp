@@ -38,7 +38,7 @@ public:
     static cv::Mat blobs2mat(const std::list<Blob>& lBlobs, const cv::Size& size);
     cv::Mat blob2mat();
     void computeBorderCells(cv::Mat mat);
-    
+    bool IsAdjacent(const Blob& blob, int depthThresh = INT_MAX) const;
 protected:
     Cells<TContainer,T> cells;
     Cells<TContainer,T> borderCells;
@@ -129,6 +129,11 @@ int Blob<TContainer,T>::indOriginNearest(cv::Mat originalMat) const{
     
     return indNearest;
     
+}
+
+template<template<typename> class  TContainer, typename T>
+bool Blob<TContainer, T>::IsAdjacent(const Blob& blob, int depthThresh) const{
+    return true;
 }
 
 template<template<typename> class TContainer, typename T>

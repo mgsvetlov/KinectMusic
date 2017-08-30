@@ -13,7 +13,7 @@
 
 template<typename T> class BlobsClust {
 public:
-    BlobsClust( std::list<T>& blobs, int xyThresh, int depthThresh, int blobMinSize = -1);
+    BlobsClust( std::list<T>& blobs, int xyThresh, int depthThresh, int blobMinSize = -1, bool isAdjacentTest = false);
     std::list<T>& getBlobsClust();
 private:
     bool isBlobNear(const T& blob1, const T& blob2);
@@ -22,13 +22,15 @@ private:
     std::list<T> blobsClust;
     int xyThresh;
     int depthThresh;
+    bool isAdjacentTest;
 };
 
 
-template<typename T> BlobsClust<T>::BlobsClust( std::list<T>& blobs, int xyThresh, int depthThresh, int blobMinSize) :
+template<typename T> BlobsClust<T>::BlobsClust( std::list<T>& blobs, int xyThresh, int depthThresh, int blobMinSize, bool isAdjacentTest) :
 blobs (blobs),
 xyThresh(xyThresh),
-depthThresh(depthThresh)
+depthThresh(depthThresh),
+isAdjacentTest(isAdjacentTest)
 {
     if(blobs.empty())
         return;
@@ -98,7 +100,9 @@ template<typename T> bool BlobsClust<T>::isBlobNear(const T& blob1, const T& blo
     int dy = y1 - y2;
     if(dx * dx + dy * dy > xyThresh * xyThresh)
         return false;
-    return true;
+    if(!isAdjacentTest)
+        return true;
+    return blob1.IsAdjacent(blob2, depthThresh);
 }
 
 #endif /* blobsclust_hpp */
