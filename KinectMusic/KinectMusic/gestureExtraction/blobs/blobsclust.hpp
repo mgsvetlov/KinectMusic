@@ -90,16 +90,43 @@ template<typename T> std::list<T>& BlobsClust<T>::getBlobsClust(){
 template<typename T> bool BlobsClust<T>::isBlobNear(const T& blob1, const T& blob2) {
     if(!blob1.getCellsConst().MinValCell()|| !blob2.getCellsConst().MinValCell())
         return false;
-    if(abs(blob1.getCellsConst().MinValCell()->val - blob2.getCellsConst().MinValCell()->val) > depthThresh)
-        return false;
-    int x1 = blob1.getCellsConst().MinValCell()->x;
-    int y1 = blob1.getCellsConst().MinValCell()->y;
-    int x2 = blob2.getCellsConst().MinValCell()->x;
-    int y2 = blob2.getCellsConst().MinValCell()->y;
-    int dx = x1 - x2;
-    int dy = y1 - y2;
-    if(dx * dx + dy * dy > xyThresh * xyThresh)
-        return false;
+    if(depthThresh > 0){
+        if(std::abs(blob1.getCellsConst().MinValCell()->val - blob2.getCellsConst().MinValCell()->val) > depthThresh)
+            return false;
+    }
+    if(xyThresh > 0){
+        if(isAdjacentTest){
+            bool isNear(false);
+            for(const auto& cell1 : blob1.getCellsConst().AllConst()){
+                int x1 = cell1.x;
+                int y1 = cell1.y;
+                for(const auto& cell2 : blob2.getCellsConst().AllConst()){
+                    int x2 = cell2.x;
+                    int y2 = cell2.y;
+                    int dx = x1 - x2;
+                    int dy = y1 - y2;
+                    if(dx * dx + dy * dy <= xyThresh * xyThresh){
+                        isNear = true;
+                        break;
+                    }
+                }
+                if(isNear)
+                    break;
+            }
+            if(!isNear)
+                return false;
+        }
+        else {
+            int x1 = blob1.getCellsConst().MinValCell()->x;
+            int y1 = blob1.getCellsConst().MinValCell()->y;
+            int x2 = blob2.getCellsConst().MinValCell()->x;
+            int y2 = blob2.getCellsConst().MinValCell()->y;
+            int dx = x1 - x2;
+            int dy = y1 - y2;
+            if(dx * dx + dy * dy > xyThresh * xyThresh)
+                return false;
+        }
+    }
     if(!isAdjacentTest)
         return true;
     return blob1.IsAdjacent(blob2, depthThresh);

@@ -114,7 +114,7 @@ mat(mat)
     }
     cells.All().reserve(lCells_1.size());
     for(auto& cell : lCells_1){
-        if(maxDepthRange <= 0 || cell.val - minVal < maxDepthRange)
+        //if(maxDepthRange <= 0 || cell.val - minVal < maxDepthRange)
             cells.AddCell(cell);
     }
 }
@@ -145,13 +145,13 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
     std::list<int> inds;
     for(auto& cell : cells.All())
         inds.push_back(cell.ind);
-    Convex3d::extractConvexities(mat, filterSize, filterDepth, coreHalfSize, countFalsePercent, true, inds);
+    Convex3d::extractConvexities(mat, filterSize, filterDepth, coreHalfSize, countFalsePercent, true, inds, true);
     for(auto i : inds){
-        blobsFingers.emplace_back(matBlob, i, 40, 1);
+        blobsFingers.emplace_back(matBlob, i, 0, 1);
     }
     if(blobsFingers.empty())
         return;
-    BlobsClust<BlobExt<TContainer,T>> blobsClust(blobsFingers, 15, 40, 1, true);
+    BlobsClust<BlobExt<TContainer,T>> blobsClust(blobsFingers, 2, 20, 1, true);
     blobsFingers = std::move(blobsClust.getBlobsClust());
     CheckBlobFingers();
 }
