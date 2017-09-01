@@ -151,7 +151,7 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
     }
     if(blobsFingers.empty())
         return;
-    BlobsClust<BlobExt<TContainer,T>> blobsClust(blobsFingers, 2, 20, 1, true);
+    BlobsClust<BlobExt<TContainer,T>> blobsClust(blobsFingers, 8, 20, 1, true);
     blobsFingers = std::move(blobsClust.getBlobsClust());
     CheckBlobFingers();
 }
@@ -240,8 +240,10 @@ void BlobExt<TContainer, T>::ComputeAngle(){
             points.emplace_back(cell.x, cell.y, cell.val);
         }
     }
+    if(points.size() < 5)
+        return;
     angles3dPtr = std::unique_ptr<Angles3d>(new Angles3d(points));
-    const auto& anglesData = angles3dPtr->getDataConst();
+    /*const auto& anglesData = angles3dPtr->getDataConst();
     if(anglesData.empty())
         return;
     const auto& plane = std::get<0>(anglesData.front());
@@ -255,19 +257,8 @@ void BlobExt<TContainer, T>::ComputeAngle(){
             ++count1;
         else
             ++count2;
-        /*int x = cell.x;
-        int y = cell.y;
-        int z = cell.val;
-        if(
-        if(abs(x - point.x) > 50 || abs(y - point.y) > 50|| abs(z - point.z) > 30)
-            continue;
-        float crossZ = -(plane.w + plane.x*x + plane.y*y) / static_cast<float>(plane.z);
-        if(crossZ < z)
-            ++count1;
-        else
-            ++count2;*/
     }
-    testFeature = (count1  < count2) ? true : false;
+    testFeature = (count1  < count2) ? true : false;*/
 }
 
 template<template<typename> class  TContainer, typename T>
@@ -285,6 +276,14 @@ void BlobExt<TContainer, T>::Enlarge(int width){
             cell.x <<= resizePow;
             cell.y <<= resizePow;
             cell.ind = cell.y * width + cell.x;
+        }
+    }
+    if(angles3dPtr){
+    auto& anglesData = angles3dPtr->getData();
+        for(auto & d : anglesData){
+            auto& p = std::get<1>(d);
+            p.x <<= resizePow;
+            p.y <<= resizePow;
         }
     }
 }

@@ -20,6 +20,7 @@ struct Plane {
 class Angles3d {
 public:
     Angles3d(std::list<cv::Point3i>& points);
+    std::list<std::tuple<Plane, cv::Point3i, std::list<cv::Point3i>>>& getData() { return data;}
     const std::list<std::tuple<Plane, cv::Point3i, std::list<cv::Point3i>>>& getDataConst() const { return data;}
    static std::vector<cv::Point2f> projectPointsToPlane(std::vector<cv::Point3f>& points, const Plane& plane);
 private:

@@ -18,10 +18,12 @@ Angles3d::Angles3d(std::list<cv::Point3i>& points){
         PclPlane::fitPlane(points, x, y, z, w);
         if(z > 0)
             x = -x, y = -y, z = -z;
+        cv::Point3i avgPoint = averagePoint(points);
+        data.emplace_back(Plane(x, y, z, w), avgPoint, points);
         /*std::stringstream ss;
         ss << "plane " << x << " " << y << " " << z << " " << w << " " ;
+        ss << " point " << avgPoint;
         Logs::writeLog("gestures", ss.str());*/
-        data.emplace_back(Plane(x, y, z, w), averagePoint(points), points);
     }
 }
 

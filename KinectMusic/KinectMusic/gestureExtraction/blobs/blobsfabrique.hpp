@@ -141,7 +141,7 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
             continue;
         }
         std::list<int> cellInds;
-        for(auto& cell : blobExt.cells.All()) {
+        for(const auto& cell : blobExt.cells.AllConst()) {
             cellInds.push_back(cell.ind);
         }
         cv::Mat matDst = Convex3d::extractConvexities(origMat,
@@ -154,6 +154,11 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
             continue;
         }
         blobExt.CreateBlobsFingers();
+        blobExt.ComputeAngle();
+        uint16_t* p_origMat = (uint16_t*)(origMat.data);
+        for(const auto& cell : blobExt.cells.AllConst()) {
+            *(p_origMat + cell.ind) = 0;
+        }
     }
     return blobsExt;
 }

@@ -778,11 +778,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/blobs/blobext.hpp"
-            timestampString = "525808063.194307"
+            timestampString = "525981469.584759"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "184"
-            endingLineNumber = "184"
+            startingLineNumber = "178"
+            endingLineNumber = "178"
             landmarkName = "IsAdjacent(const BlobExt&amp; blob, int depthThresh)"
             landmarkType = "7">
          </BreakpointContent>
