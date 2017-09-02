@@ -36,7 +36,6 @@ public:
     static int GET_BLOB_EXT_RESIZE_POW() { return BLOB_EXT_RESIZE_POW; }
     static int getBlobExtDepthCoeff() { return BLOB_EXT_DEPTH_COEFF;}
     static int getBlobExtMaxSize() { return BLOB_EXT_MAX_SIZE;}
-    static int getBlobExtMaxDepthRange() { return BLOB_EXT_MAX_DEPTH_RANGE;}
     static int getBlobExtMaxDepthThresh() { return BLOB_EXT_MAX_DEPTH_THRESH;}
     static int getBlobExtFrontCellsCount() { return BLOB_EXT_FRONT_CELLS_COUNT;}
     static int GET_BLOB_EXT_CONVEX3D_FILTER_SIZE_COARSE() { return BLOB_EXT_CONVEX3D_FILTER_SIZE_COARSE; }
@@ -50,6 +49,7 @@ public:
     static int GET_BLOB_EXT_CONVEX3D_FILTER_DEPTH_FINE() { return BLOB_EXT_CONVEX3D_FILTER_DEPTH_FINE; }
     static int GET_BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_FINE() { return BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_FINE; }
     static int GET_BLOB_EXT_CONVEX3D_COUNT_FALSE_PERCENT_FINE() { return BLOB_EXT_CONVEX3D_COUNT_FALSE_PERCENT_FINE; }
+    static int GET_BLOB_FINGER_MAX_SIZE() { return BLOB_FINGER_MAX_SIZE;}
     static int getIsInit() { return isInit;}
     static size_t getTracksCount() { return TRACKS_COUNT;}
     static size_t getTrackingDistThresh() { return TRACKING_DIST_THRESH;}
@@ -76,7 +76,6 @@ private:
     static int BLOB_EXT_RESIZE_POW;
     static int BLOB_EXT_DEPTH_COEFF;
     static int BLOB_EXT_MAX_SIZE;
-    static int BLOB_EXT_MAX_DEPTH_RANGE;
     static int BLOB_EXT_MAX_DEPTH_THRESH;
     static int BLOB_EXT_FRONT_CELLS_COUNT;
     static int BLOB_EXT_CONVEX3D_FILTER_SIZE_COARSE;
@@ -88,6 +87,7 @@ private:
     static int BLOB_EXT_CONVEX3D_FILTER_DEPTH_FINE;
     static int BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_FINE;
     static int BLOB_EXT_CONVEX3D_COUNT_FALSE_PERCENT_FINE;
+    static int BLOB_FINGER_MAX_SIZE;
     static size_t TRACKS_COUNT;
     static size_t TRACKING_DIST_THRESH;
     static bool isInit;

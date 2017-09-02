@@ -132,7 +132,7 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
         uint16_t firstVal = *((uint16_t*)(origMat.data) + ind);
         double coeff = static_cast<double>(Params::getBlobExtDepthCoeff()) / firstVal;
         int maxCount = coeff * coeff * Params::getBlobExtMaxSize();
-        blobsExt.emplace_back(origMat, ind, Params::getMaxNeighbDiffCoarse(), maxCount, Params::getBlobExtMaxDepthRange());
+        blobsExt.emplace_back(origMat, ind, Params::getMaxNeighbDiffCoarse(), maxCount);
         auto& blobExt = blobsExt.back();
         if( blobExt.cells.Size() == 0
            ||blobExt.cells.MaxValCell()->val < Params::getBlobExtMaxDepthThresh()
@@ -154,7 +154,7 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
             continue;
         }
         blobExt.CreateBlobsFingers();
-        blobExt.ComputeAngle();
+        //blobExt.ComputeAngle();
         uint16_t* p_origMat = (uint16_t*)(origMat.data);
         for(const auto& cell : blobExt.cells.AllConst()) {
             *(p_origMat + cell.ind) = 0;

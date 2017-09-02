@@ -150,7 +150,7 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
         rem == 4 ? cv::Scalar (255, 0, 255) :
         cv::Scalar (33, 67, 255);
         for(const auto& cell : blob.cells.AllConst()){
-            cv::circle(matImg, cv::Point(cell.x, cell.y), 3, color, -1);
+            cv::circle(matImg, cv::Point(cell.x, cell.y), 1, color, -1);
         }
         ++fingerCount;
     }
