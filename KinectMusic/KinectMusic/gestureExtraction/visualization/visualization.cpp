@@ -151,7 +151,7 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
         cv::Scalar (33, 67, 255);
         bool isFirstCell(true);
         for(const auto& cell : blob.cells.AllConst()){
-            int size = isFirstCell? 3 : 1;
+            int size = 1;//isFirstCell? 3 : 1;
             cv::circle(matImg, cv::Point(cell.x, cell.y), size, color, -1);
             isFirstCell = false;
         }

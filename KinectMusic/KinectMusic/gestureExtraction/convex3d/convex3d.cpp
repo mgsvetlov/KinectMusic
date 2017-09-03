@@ -62,3 +62,75 @@ cv::Mat Convex3d::extractConvexities(cv::Mat mat, int filt_size, int filt_depth,
     return matDst;
 }
 
+cv::Mat Convex3d::extractConvexities1(cv::Mat mat, int filt_size, int filt_depth, int core_half_size, int count_false_percent, bool isZeroValid, std::list<int>& inds, bool extremumsOnly)
+{
+    if(inds.empty()){
+        inds.resize(mat.total());
+        std::iota(inds.begin(), inds.end(), 0);
+    }
+    cv::Mat matDst = cv::Mat_<uint16_t>::zeros(mat.size());
+    auto it = inds.begin();
+    while(it != inds.end()){
+        auto ind = *it;
+        int x = ind % mat.cols;
+        int y = (ind - x) / mat.cols;
+        uint16_t val = *((uint16_t*)(mat.data) + ind);
+        if(val){
+            bool isLocalMin(true);
+            for(auto& neighb : neighbours){
+                int x_ = x + neighb.first;
+                int y_ = y + neighb.second;
+                if(x_ < 0 || x_ >= mat.cols || y_ < 0 || y_ >= mat.rows)
+                    continue;
+                uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
+                if(val_ && val_ < val){
+                    isLocalMin = false;
+                    break;
+                }
+            }
+            if(isLocalMin) {
+                static const int filt_size2 = 4;
+                static const int dzThresh = 20;
+                static const int countMin = 1;
+                int count(0);
+                for(int i = 0; i < (neighbours.size() >> 1); ++i){
+                    int dx = neighbours[i].first;
+                    int dy = neighbours[i].second;
+                    bool isFound(true);
+                    for(int k = -1; k <= 1; k += 2){
+                        int dx1 = k * dx;
+                        int dy1 = k * dy;
+                        int dx_ =  dx1;
+                        int dy_ =  dy1;
+                        int j = 1;
+                        for(; j <= filt_size2; ++j, dx_ += dx1, dy_ += dy1){
+                            int x_ = x + dx_;
+                            int y_ = y + dy_;
+                            if(x_ < 0 || x_ >= mat.cols || y_ < 0 || y_ >= mat.rows)
+                                continue;
+                            uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
+                            if(!val_ || val_ - val >= dzThresh)
+                                break;
+                        }
+                        if( j == filt_size2 + 1){
+                            isFound = false;
+                            break;
+                        }
+                    }
+                    if(isFound){
+                        ++count;
+                        if(count == countMin)
+                            break;
+                    }
+                }
+                if(count == countMin){
+                    *((uint16_t*)(matDst.data) + ind) =  val;
+                    ++it;
+                    continue;
+                }
+            }
+        }
+        it = inds.erase(it);
+    }
+    return matDst;
+}

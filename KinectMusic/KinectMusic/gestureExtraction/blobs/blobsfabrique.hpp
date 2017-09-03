@@ -128,8 +128,13 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
         if(ind != NO_DATA_VALUE)
             inds.push_back(ind);
     }
+    std::sort(inds.begin(), inds.end(), [origMat] (const int& i1, const int& i2) {
+        return *((uint16_t*)(origMat.data) + i1) < *((uint16_t*)(origMat.data) + i2); } );
+    auto origMatClone = origMat.clone();
     for(auto& ind : inds) {
-        uint16_t firstVal = *((uint16_t*)(origMat.data) + ind);
+        uint16_t firstVal = *((uint16_t*)(origMatClone.data) + ind);
+        if(!firstVal)
+            continue;
         double coeff = static_cast<double>(Params::getBlobExtDepthCoeff()) / firstVal;
         int maxCount = coeff * coeff * Params::getBlobExtMaxSize();
         blobsExt.emplace_back(origMat, ind, Params::getMaxNeighbDiffCoarse(), maxCount);
@@ -155,9 +160,9 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
         }
         blobExt.CreateBlobsFingers();
         //blobExt.ComputeAngle();
-        uint16_t* p_origMat = (uint16_t*)(origMat.data);
+        uint16_t* p_origMatClone = (uint16_t*)(origMatClone.data);
         for(const auto& cell : blobExt.cells.AllConst()) {
-            *(p_origMat + cell.ind) = 0;
+            *(p_origMatClone + cell.ind) = 0;
         }
     }
     return blobsExt;

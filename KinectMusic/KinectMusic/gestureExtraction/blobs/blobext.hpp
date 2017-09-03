@@ -32,7 +32,7 @@ public:
     bool IsAdjacent(const BlobExt& blob, int depthThresh = INT_MAX) const;
     void Enlarge(int width);
 private:
-    inline bool GoRoundNeighbours(std::list<Cell>& lCells, Cell& cell, size_t maxNeighbDiff, int maxCount, int adjacentDepthThresh = -1);
+    inline bool GoRoundNeighbours(std::list<Cell>& lCells, Cell& cell, size_t maxNeighbDiff, int maxCount/*, int adjacentDepthThresh = -1*/);
     inline bool IsAdjacentCells(int x1, int y1, uint16_t val1, int x2, int y2, int depthThresh = INT_MAX) const;
     void CheckBlobFingers();
     void CreateGraph();
@@ -64,7 +64,7 @@ std::vector<std::pair<int,int>> BlobExt<TContainer, T>::neighbours {
 
 //blob extended
 template<template<typename> class  TContainer, typename T>
-BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, int ind, size_t maxNeighbDiff, int maxCount, int adjacentDepthThresh) :
+BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, int ind, size_t maxNeighbDiff, int maxCount/*, int adjacentDepthThresh*/) :
 mat(mat)
 {
     matBlob = cv::Mat_<uint16_t>::zeros(cv::Size(mat.cols, mat.rows));
@@ -82,18 +82,18 @@ mat(mat)
         auto it = lCells.begin();
         while(it != lCells.end()){
             auto& cell = *it;
-            if(!GoRoundNeighbours(lCells, cell, maxNeighbDiff, maxCount, adjacentDepthThresh))
+            if(!GoRoundNeighbours(lCells, cell, maxNeighbDiff, maxCount/*, adjacentDepthThresh*/))
                 break;
             ++it;
         }
     }
     
     //recreate matBlob if adjacenty test
-    if(adjacentDepthThresh != -1){
+    /*if(adjacentDepthThresh != -1){
         matBlob = cv::Mat_<uint16_t>::zeros(cv::Size(mat.cols, mat.rows));
         for(const auto& cell : cells.AllConst())
             *((uint16_t*)(matBlob.data) + cell.ind) = cell.val;
-    }
+    }*/
 }
 
 template<template<typename> class  TContainer,  typename T>
@@ -175,22 +175,22 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
     std::list<int> inds;
     for(auto& cell : cells.All())
         inds.push_back(cell.ind);
-    Convex3d::extractConvexities(mat, filterSize, filterDepth, coreHalfSize, countFalsePercent, true, inds, true);
+    Convex3d::extractConvexities1(mat, filterSize, filterDepth, coreHalfSize, countFalsePercent, true, inds, true);
     
     int minVal = this->cells.MinValCell()->val;
     cv::Mat matBlobClone = matBlob.clone();
     for(auto i : inds){
         //filter far
         int val =*((uint16_t*)(mat.data) + i);
-        if(val > minVal + 200)
+        if(val > minVal + 150)
             continue;
         if(!*((uint16_t*)(matBlobClone.data) + i))
             continue;
         blobsFingers.emplace_back(matBlobClone,
                                   i,
                                   Params::getMaxNeighbDiffCoarse() * 0.25,
-                                  Params::GET_BLOB_FINGER_MAX_SIZE(),
-                                  Params::getMaxNeighbDiffCoarse());
+                                  1//Params::GET_BLOB_FINGER_MAX_SIZE()
+                                  /*,Params::getMaxNeighbDiffCoarse()*/);
         for(const auto& cell : blobsFingers.back().cells.AllConst()){
             *((uint16_t*)(matBlobClone.data) + cell.ind) = 0;
         }
