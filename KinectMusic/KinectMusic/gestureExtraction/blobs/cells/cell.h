@@ -17,7 +17,7 @@ struct FLAGS {
 
 struct Cell {
     Cell(uint16_t x, uint16_t y, int ind, int val);
-    //Cell(uint16_t x, uint16_t y, int ind, int val, Cell* cellPrec, int dist);
+    Cell(uint16_t x, uint16_t y, int ind, int val, Cell* cellPrec, int dist);
     static float Distance(const Cell& cell1, const Cell& cell2);
     static float Distance(const Cell& cell1, int x, int y, int val);
     
@@ -26,8 +26,8 @@ struct Cell {
     int ind = NO_DATA_VALUE;
     uint16_t val = NO_DATA_VALUE;
     
-    //Cell* cellPrec = nullptr;
-    //int dist = 0;
+    Cell* cellPrec = nullptr;
+    int dist = 0;
 };
 
 struct CellContour : public Cell {

@@ -31,6 +31,7 @@ public:
     const cv::Point3i& AveragePoint();
     bool IsAdjacent(const BlobExt& blob, int depthThresh = INT_MAX) const;
     void Enlarge(int width);
+    void SetMat (cv::Mat m) {mat = m;}
 private:
     inline bool GoRoundNeighbours(std::list<Cell>& lCells, Cell& cell, size_t maxNeighbDiff, int maxCount/*, int adjacentDepthThresh = -1*/);
     inline bool IsAdjacentCells(int x1, int y1, uint16_t val1, int x2, int y2, int depthThresh = INT_MAX) const;
@@ -38,7 +39,7 @@ private:
     void CreateGraph();
     
 private:
-    const cv::Mat mat;
+    cv::Mat mat;
     cv::Mat matBlob;
     std::map<int, int> cellsMap;
     Graph graph;
@@ -194,9 +195,12 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
         for(const auto& cell : blobsFingers.back().cells.AllConst()){
             *((uint16_t*)(matBlobClone.data) + cell.ind) = 0;
         }
+        blobsFingers.back().SetMat(matBlob);
     }
     if(blobsFingers.empty())
         return;
+    BlobsClust<BlobExt> blobsFingersClust(blobsFingers, 2, 20, 2, true);
+    blobsFingers = std::move(blobsFingersClust.getBlobsClust());
     CheckBlobFingers();
 }
 
@@ -219,12 +223,29 @@ void BlobExt<TContainer, T>::CheckBlobFingers(){
 
 template<template<typename> class  TContainer, typename T>
 bool BlobExt<TContainer, T>::IsAdjacent(const BlobExt& blob, int depthThresh) const{
-    float x1 = this->cells.MinValCell()->x;
-    float y1 = this->cells.MinValCell()->y;
-    float x2 = blob.cells.MinValCell()->x;
-    float y2 = blob.cells.MinValCell()->y;
+    /*float x1 = this->cells.AllConst().front().x;
+    float y1 = this->cells.AllConst().front().y;
+    float x2 = blob.cells.AllConst().front().x;
+    float y2 = blob.cells.AllConst().front().y;
     int val1 = *((uint16_t*)(mat.data) + this->cells.MinValCell()->ind);
-    return IsAdjacentCells(x1, y1, val1, x2, y2, depthThresh);
+    return IsAdjacentCells(x1, y1, val1, x2, y2, depthThresh);*/
+    int testCount (this->cells.Size() * blob.cells.Size());
+    int thresh = testCount * 0.5;
+    auto& lCells = this->cells.AllConst();
+    auto& lCells1 = blob.cells.AllConst();
+    int count(0);
+    int i (0);
+    for(const auto& cell : lCells){
+        for(const auto& cell1 : lCells1) {
+            count += IsAdjacentCells(cell.x, cell.y, cell.val, cell1.x, cell1.y, depthThresh);
+            if(count > thresh)
+                return true;
+            ++i;
+            if(i - count > testCount - thresh)
+                return false;
+        }
+    }
+    return count > thresh;
 }
 
 template<template<typename> class  TContainer, typename T>

@@ -14,14 +14,14 @@ y(y),
 ind(ind),
 val(val){}
 
-/*Cell::Cell(uint16_t x, uint16_t y, int ind, int val, Cell* cellPrec, int dist):
+Cell::Cell(uint16_t x, uint16_t y, int ind, int val, Cell* cellPrec, int dist):
 x(x),
 y(y),
 ind(ind),
 val(val),
 cellPrec(cellPrec),
 dist(dist)
-{}*/
+{}
 
 
 float Cell::Distance(const Cell& cell1, const Cell& cell2){

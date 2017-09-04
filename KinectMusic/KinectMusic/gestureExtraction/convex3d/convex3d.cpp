@@ -76,58 +76,40 @@ cv::Mat Convex3d::extractConvexities1(cv::Mat mat, int filt_size, int filt_depth
         int y = (ind - x) / mat.cols;
         uint16_t val = *((uint16_t*)(mat.data) + ind);
         if(val){
-            bool isLocalMin(true);
-            for(auto& neighb : neighbours){
-                int x_ = x + neighb.first;
-                int y_ = y + neighb.second;
-                if(x_ < 0 || x_ >= mat.cols || y_ < 0 || y_ >= mat.rows)
+            static const int filt_size2 = 3;
+            static const int dzThresh = 40;
+            static const int countMin = 6;
+            int count(0);
+            for(int i = 0; i < neighbours.size(); ++i){
+                int dx = neighbours[i].first;
+                int dy = neighbours[i].second;
+                int dx_ =  dx;
+                int dy_ =  dy;
+                int j = 0;
+                int valPrec = val;
+                for(; j < filt_size2; ++j, dx_ += dx, dy_ += dy){
+                    int x_ = x + dx_;
+                    int y_ = y + dy_;
+                    if(x_ < 0 || x_ >= mat.cols || y_ < 0 || y_ >= mat.rows)
+                        continue;
+                    uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
+                    if(!val_ || val_ - valPrec  >= dzThresh)
+                        break;
+                    valPrec = val_;
+                }
+                if(j == filt_size2){
+                    if(i + 1 - count > neighbours.size() - countMin)
+                        break;
                     continue;
-                uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
-                if(val_ && val_ < val){
-                    isLocalMin = false;
+                }
+                ++count;
+                if(count == countMin)
                     break;
-                }
             }
-            if(isLocalMin) {
-                static const int filt_size2 = 4;
-                static const int dzThresh = 20;
-                static const int countMin = 1;
-                int count(0);
-                for(int i = 0; i < (neighbours.size() >> 1); ++i){
-                    int dx = neighbours[i].first;
-                    int dy = neighbours[i].second;
-                    bool isFound(true);
-                    for(int k = -1; k <= 1; k += 2){
-                        int dx1 = k * dx;
-                        int dy1 = k * dy;
-                        int dx_ =  dx1;
-                        int dy_ =  dy1;
-                        int j = 1;
-                        for(; j <= filt_size2; ++j, dx_ += dx1, dy_ += dy1){
-                            int x_ = x + dx_;
-                            int y_ = y + dy_;
-                            if(x_ < 0 || x_ >= mat.cols || y_ < 0 || y_ >= mat.rows)
-                                continue;
-                            uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
-                            if(!val_ || val_ - val >= dzThresh)
-                                break;
-                        }
-                        if( j == filt_size2 + 1){
-                            isFound = false;
-                            break;
-                        }
-                    }
-                    if(isFound){
-                        ++count;
-                        if(count == countMin)
-                            break;
-                    }
-                }
-                if(count == countMin){
-                    *((uint16_t*)(matDst.data) + ind) =  val;
-                    ++it;
-                    continue;
-                }
+            if(count == countMin){
+                *((uint16_t*)(matDst.data) + ind) =  val;
+                ++it;
+                continue;
             }
         }
         it = inds.erase(it);
