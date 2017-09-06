@@ -23,7 +23,7 @@ template<template<typename> class  TContainer, typename T> class BlobExt : publi
     using Blob<TContainer,T>::cells;
 public:
     BlobExt() = delete;
-    BlobExt(const cv::Mat mat, int ind, size_t maxNeighbDiff = Params::getMaxNeighbDiffCoarse(), int maxCount = -1/*, int adjacentDepthThresh = -1*/);
+    BlobExt(const cv::Mat mat, int ind, size_t maxNeighbDiff = Params::getMaxNeighbDiffCoarse(), int maxCount = -1);
     void CreateBlobsFingers();
     void ComputeAngle();
     //size_t CreateBorder();
@@ -33,8 +33,9 @@ public:
     void Enlarge(int width);
     void SetMat (cv::Mat m) {mat = m;}
 private:
-    inline bool GoRoundNeighbours(std::list<Cell>& lCells, Cell& cell, size_t maxNeighbDiff, int maxCount/*, int adjacentDepthThresh = -1*/);
+    inline bool GoRoundNeighbours(std::list<Cell>& lCells, Cell& cell, size_t maxNeighbDiff, int maxCount);
     inline bool IsAdjacentCells(int x1, int y1, uint16_t val1, int x2, int y2, int depthThresh = INT_MAX) const;
+    void Extend(size_t maxNeighbDiff, int adjacThresh, float adjacPercent);
     void CheckBlobFingers();
     void CreateGraph();
     
@@ -63,9 +64,10 @@ std::vector<std::pair<int,int>> BlobExt<TContainer, T>::neighbours {
     {1, 0}, {1, -1},  {0, -1},  {-1, -1}
 };
 
+
 //blob extended
 template<template<typename> class  TContainer, typename T>
-BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, int ind, size_t maxNeighbDiff, int maxCount/*, int adjacentDepthThresh*/) :
+BlobExt<TContainer, T>::BlobExt(const cv::Mat mat, int ind, size_t maxNeighbDiff, int maxCount) :
 mat(mat)
 {
     matBlob = cv::Mat_<uint16_t>::zeros(cv::Size(mat.cols, mat.rows));
@@ -75,7 +77,7 @@ mat(mat)
     int x = ind % w;
     int y = (ind - x)/ w;
     uint16_t val = *((uint16_t*)(mat.data) + ind);
-    std::list<Cell> lCells (1, Cell(x, y, ind, val));
+    std::list<T> lCells (1, Cell(x, y, ind, val));
     *((uint16_t*)(matBlob.data) + ind) = val;
     cells.AddCell(lCells.back());
     //go round matrix
@@ -83,22 +85,60 @@ mat(mat)
         auto it = lCells.begin();
         while(it != lCells.end()){
             auto& cell = *it;
-            if(!GoRoundNeighbours(lCells, cell, maxNeighbDiff, maxCount/*, adjacentDepthThresh*/))
+            if(!GoRoundNeighbours(lCells, cell, maxNeighbDiff, maxCount))
                 break;
             ++it;
         }
     }
-    
-    //recreate matBlob if adjacenty test
-    /*if(adjacentDepthThresh != -1){
-        matBlob = cv::Mat_<uint16_t>::zeros(cv::Size(mat.cols, mat.rows));
-        for(const auto& cell : cells.AllConst())
-            *((uint16_t*)(matBlob.data) + cell.ind) = cell.val;
-    }*/
+    for(const auto& cell : lCells)
+        cells.AddCell(cell);
+}
+
+template<template<typename> class  TContainer, typename T>
+void BlobExt<TContainer, T>::Extend(size_t maxNeighbDiff, int adjacThresh, float adjacPercent) {
+    std::list<T> lCellsBase;
+    for(const auto& cell : this->cells.AllConst()){
+        lCellsBase.push_back(cell);
+    }
+
+    for(const auto& cellBase : lCellsBase){
+        std::list<T> lCells(1, cellBase);
+        auto it = lCells.begin();
+        while(it != lCells.end()){
+            auto& cell = *it;
+            if(!GoRoundNeighbours(lCells, cell, maxNeighbDiff, -1))
+                break;
+            auto it1 = it;
+            ++it1;
+            while(it1 != lCells.end()){
+                auto& cell1 = *it1;
+                size_t testCount (lCellsBase.size());
+                size_t thresh = testCount * adjacPercent;
+                size_t count(0);
+                size_t i (0);
+                for(const auto& cellBase : lCellsBase){
+                    count += IsAdjacentCells(cell1.x, cell1.y, cell1.val, cellBase.x, cellBase.y, adjacThresh);
+                    if(count > thresh)
+                        break;
+                    ++i;
+                    if(i - count > testCount - thresh)
+                        break;
+                }
+                if(count <= thresh){
+                    it1 = lCells.erase(it1);
+                    continue;
+                }
+                ++it1;
+            }
+            ++it;
+        }
+        for(const auto& cell : lCells)
+            cells.AddCell(cell);
+    }
 }
 
 template<template<typename> class  TContainer,  typename T>
-inline bool BlobExt<TContainer, T>::GoRoundNeighbours(std::list<Cell>& lCells, Cell& cell, size_t maxNeighbDiff, int maxCount/*, int adjacentDepthThresh*/){
+inline bool BlobExt<TContainer, T>::GoRoundNeighbours(std::list<Cell>& lCells, Cell& cell, size_t maxNeighbDiff, int maxCount){
     int x = cell.x;
     int y = cell.y;
     int val = cell.val;
@@ -116,34 +156,9 @@ inline bool BlobExt<TContainer, T>::GoRoundNeighbours(std::list<Cell>& lCells, C
         }
         *((uint16_t*)(matBlob.data) + indNeighb) = valNeighb;
 
-        /*if(adjacentDepthThresh != -1){
-            float distToOrigin = Cell::Distance(lCells.front(), xNeighb, yNeighb, valNeighb);
-            if(distToOrigin > 25)
-                continue;
-            float dist = Cell::Distance(cell, xNeighb, yNeighb, valNeighb);
-            Cell* pCell = &cell;
-            Cell* pCellPrec = cell.cellPrec;
-            bool isInsideBlob(true);
-            float routeLength = dist;
-            while(pCellPrec != nullptr){
-                float distToPrec = Cell::Distance(*pCellPrec, xNeighb, yNeighb, valNeighb);
-                routeLength += pCell->dist - pCellPrec->dist;
-                if(routeLength > distToPrec * 1.25){
-                    isInsideBlob = false;
-                    break;
-                }
-                pCell = pCellPrec;
-                pCellPrec = pCell->cellPrec;
-            }
-            if(!isInsideBlob)
-                continue;
-            lCells.emplace_back(xNeighb, yNeighb, indNeighb, valNeighb, &cell, dist);
-        }
-        else {*/
-            lCells.emplace_back(xNeighb, yNeighb, indNeighb, valNeighb);
-        //}
+        lCells.emplace_back(xNeighb, yNeighb, indNeighb, valNeighb);
         
-        cells.AddCell(lCells.back());
+        
         if(maxCount != -1 && lCells.size() == maxCount){
             return false;
         }
@@ -199,9 +214,14 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
     }
     if(blobsFingers.empty())
         return;
+    
     BlobsClust<BlobExt> blobsFingersClust(blobsFingers, 2, 20, 2, true);
     blobsFingers = std::move(blobsFingersClust.getBlobsClust());
-    CheckBlobFingers();
+    
+    for(auto& blob : blobsFingers)
+        blob.Extend(Params::getMaxNeighbDiffCoarse() * 0.25, Params::getMaxNeighbDiffCoarse() * 0.05, 0.5);
+        
+    blobsFingers.sort([](const BlobExt<TContainer,T>& bl1, const BlobExt<TContainer,T>& bl2){return bl1.getCellsConst().MinValCell()->x < bl2.getCellsConst().MinValCell()->x;});
 }
 
 template<template<typename> class  TContainer, typename T>
@@ -218,17 +238,11 @@ void BlobExt<TContainer, T>::CheckBlobFingers(){
         }
         ++it;
     }*/
-    blobsFingers.sort([](const BlobExt<TContainer,T>& bl1, const BlobExt<TContainer,T>& bl2){return bl1.getCellsConst().MinValCell()->x < bl2.getCellsConst().MinValCell()->x;});
+    
 }
 
 template<template<typename> class  TContainer, typename T>
 bool BlobExt<TContainer, T>::IsAdjacent(const BlobExt& blob, int depthThresh) const{
-    /*float x1 = this->cells.AllConst().front().x;
-    float y1 = this->cells.AllConst().front().y;
-    float x2 = blob.cells.AllConst().front().x;
-    float y2 = blob.cells.AllConst().front().y;
-    int val1 = *((uint16_t*)(mat.data) + this->cells.MinValCell()->ind);
-    return IsAdjacentCells(x1, y1, val1, x2, y2, depthThresh);*/
     int testCount (this->cells.Size() * blob.cells.Size());
     int thresh = testCount * 0.5;
     auto& lCells = this->cells.AllConst();
