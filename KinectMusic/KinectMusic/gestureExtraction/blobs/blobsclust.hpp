@@ -105,7 +105,7 @@ template<typename T> bool BlobsClust<T>::isBlobNear(const T& blob1, const T& blo
                     int y2 = cell2.y;
                     int dx = x1 - x2;
                     int dy = y1 - y2;
-                    if(dx * dx + dy * dy <= xyThresh * xyThresh){
+                    if(dx * dx + dy * dy < xyThresh * xyThresh){
                         isNear = true;
                         break;
                     }
