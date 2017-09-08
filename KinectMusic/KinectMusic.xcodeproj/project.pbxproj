@@ -128,6 +128,7 @@
 		728233C31F11525700B6E4D4 /* pclsegmentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233C11F11525700B6E4D4 /* pclsegmentation.cpp */; };
 		728233C61F1153B100B6E4D4 /* pclnormals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 728233C41F1153B100B6E4D4 /* pclnormals.cpp */; };
 		7298B7271D8D85840093134C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7298B7261D8D85840093134C /* main.cpp */; };
+		72AC89EF1F62F4700099C575 /* pclconvexhull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72AC89ED1F62F4700099C575 /* pclconvexhull.cpp */; };
 		72AFE5E41E7B583000143CA7 /* libusb-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 72AFE5E31E7B583000143CA7 /* libusb-1.0.a */; };
 		72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72B332AD1BAF0733003DA9DA /* kinect.cpp */; };
 /* End PBXBuildFile section */
@@ -326,6 +327,8 @@
 		728233CE1F1B692F00B6E4D4 /* blobsfabrique.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = blobsfabrique.hpp; path = gestureExtraction/blobs/blobsfabrique.hpp; sourceTree = "<group>"; };
 		728233D11F1B7EFE00B6E4D4 /* blobsclust.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = blobsclust.hpp; path = gestureExtraction/blobs/blobsclust.hpp; sourceTree = "<group>"; };
 		7298B7261D8D85840093134C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		72AC89ED1F62F4700099C575 /* pclconvexhull.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pclconvexhull.cpp; path = gestureExtraction/pcl/pclconvexhull.cpp; sourceTree = "<group>"; };
+		72AC89EE1F62F4700099C575 /* pclconvexhull.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pclconvexhull.hpp; path = gestureExtraction/pcl/pclconvexhull.hpp; sourceTree = "<group>"; };
 		72AFE5E31E7B583000143CA7 /* libusb-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libusb-1.0.a"; path = "lib/libusb-1.0.a"; sourceTree = "<group>"; };
 		72B332AD1BAF0733003DA9DA /* kinect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = kinect.cpp; sourceTree = "<group>"; };
 		72B332AE1BAF0733003DA9DA /* kinect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kinect.h; sourceTree = "<group>"; };
@@ -741,6 +744,8 @@
 				728233C21F11525700B6E4D4 /* pclsegmentation.hpp */,
 				728233C41F1153B100B6E4D4 /* pclnormals.cpp */,
 				728233C51F1153B100B6E4D4 /* pclnormals.hpp */,
+				72AC89ED1F62F4700099C575 /* pclconvexhull.cpp */,
+				72AC89EE1F62F4700099C575 /* pclconvexhull.hpp */,
 			);
 			name = pcl;
 			sourceTree = "<group>";
@@ -854,6 +859,7 @@
 				728233C01F114CC200B6E4D4 /* pclutility.cpp in Sources */,
 				7207E6351EE2F5CC0021824C /* gestureAll.cpp in Sources */,
 				7252AB891F3476E700521714 /* Neuron.cpp in Sources */,
+				72AC89EF1F62F4700099C575 /* pclconvexhull.cpp in Sources */,
 				72048F8F1EDAD808006381E9 /* logs.cpp in Sources */,
 				7230289E1F247BB0003A8770 /* params.cpp in Sources */,
 			);

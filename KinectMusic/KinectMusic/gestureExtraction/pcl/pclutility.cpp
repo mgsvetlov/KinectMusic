@@ -7,6 +7,7 @@
 //
 
 #include "pclutility.h"
+#include <pcl/surface/convex_hull.h>
 
 void PclUtility::points2cloud(std::list<cv::Point3i>& points,  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
     cloud->width    = static_cast<unsigned int>(points.size());

@@ -18,6 +18,7 @@
 #include "../angles3d/angles3d.h"
 #include "blobsfabrique.hpp"
 #include "../graphs/shortestpath.hpp"
+#include "../pcl/pclconvexhull.hpp"
 
 template<template<typename> class  TContainer, typename T> class BlobExt : public Blob<TContainer,  T> {
     using Blob<TContainer,T>::cells;
@@ -42,6 +43,8 @@ private:
 private:
     cv::Mat mat;
     cv::Mat matBlob;
+    std::list<cv::Point3i> pointsCHull;
+    
     std::map<int, int> cellsMap;
     Graph graph;
     //std::unique_ptr<Border<TContainer, T>> borderPtr;
@@ -189,6 +192,32 @@ const cv::Point3i& BlobExt<TContainer,T>::AveragePoint() {
 
 template<template<typename> class  TContainer, typename T>
 void BlobExt<TContainer, T>::CreateBlobsFingers(){
+    if(cells.Size() < 10)
+        return;
+    std::list<cv::Point3i> points;
+    for(auto& cell : cells.AllConst())
+        points.emplace_back(cell.x, cell.y, cell.val);
+    pointsCHull = PclConvexHull::convecHull(points);
+    {
+        int filterSize = Params::GET_BLOB_EXT_CONVEX3D_FILTER_SIZE_FINE();
+        int filterDepth = Params::GET_BLOB_EXT_CONVEX3D_FILTER_DEPTH_FINE();
+        int coreHalfSize = Params::GET_BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_FINE();
+        int countFalsePercent = Params::GET_BLOB_EXT_CONVEX3D_COUNT_FALSE_PERCENT_FINE();
+        std::list<int> inds;
+        for(const auto& p : pointsCHull)
+            inds.push_back(p.y * mat.cols + p.x);
+        Convex3d::extractConvexities1(mat, filterSize, filterDepth, coreHalfSize, countFalsePercent, true, inds, true);
+        pointsCHull.clear();
+        for(auto ind : inds){
+            int x = ind % mat.cols;
+            int y = (ind - x) / mat.cols;
+            pointsCHull.emplace_back(x, y, 0);
+        }
+        
+                                  
+    }
+    return;
+    
     int filterSize = Params::GET_BLOB_EXT_CONVEX3D_FILTER_SIZE_FINE();
     int filterDepth = Params::GET_BLOB_EXT_CONVEX3D_FILTER_DEPTH_FINE();
     int coreHalfSize = Params::GET_BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_FINE();
@@ -364,6 +393,10 @@ void BlobExt<TContainer, T>::Enlarge(int width){
         cell.x <<= resizePow;
         cell.y <<= resizePow;
         cell.ind = cell.y * width + cell.x;
+    }
+    for(auto& p : pointsCHull){
+        p.x <<= resizePow;
+        p.y <<= resizePow;
     }
     for(auto& blob : blobsFingers){
         for(auto& cell : blob.getCells().All()){

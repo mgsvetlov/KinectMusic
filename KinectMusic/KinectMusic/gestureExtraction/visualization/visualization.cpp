@@ -140,6 +140,10 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
         cv::Scalar c = (cell.flags & FLAGS::ADJACENT_BODY) ? cv::Scalar (255.0f, 0.0f, 0) : cv::Scalar (0.0f, 0.0f, 255);
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, c, -1);
     }*/
+    for(const auto& p : blob.pointsCHull){
+        cv::Scalar color = cv::Scalar (0, 0, 255);
+        cv::circle(matImg, cv::Point(p.x, p.y), 1, color, -1);
+    }
     int fingerCount(0);
     for(const auto& blob : blob.blobsFingers){
         int rem = fingerCount % 6;
