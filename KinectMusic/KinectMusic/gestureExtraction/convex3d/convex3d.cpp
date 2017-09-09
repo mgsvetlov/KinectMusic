@@ -76,7 +76,7 @@ cv::Mat Convex3d::extractConvexities1(cv::Mat mat, int filt_size, int filt_depth
         int y = (ind - x) / mat.cols;
         uint16_t val = *((uint16_t*)(mat.data) + ind);
         if(val){
-            static const int filt_size2 = 4;
+            static const int filt_size2 = 2;
             static const int dzThresh = 40;
             static const int countMin = 5;
             //std::vector<bool> pos (neighbours.size(), false);

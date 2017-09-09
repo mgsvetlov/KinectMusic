@@ -154,8 +154,8 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
         cv::Vec3i U = blob.pointsCHull[poly[1]] - blob.pointsCHull[poly[0]];
         cv::Vec3i V = blob.pointsCHull[poly[2]] - blob.pointsCHull[poly[0]];
         int normal_z = U[0] * V[1] - U[1] * V[0];
-        if(normal_z > 0)
-            continue;
+        //if(normal_z > 0)
+            //continue;
         cv::Scalar color = (normal_z < 0) ? cv::Scalar (255, 127, 64) : cv::Scalar (64, 127, 255);
         for(int i = 0; i < poly.size(); ++i){
             auto& p1 = blob.pointsCHull[poly[i]];

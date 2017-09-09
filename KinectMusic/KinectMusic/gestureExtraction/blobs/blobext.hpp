@@ -202,6 +202,8 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
         points.emplace_back(cell.x, cell.y, cell.val);
     
     pointsCHull = PclConvexHull::convecHull(points, meshInds);
+    if(pointsCHull.empty())
+        return;
     /*std::stringstream ss;
     ss << "points: " << pointsCHull.size() << " meshInds:";
     for(auto& poly : meshInds){
