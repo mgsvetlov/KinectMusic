@@ -7,7 +7,10 @@
 
 class PclConvexHull {
 public:
-    static std::list<cv::Point3i> convecHull(std::list<cv::Point3i>& points);
+    //static void *threadfunc(void *arg);
+    static std::vector<cv::Point3i> convecHull(const std::list<cv::Point3i>& points, std::vector<std::vector< uint32_t >>& polyInds);
+    static pthread_mutex_t convexhullMutex;
+    //static std::list<cv::Point3i> input, output;
 };
 
 #endif /* pclconvex_hull_hpp */

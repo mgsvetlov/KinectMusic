@@ -104,11 +104,11 @@ void Visualization::blobs2img(const std::list<BlobFinal>& lBlobs, cv::Mat& matIm
     if(lBlobs.empty())
         return;
     
-    //int i(0);
+    int i(0);
     for(const auto& blob : lBlobs){
-        //int rem = i % 3;
-        //cv::Scalar color = rem == 0 ? cv::Scalar(0,1.0,0) : rem == 1 ?cv::Scalar(1.0,0,0) : cv::Scalar(1.0,1.0,0) ;
-        cv::Scalar color (0,1,1);
+        int rem = i % 3;
+        cv::Scalar color = rem == 0 ? cv::Scalar(0,1.0,0) : rem == 1 ?cv::Scalar(1.0,0,0) : cv::Scalar(1.0,1.0,0) ;
+        //cv::Scalar color (0,1,1);
         blob2img(blob, matImg, color, true);
         if(drawKeyPoints) {
             int x = blob.cells.MinValCell()->x;
@@ -116,7 +116,7 @@ void Visualization::blobs2img(const std::list<BlobFinal>& lBlobs, cv::Mat& matIm
             int z = blob.cells.MinValCell()->val;
             keyPoint2img(cv::Point3i(x, y, z), matImg, cv::Scalar(127, 0, 0), 3);
         }
-        //++i;
+        ++i;
     }
     
 }
@@ -142,6 +142,30 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
     }*/
     for(const auto& p : blob.pointsCHull){
         cv::Scalar color = cv::Scalar (0, 0, 255);
+        cv::circle(matImg, cv::Point(p.x, p.y), 1, color, -1);
+    }
+    for(auto& poly : blob.meshInds){
+        /*Set Vector U to (Triangle.p2 minus Triangle.p1)
+        Set Vector V to (Triangle.p3 minus Triangle.p1)
+        
+        Set Normal.x to (multiply U.y by V.z) minus (multiply U.z by V.y)
+        Set Normal.y to (multiply U.z by V.x) minus (multiply U.x by V.z)
+        Set Normal.z to (multiply U.x by V.y) minus (multiply U.y by V.x)*/
+        cv::Vec3i U = blob.pointsCHull[poly[1]] - blob.pointsCHull[poly[0]];
+        cv::Vec3i V = blob.pointsCHull[poly[2]] - blob.pointsCHull[poly[0]];
+        int normal_z = U[0] * V[1] - U[1] * V[0];
+        if(normal_z > 0)
+            continue;
+        cv::Scalar color = (normal_z < 0) ? cv::Scalar (255, 127, 64) : cv::Scalar (64, 127, 255);
+        for(int i = 0; i < poly.size(); ++i){
+            auto& p1 = blob.pointsCHull[poly[i]];
+            auto& p2 = blob.pointsCHull[poly[(i+1) % poly.size()]];
+            cv::line(matImg, cv::Point(p1.x, p1.y), cv::Point(p2.x, p2.y), color);
+        }
+    }
+    
+    for(const auto& p : blob.pointsFingers){
+        cv::Scalar color = cv::Scalar (0, 255, 255);
         cv::circle(matImg, cv::Point(p.x, p.y), 1, color, -1);
     }
     int fingerCount(0);

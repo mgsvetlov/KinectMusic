@@ -32,7 +32,6 @@ public:
     const cv::Point3i& AveragePoint();
     bool IsAdjacent(const BlobExt& blob, int depthThresh = INT_MAX) const;
     void Enlarge(int width);
-    void SetMat (cv::Mat m) {mat = m;}
 private:
     inline bool GoRoundNeighbours(std::list<Cell>& lCells, Cell& cell, size_t maxNeighbDiff, int maxCount);
     inline bool IsAdjacentCells(int x1, int y1, uint16_t val1, int x2, int y2, int depthThresh = INT_MAX) const;
@@ -41,9 +40,11 @@ private:
     void CreateGraph();
     
 private:
-    cv::Mat mat;
+    const cv::Mat mat;
     cv::Mat matBlob;
-    std::list<cv::Point3i> pointsCHull;
+    std::vector<cv::Point3i> pointsCHull;
+    std::vector<std::vector< uint32_t>> meshInds;
+    std::list<cv::Point3i> pointsFingers;
     
     std::map<int, int> cellsMap;
     Graph graph;
@@ -148,27 +149,29 @@ inline bool BlobExt<TContainer, T>::GoRoundNeighbours(std::list<Cell>& lCells, C
     int x = cell.x;
     int y = cell.y;
     int val = cell.val;
-    for(auto& neighb : neighbours){
-        int xNeighb = x + neighb.first;
-        int yNeighb = y + neighb.second;
-        if(xNeighb < 0 || xNeighb >= mat.cols || yNeighb < 0 || yNeighb >= mat.rows)
-            continue;
-        int indNeighb = yNeighb * mat.cols + xNeighb;
-        if(*((uint16_t*)(matBlob.data) + indNeighb))
-            continue;
-        uint16_t valNeighb =  *((uint16_t*)(mat.data) + indNeighb);
-        if(valNeighb >= Params::getMaxKinectDepth()  || valNeighb == 0 || abs(valNeighb-val) >= maxNeighbDiff){
-            continue;
-        }
-        *((uint16_t*)(matBlob.data) + indNeighb) = valNeighb;
+    for(int i = 1; i < 3; ++i) {
+        for(auto& neighb : neighbours){
+            int xNeighb = x + neighb.first * i;
+            int yNeighb = y + neighb.second * i;
+            if(xNeighb < 0 || xNeighb >= mat.cols || yNeighb < 0 || yNeighb >= mat.rows)
+                continue;
+            int indNeighb = yNeighb * mat.cols + xNeighb;
+            if(*((uint16_t*)(matBlob.data) + indNeighb))
+                continue;
+            uint16_t valNeighb =  *((uint16_t*)(mat.data) + indNeighb);
+            if(valNeighb >= Params::getMaxKinectDepth()  || valNeighb == 0 || abs(valNeighb-val) >= maxNeighbDiff){
+                continue;
+            }
+            *((uint16_t*)(matBlob.data) + indNeighb) = valNeighb;
 
-        if(valNeighb - lCells.front().val > 150)
-            continue;
-        lCells.emplace_back(xNeighb, yNeighb, indNeighb, valNeighb);
-        
-        
-        if(maxCount != -1 && lCells.size() == maxCount){
-            return false;
+            if(valNeighb - lCells.front().val > 150)
+                continue;
+            lCells.emplace_back(xNeighb, yNeighb, indNeighb, valNeighb);
+            
+            
+            if(maxCount != -1 && lCells.size() == maxCount){
+                return false;
+            }
         }
     }
     return true;
@@ -197,7 +200,16 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
     std::list<cv::Point3i> points;
     for(auto& cell : cells.AllConst())
         points.emplace_back(cell.x, cell.y, cell.val);
-    pointsCHull = PclConvexHull::convecHull(points);
+    
+    pointsCHull = PclConvexHull::convecHull(points, meshInds);
+    /*std::stringstream ss;
+    ss << "points: " << pointsCHull.size() << " meshInds:";
+    for(auto& poly : meshInds){
+        ss << "\n";
+        for(auto& ind : poly)
+            ss << ind << " ";
+    }
+    Logs::writeLog("gestures", ss.str());*/
     {
         int filterSize = Params::GET_BLOB_EXT_CONVEX3D_FILTER_SIZE_FINE();
         int filterDepth = Params::GET_BLOB_EXT_CONVEX3D_FILTER_DEPTH_FINE();
@@ -207,17 +219,15 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
         for(const auto& p : pointsCHull)
             inds.push_back(p.y * mat.cols + p.x);
         Convex3d::extractConvexities1(mat, filterSize, filterDepth, coreHalfSize, countFalsePercent, true, inds, true);
-        pointsCHull.clear();
         for(auto ind : inds){
             int x = ind % mat.cols;
             int y = (ind - x) / mat.cols;
-            pointsCHull.emplace_back(x, y, 0);
+            pointsFingers.emplace_back(x, y, 0);
         }
-        
                                   
     }
     return;
-    
+    /*
     int filterSize = Params::GET_BLOB_EXT_CONVEX3D_FILTER_SIZE_FINE();
     int filterDepth = Params::GET_BLOB_EXT_CONVEX3D_FILTER_DEPTH_FINE();
     int coreHalfSize = Params::GET_BLOB_EXT_CONVEX3D_CORE_HALF_SIZE_FINE();
@@ -239,12 +249,12 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
         blobsFingers.emplace_back(matBlobClone,
                                   i,
                                   Params::getMaxNeighbDiffCoarse() * 0.25,
-                                  1//Params::GET_BLOB_FINGER_MAX_SIZE()
-                                  /*,Params::getMaxNeighbDiffCoarse()*/);
+                                  1//Params::GET_BLOB_FINGER_MAX_SIZE(),Params::getMaxNeighbDiffCoarse())
+                                  ;
         for(const auto& cell : blobsFingers.back().cells.AllConst()){
             *((uint16_t*)(matBlobClone.data) + cell.ind) = 0;
         }
-        blobsFingers.back().SetMat(matBlob);
+        //blobsFingers.back().SetMat(matBlob);
     }
     if(blobsFingers.empty())
         return;
@@ -254,10 +264,11 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
     BlobsClust<BlobExt> blobsFingersClust1(blobsFingers, 2, -1, 6, true);
     blobsFingers = std::move(blobsFingersClust1.getBlobsClust());
     
-    /*for(auto& blob : blobsFingers)
-        blob.Extend(Params::getMaxNeighbDiffCoarse() * 0.25, Params::getMaxNeighbDiffCoarse() * 0.05, 0.5);*/
+    //for(auto& blob : blobsFingers)
+        //blob.Extend(Params::getMaxNeighbDiffCoarse() * 0.25, //Params::getMaxNeighbDiffCoarse() * 0.05, 0.5);
         
     blobsFingers.sort([](const BlobExt<TContainer,T>& bl1, const BlobExt<TContainer,T>& bl2){return bl1.getCellsConst().MinValCell()->x < bl2.getCellsConst().MinValCell()->x;});
+     */
 }
 
 template<template<typename> class  TContainer, typename T>
@@ -395,6 +406,10 @@ void BlobExt<TContainer, T>::Enlarge(int width){
         cell.ind = cell.y * width + cell.x;
     }
     for(auto& p : pointsCHull){
+        p.x <<= resizePow;
+        p.y <<= resizePow;
+    }
+    for(auto& p : pointsFingers){
         p.x <<= resizePow;
         p.y <<= resizePow;
     }

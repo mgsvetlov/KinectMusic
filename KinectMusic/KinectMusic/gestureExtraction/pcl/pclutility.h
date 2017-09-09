@@ -15,7 +15,7 @@
 
 class PclUtility {
 public:
-    static void points2cloud(std::list<cv::Point3i>& points,  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+    static void points2cloud(const std::list<cv::Point3i>& points,  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 };
 
 #endif /* utility_hpp */

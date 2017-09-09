@@ -130,9 +130,9 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
     }
     std::sort(inds.begin(), inds.end(), [origMat] (const int& i1, const int& i2) {
         return *((uint16_t*)(origMat.data) + i1) < *((uint16_t*)(origMat.data) + i2); } );
-    auto origMatClone = origMat.clone();
+    cv::Mat blobsMap = cv::Mat_<uint16_t>::zeros(cv::Size(origMat.cols, origMat.rows));
     for(auto& ind : inds) {
-        uint16_t firstVal = *((uint16_t*)(origMatClone.data) + ind);
+        uint16_t firstVal = *((uint16_t*)(origMat.data) + ind);
         if(!firstVal)
             continue;
         double coeff = static_cast<double>(Params::getBlobExtDepthCoeff()) / firstVal;
@@ -140,12 +140,24 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
         blobsExt.emplace_back(origMat, ind, Params::getMaxNeighbDiffCoarse(), maxCount);
         auto& blobExt = blobsExt.back();
         if( blobExt.cells.Size() == 0
-           ||blobExt.cells.MaxValCell()->val < Params::getBlobExtMaxDepthThresh()
+           /*||blobExt.cells.MaxValCell()->val < Params::getBlobExtMaxDepthThresh()*/
            ) {
             blobsExt.pop_back();
             continue;
         }
-        std::list<int> cellInds;
+        bool isCross(false);
+        for(const auto& cell : blobExt.cells.AllConst()) {
+            if(*((uint16_t*)(blobsMap.data) + cell.ind)){
+                isCross = true;
+                break;
+            }
+        }
+        if(isCross){
+            blobsExt.pop_back();
+            continue;
+        }
+            
+        /*std::list<int> cellInds;
         for(const auto& cell : blobExt.cells.AllConst()) {
             cellInds.push_back(cell.ind);
         }
@@ -157,12 +169,11 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
         if(cellInds.size() < Params::GET_BLOB_EXT_FEATURE_INDS_COARSE_MIN_SIZE()){
             blobsExt.pop_back();
             continue;
-        }
+        }*/
         blobExt.CreateBlobsFingers();
         //blobExt.ComputeAngle();
-        uint16_t* p_origMatClone = (uint16_t*)(origMatClone.data);
         for(const auto& cell : blobExt.cells.AllConst()) {
-            *(p_origMatClone + cell.ind) = 0;
+            *((uint16_t*)(blobsMap.data) + cell.ind) = cell.val;
         }
     }
     return blobsExt;

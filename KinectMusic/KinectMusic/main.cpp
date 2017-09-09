@@ -42,21 +42,11 @@
 #include "share.h"
 #include "log/logs.h"
 #include "config/config.h"
-//#include "gestureExtraction/graphs/shortestpath.hpp"
+//#include "gestureExtraction/pcl/pclconvexhull.hpp"
+
 
 int main(int argc, char **argv)
 {
-    /*Graph graph;
-    graph.verts_count = 6;
-    graph.edges = { Edge(0, 2), Edge(1, 1), Edge(1, 3), Edge(1, 4), Edge(2, 1), Edge(2, 3), Edge(3, 4), Edge(4, 0), Edge(4, 1)};
-    graph.weights = { 1, 2, 1, 2, 7, 3, 1, 1, 1 };
-    ShortestPath shortestPath(graph, 0);
-    for(int dst = 0; dst < graph.verts_count; ++dst){
-        shortestPath.GetDistance(dst);
-        shortestPath.GetPath(dst);
-    }
-    return 0;*/
-    
     Config::setFileName("../../../config.ini");
     Config* config = Config::instance();
     if(config == nullptr){
@@ -96,7 +86,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
     
-    size_t extractFrameDataThreadsCount = 2;
+    size_t extractFrameDataThreadsCount = 1;
     pthread_t* p_extractFrameData_create = new pthread_t[extractFrameDataThreadsCount];
     for(int i = 0; i < extractFrameDataThreadsCount; i++){
         res = pthread_create(&p_extractFrameData_create[i], NULL, ExtractFrameData::threadfunc, NULL);
@@ -105,6 +95,14 @@ int main(int argc, char **argv)
             return 1;
         }
     }
+    
+    /*pthread_t convexhull_thread;
+    res = pthread_create(&convexhull_thread, NULL, PclConvexHull::threadfunc, NULL);
+    if (res) {
+        printf("pthread_create convexhull_thread failed\n");
+        freenect_shutdown(f_ctx);
+        return 1;
+    }*/
     
     while(true) {
         if(config->getIsVisualisation()){
@@ -124,7 +122,8 @@ int main(int argc, char **argv)
     for(int i = 0; i < extractFrameDataThreadsCount; i++){
         pthread_join(p_extractFrameData_create[i], NULL);
     }
-    
+    //pthread_join(convexhull_thread, NULL);
+                 
     Sensor::die_kinect = 1;
     pthread_join(freenect_thread, NULL);
     

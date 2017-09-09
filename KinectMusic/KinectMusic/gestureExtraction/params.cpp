@@ -53,7 +53,7 @@ void Params::Init(){
     //1 FREENECT_DEPTH_11BIT     MAX_KINECT_VALUE  2018 MAX_NEIGHB_DIFF_COARSE 4
     int depthFormatIndex = Config::instance()->getDepthFormat();
     MAX_KINECT_VALUE = depthFormatIndex == 0 ? 10000 : 2018;
-    MAX_NEIGHB_DIFF_COARSE = depthFormatIndex == 0 ? 40 : 6;//80 : 4
+    MAX_NEIGHB_DIFF_COARSE = depthFormatIndex == 0 ? 80 : 6;//80 : 4
     MAX_KINECT_DEPTH = depthFormatIndex == 0 ? 2500 : 900;
     MATRIX_WIDTH = Config::instance()->getMatrixWidth();
     MATRIX_HEIGHT = MATRIX_WIDTH / 4 * 3;

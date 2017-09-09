@@ -76,10 +76,10 @@ cv::Mat Convex3d::extractConvexities1(cv::Mat mat, int filt_size, int filt_depth
         int y = (ind - x) / mat.cols;
         uint16_t val = *((uint16_t*)(mat.data) + ind);
         if(val){
-            static const int filt_size2 = 3;
+            static const int filt_size2 = 4;
             static const int dzThresh = 40;
-            static const int countMin = 6;
-            std::vector<bool> pos (neighbours.size(), false);
+            static const int countMin = 5;
+            //std::vector<bool> pos (neighbours.size(), false);
             int count(0);
             for(int i = 0; i < neighbours.size(); ++i){
                 int dx = neighbours[i].first;
@@ -103,12 +103,17 @@ cv::Mat Convex3d::extractConvexities1(cv::Mat mat, int filt_size, int filt_depth
                         break;
                     continue;
                 }
-                pos [i] = true;
+                //pos [i] = true;
                 ++count;
-                //if(count == countMin)
-                    //break;
+                if(count == countMin)
+                    break;
             }
-            if(count >= countMin){
+            if(count == countMin){
+                *((uint16_t*)(matDst.data) + ind) =  val;
+                ++it;
+                continue;
+            }
+            /*if(count >= countMin){
                 bool flag(false);
                 if(count >= 7) {
                     flag = true;
@@ -129,7 +134,7 @@ cv::Mat Convex3d::extractConvexities1(cv::Mat mat, int filt_size, int filt_depth
                     ++it;
                     continue;
                 }
-            }
+            }*/
         }
         it = inds.erase(it);
     }
