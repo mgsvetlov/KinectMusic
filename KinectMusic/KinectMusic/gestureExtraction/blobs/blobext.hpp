@@ -205,11 +205,12 @@ void BlobExt<TContainer, T>::CreateBlobsFingers(){
     if(pointsCHull.empty())
         return;
     */
-    for(const auto& p :  cells.AllConst()){
-        //int ind = p.y * mat.cols + p.x;
-        int radius = Convex3d::radius(mat, p.ind, 20);
-        if(radius < 14 )
-            pointsFingers.emplace_back(p.x, p.y, p.val/**((uint16_t*)(mat.data) + ind)*/);
+    for(const auto& cell :  cells.AllConst()){
+        if(!Convex3d::isBorderPoint(mat, cell.ind, 1, 1, 20))
+            continue;
+        int radius = Convex3d::radius(mat, cell.ind, 1, 8, 20);
+        if(radius != INT_MAX)
+            pointsFingers.emplace_back(cell.x, cell.y, radius);
     }
     
     /*std::list<int> inds;

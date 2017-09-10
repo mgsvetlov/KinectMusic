@@ -110,7 +110,7 @@ cv::Mat Convex3d::extractConvexitiesFine(cv::Mat mat, int start_dist, int end_di
     return matDst;
 }
 
-int Convex3d::radius(cv::Mat mat, int ind, int dzThresh){
+int Convex3d::radius(cv::Mat mat, int ind, int start, int end, int dzThresh){
     if(ind < 0 || ind > mat.total())
        return INT_MAX;
     int x = ind % mat.cols;
@@ -122,11 +122,11 @@ int Convex3d::radius(cv::Mat mat, int ind, int dzThresh){
     for(int i = 0; i < neighbours.size(); ++i){
         int dx = neighbours[i].first;
         int dy = neighbours[i].second;
-        int x_ =  x + dx;
-        int y_ =  y + dy;
+        int x_ =  x + dx * start;
+        int y_ =  y + dy * start;
         int valPrec = val;
-        int j = 1;
-        for(; j <= 8; ++j, x_ += dx, y_ += dy){
+        int j = start;
+        for(; j <= end; ++j, x_ += dx, y_ += dy){
             if(x_ < 0 || x_ >= mat.cols || y_ < 0 || y_ >= mat.rows){
                 break;
             }
@@ -147,8 +147,32 @@ int Convex3d::radius(cv::Mat mat, int ind, int dzThresh){
     }
     
     std::sort(radiusAll1.begin(), radiusAll1.end(), [](int r1, int r2){return r1 < r2;});
-    if(radiusAll1[2] == INT_MAX)
+    if(radiusAll1[1] == INT_MAX)
         return INT_MAX;
     
-    return radiusAll1[2]; //(radiusAll1[0] + radiusAll1[1]+ radiusAll1[2]) / 3;
+    return radiusAll1[1];
+}
+
+bool Convex3d::isBorderPoint(cv::Mat mat, int ind, int start, int end, int dzThresh){
+    if(ind < 0 || ind > mat.total())
+        return false;
+    int x = ind % mat.cols;
+    int y = (ind - x) / mat.cols;
+    uint16_t val = *((uint16_t*)(mat.data) + ind);
+    if(!val)
+        return false;
+    int count(0);
+    for(int i = start; i <= end; ++i) {
+        for(auto& neighb : neighbours){
+            int xNeighb = x + neighb.first * i;
+            int yNeighb = y + neighb.second * i;
+            if(xNeighb < 0 || xNeighb >= mat.cols || yNeighb < 0 || yNeighb >= mat.rows)
+                return false;
+            int indNeighb = yNeighb * mat.cols + xNeighb;
+            uint16_t valNeighb =  *((uint16_t*)(mat.data) + indNeighb);
+            if(valNeighb - val >= dzThresh)
+                count++;
+        }
+    }
+    return count >= 2;
 }

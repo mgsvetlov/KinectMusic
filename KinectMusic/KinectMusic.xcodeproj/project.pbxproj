@@ -725,8 +725,8 @@
 		728233201F07950D00B6E4D4 /* convex3d */ = {
 			isa = PBXGroup;
 			children = (
-				7274B8B91F1CEA5300F1D30D /* convex3d.cpp */,
 				7274B8BA1F1CEA5300F1D30D /* convex3d.h */,
+				7274B8B91F1CEA5300F1D30D /* convex3d.cpp */,
 			);
 			name = convex3d;
 			sourceTree = "<group>";

@@ -122,13 +122,13 @@ void Visualization::blobs2img(const std::list<BlobFinal>& lBlobs, cv::Mat& matIm
 }
 
 void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::Scalar& color, bool colorFromNormal){
-    int minVal = blob.cells.MinValCell()->val;
+    /*int minVal = blob.cells.MinValCell()->val;
     for(auto& cell : blob.cells.AllConst()){
         int col = 255 - (cell.val - minVal);
         if(col < 0)
             col = 0;
         cv::circle(matImg, cv::Point(cell.x, cell.y), 1, cv::Scalar (color[0] * col, color[1] * col, color[2] * col), -1);
-    }
+    }*/
     //const auto& contour = blob.borderPtr->contour;
     /*for(const auto& cell : contour){
         cv::Scalar c = (cell.flags & FLAGS::ADJACENT_BODY) ? cv::Scalar (255.0f, 0.0f, 0) : cv::Scalar (0.0f, 0.0f, 255);
@@ -185,7 +185,7 @@ void Visualization::blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::S
     }*/
     
     for(const auto& p : blob.pointsFingers){
-        cv::Scalar color = cv::Scalar (0, 255, 255);
+        cv::Scalar color = cv::Scalar (0, 0, 255 - (p.z -1) * 16);
         cv::circle(matImg, cv::Point(p.x, p.y), 1, color, -1);
     }
 
