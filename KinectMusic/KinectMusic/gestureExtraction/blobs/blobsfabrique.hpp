@@ -137,7 +137,8 @@ template<typename T1> std::list<T1>& BlobsFabrique<T>::constructBlobsExt(cv::Mat
             continue;
         double coeff = static_cast<double>(Params::getBlobExtDepthCoeff()) / firstVal;
         int maxCount = coeff * coeff * Params::getBlobExtMaxSize();
-        blobsExt.emplace_back(origMat, ind, Params::getMaxNeighbDiffCoarse(), maxCount);
+        int neighbLevels = 2;
+        blobsExt.emplace_back(origMat, ind, Params::getMaxNeighbDiffCoarse(), maxCount, neighbLevels);
         auto& blobExt = blobsExt.back();
         if( blobExt.cells.Size() == 0
            /*||blobExt.cells.MaxValCell()->val < Params::getBlobExtMaxDepthThresh()*/

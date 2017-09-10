@@ -15,7 +15,8 @@
 class Convex3d {
 public:
     static cv::Mat extractConvexities(cv::Mat mat, int filt_size, int filt_depth, int core_half_size, int count_false_percent, bool isZeroValid, std::list<int>& inds, bool extremumsOnly = false);
-    static cv::Mat extractConvexities1(cv::Mat mat, int filt_size, int filt_depth, int core_half_size, int count_false_percent, bool isZeroValid, std::list<int>& inds, bool extremumsOnly = false);
+    static cv::Mat extractConvexitiesFine(cv::Mat mat, int start_dist, int end_dist, int dzThresh, int countGlobalMin, std::list<int>& inds);
+    static int radius(cv::Mat mat, int ind, int dzThresh);
 private:
     static std::vector<std::pair<int,int>> neighbours;
 };

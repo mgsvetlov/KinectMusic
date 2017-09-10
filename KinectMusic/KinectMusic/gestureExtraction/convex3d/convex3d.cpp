@@ -62,7 +62,7 @@ cv::Mat Convex3d::extractConvexities(cv::Mat mat, int filt_size, int filt_depth,
     return matDst;
 }
 
-cv::Mat Convex3d::extractConvexities1(cv::Mat mat, int filt_size, int filt_depth, int core_half_size, int count_false_percent, bool isZeroValid, std::list<int>& inds, bool extremumsOnly)
+cv::Mat Convex3d::extractConvexitiesFine(cv::Mat mat, int start_dist, int end_dist, int dzThresh, int countGlobalMin, std::list<int>& inds)
 {
     if(inds.empty()){
         inds.resize(mat.total());
@@ -76,67 +76,79 @@ cv::Mat Convex3d::extractConvexities1(cv::Mat mat, int filt_size, int filt_depth
         int y = (ind - x) / mat.cols;
         uint16_t val = *((uint16_t*)(mat.data) + ind);
         if(val){
-            static const int filt_size2 = 2;
-            static const int dzThresh = 40;
-            static const int countMin = 5;
-            //std::vector<bool> pos (neighbours.size(), false);
-            int count(0);
+            int countGlobal(0);
             for(int i = 0; i < neighbours.size(); ++i){
                 int dx = neighbours[i].first;
                 int dy = neighbours[i].second;
-                int dx_ =  dx;
-                int dy_ =  dy;
-                int j = 0;
+                int dx_ =  dx * start_dist;
+                int dy_ =  dy * start_dist;
+                int j = start_dist;
                 int valPrec = val;
-                for(; j < filt_size2; ++j, dx_ += dx, dy_ += dy){
+                int countLocal(0);
+                for(; j < end_dist; ++j, dx_ += dx, dy_ += dy){
                     int x_ = x + dx_;
                     int y_ = y + dy_;
                     if(x_ < 0 || x_ >= mat.cols || y_ < 0 || y_ >= mat.rows)
                         continue;
                     uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
                     if(!val_ || val_ - valPrec  >= dzThresh)
-                        break;
+                        ++countLocal;
                     valPrec = val_;
                 }
-                if(j == filt_size2){
-                    if(i + 1 - count > neighbours.size() - countMin)
-                        break;
-                    continue;
-                }
-                //pos [i] = true;
-                ++count;
-                if(count == countMin)
+                countGlobal += countLocal;
+                if(countGlobal >= countGlobalMin)
                     break;
             }
-            if(count == countMin){
+            if(countGlobal >= countGlobalMin){
                 *((uint16_t*)(matDst.data) + ind) =  val;
                 ++it;
                 continue;
             }
-            /*if(count >= countMin){
-                bool flag(false);
-                if(count >= 7) {
-                    flag = true;
-                }
-                else {
-                    for(int i = 0; i < neighbours.size(); ++i){
-                        if(!pos[i]){
-                            if(!pos[(i + 1) % neighbours.size()] ||
-                               !pos[(i + neighbours.size() - 1) % neighbours.size()]){
-                                flag = true;
-                            }
-                            break;
-                        }
-                    }
-                }
-                if(flag){
-                    *((uint16_t*)(matDst.data) + ind) =  val;
-                    ++it;
-                    continue;
-                }
-            }*/
         }
         it = inds.erase(it);
     }
     return matDst;
+}
+
+int Convex3d::radius(cv::Mat mat, int ind, int dzThresh){
+    if(ind < 0 || ind > mat.total())
+       return INT_MAX;
+    int x = ind % mat.cols;
+    int y = (ind - x) / mat.cols;
+    uint16_t val = *((uint16_t*)(mat.data) + ind);
+    if(!val)
+        return INT_MAX;
+    std::vector<int> radiusAll(neighbours.size(), INT_MAX);
+    for(int i = 0; i < neighbours.size(); ++i){
+        int dx = neighbours[i].first;
+        int dy = neighbours[i].second;
+        int x_ =  x + dx;
+        int y_ =  y + dy;
+        int valPrec = val;
+        int j = 1;
+        for(; j <= 8; ++j, x_ += dx, y_ += dy){
+            if(x_ < 0 || x_ >= mat.cols || y_ < 0 || y_ >= mat.rows){
+                break;
+            }
+            uint16_t val_ = *((uint16_t*)(mat.data) + y_* mat.cols + x_);
+            if(!val_ || val_ - valPrec  >= dzThresh){
+                radiusAll[i] = j;
+                break;
+            }
+            valPrec = val_;
+        }
+    }
+    std::vector<int> radiusAll1(neighbours.size() >> 1, INT_MAX);
+    for(int i = 0; i < (neighbours.size() >> 1); ++i){
+        if(radiusAll[i] ==  INT_MAX ||
+           radiusAll[i + (neighbours.size() >> 1)] == INT_MAX)
+            continue;
+        radiusAll1[i] = radiusAll[i] + radiusAll[i + (neighbours.size() >> 1)];
+    }
+    
+    std::sort(radiusAll1.begin(), radiusAll1.end(), [](int r1, int r2){return r1 < r2;});
+    if(radiusAll1[2] == INT_MAX)
+        return INT_MAX;
+    
+    return radiusAll1[2]; //(radiusAll1[0] + radiusAll1[1]+ radiusAll1[2]) / 3;
 }
