@@ -24,12 +24,14 @@ frameData(frameNum)
 {
     filterFar();
     markEdges();
-    resize();
+    
+    computeIntegral();
+    
+    /*resize();
     createBlobsAndBorders();
     tracking();
-    shareFrameData();
+    shareFrameData();*/
     visualize();
-
 }
 
 void ProcessFrameData::filterFar(){
@@ -47,6 +49,7 @@ void ProcessFrameData::filterFar(){
 }
 
 void ProcessFrameData::markEdges(){
+    static const int maxKinectDepth(Params::getMaxKinectDepth());
     uint16_t* p_mat = (uint16_t*)(mat.data);
     uint16_t* p_matFilt = (uint16_t*)(matFilt.data);
     uint16_t* p_mat1 = (uint16_t*)(mat.data) + mat.total() - 1;
@@ -55,14 +58,14 @@ void ProcessFrameData::markEdges(){
         for(int i = 0; i < mat.cols; ++i){
             if(*(p_mat +i))
                 break;
-            *(p_matFilt + i) = 0;
+            *(p_matFilt + i) = maxKinectDepth;//0;
         }
         p_mat += mat.cols;
         p_matFilt += mat.cols;
         for(int i = 0; i < mat.cols; ++i){
             if(*(p_mat1 - i))
                 break;
-            *(p_matFilt1 - i) = 0;
+            *(p_matFilt1 - i) = maxKinectDepth;//0;
         }
         p_mat1 -= mat.cols;
         p_matFilt1 -= mat.cols;
@@ -73,14 +76,14 @@ void ProcessFrameData::markEdges(){
         for(int j = 0; j < mat.rows; ++j, p_mat += mat.cols, p_matFilt += mat.cols){
             if(*p_mat)
                 break;
-            *p_matFilt = 0;
+            *p_matFilt = maxKinectDepth;//0;
         }
         p_mat = (uint16_t*)(mat.data) + mat.total() - 1 - i;
         p_matFilt = (uint16_t*)(matFilt.data) + mat.total() - 1 - i;
         for(int j = 0; j < mat.rows; ++j, p_mat -= mat.cols, p_matFilt -= mat.cols){
             if(*p_mat)
                 break;
-            *p_matFilt = 0;
+            *p_matFilt = maxKinectDepth;//0;
         }
     }
 }
@@ -138,7 +141,13 @@ void ProcessFrameData::shareFrameData(){
 void ProcessFrameData::visualize(){
     if(Config::instance()->getIsVisualisation()){
         cv::Mat img;
-        Visualization::mat2img(mat, img);
+        //Visualization::mat2img(mat, img);
+        Visualization::mat2img(matFilt, img);
+        for(const auto& r : integralFeatures1)
+            cv::rectangle(img, r, cv::Scalar(0,0,255),2);
+        for(const auto& r : integralFeatures2)
+            cv::rectangle(img, r, cv::Scalar(255,0,0),2);
+        //Visualization::vecs2img(matVec, img);
         const auto& point = frameData.averagedBodyPoint;
         cv::circle(img, cv::Point(point.x , point.y), 5,  cv::Scalar(255, 0, 255), -1);
         for(auto& blob : blobsExt)
@@ -198,4 +207,90 @@ void ProcessFrameData::visualize(){
         Visualization::setIsNeedRedraw(true);
         pthread_mutex_unlock(&visualisation_mutex);
     }
+}
+
+void ProcessFrameData::gradientMat(){
+    std::vector<std::pair<int,int>> neighbours {
+        {-1, 0}, {-1, 1}, {0, 1}, {1, 1},
+        {1, 0}, {1, -1},  {0, -1},  {-1, -1}
+    };
+    cv::resize(matFilt, matResized, cv::Size(Params::getMatrixWidth()>> 3, Params::getMatrixHeight()>>3));
+    matVec = cv::Mat_<cv::Vec2f>(matResized.size(), cv::Vec2f(0.f, 0.f));
+    uint16_t* p_mat = (uint16_t*)(matResized.data);
+    cv::Vec2f* p_matVec = (cv::Vec2f*)(matVec.data);
+    int ind(0);
+    for( ; p_mat < (uint16_t*)(matResized.data) + matResized.total(); ++p_mat, ++p_matVec, ++ind){
+        //auto val = *p_mat;
+        auto x = ind % matResized.cols;
+        auto y = (ind - x) / matResized.cols;
+        std::vector<cv::Vec2f> vecs(neighbours.size() >> 1, cv::Vec2f(0.f, 0.f));
+        for(int i = 0; i < (neighbours.size() >> 1); ++i){
+            std::vector<uint16_t> valNeighb(2, 0);
+            for(int j = 0; j < 2; ++j){
+                auto& neighb = neighbours[i + j * (neighbours.size() >> 1)];
+                int xNeighb = x + neighb.first;
+                int yNeighb = y + neighb.second;
+                if(xNeighb < 0 || xNeighb >= matResized.cols || yNeighb < 0 || yNeighb >= matResized.rows)
+                    continue;
+                int indNeighb = yNeighb * matResized.cols + xNeighb;
+                valNeighb[j] =  *((uint16_t*)(matResized.data) + indNeighb);
+            }
+            if(!valNeighb[0] || !valNeighb[1])
+                continue;
+            auto dval = valNeighb[1] - valNeighb[0];
+            vecs[i] = i == 0 ? cv::Vec2f(dval, 0.f) :
+            i == 1 ? cv::Vec2f(dval, dval) :
+            i == 2 ? cv::Vec2f(0.f, dval) :
+            cv::Vec2f(-dval, dval);
+        }
+        cv::Vec2f res(0.f, 0.f);
+        for(auto& vec : vecs)
+            res += vec;
+        *p_matVec = res;
+    }
+}
+
+void ProcessFrameData::computeIntegral(){
+    cv::Mat integrMat;
+    cv::Mat matFiltFloat(mat.rows, mat.cols, cv::DataType<float>::type);
+    uint16_t* p_matFilt = (uint16_t*)(matFilt.data);
+    float* p_matFiltFloat = (float*)(matFiltFloat.data);
+    for(int i = 0; i < matFilt.total(); ++i)
+        *p_matFiltFloat++ = static_cast<float>(*p_matFilt++);
+    cv::integral(matFiltFloat, integrMat, CV_32F);
+    cv::resize(integrMat, integrMat, matFilt.size());
+    
+    int w = integrMat.cols;
+    static const int size(32);
+    static const int step (size >> 2);  
+    static const int vertShift (w*step);
+    static const float thresh(size * size * 300);
+    float* p0 = (float*)(integrMat.data);
+    float* p1 = (float*)(integrMat.data) + size * w;
+    float* p2 = (float*)(integrMat.data) + 2 * size * w;
+    float* p3 = (float*)(integrMat.data) + 3 * size * w;
+    for(int i = 0 ; p3 < (float*)(integrMat.data) + integrMat.total(); i+=step, p0+=step, p1+=step, p2+=step, p3+=step){
+        int x = i % w;
+        if(x == 0)
+            i+=vertShift, p0+=vertShift, p1+=vertShift, p2+=vertShift, p3+=vertShift;
+        if(x >= w - size)
+            continue;
+        float v0 (*p0), v1(*p1), v2(*p2), v3(*p3), v0_(*(p0 + size)), v1_(*(p1 + size)), v2_(*(p2 + size)), v3_(*(p3 + size));
+        float area0 = v1_ + v0 - v1 - v0_;
+        float area1 = v2_ + v1 - v2 - v1_;
+        float area2 = v3_ + v2 - v3 - v2_;
+        if(area0 - area1 > thresh && area2 - area1 > thresh)
+            integralFeatures1.emplace_back(x + (size >>1), (i - x)/w + size * 1.5, size, size);
+        if(x >= w - 3 * size)
+            continue;
+        float v0a(*(p0 + 2 * size)), v0b(*(p0 + 3 * size)), v1a(*(p1 + 2 * size)), v1b(*(p1 + 3 * size));
+        float area_a = v1a + v0_ - v1_ - v0a;
+        float area_b = v1b + v0a - v1a - v0b;
+        if(area0 - area_a > thresh && area_b - area_a > thresh)
+            integralFeatures2.emplace_back(x + size * 1.5, (i - x)/w + (size >>1), size, size);
+    }
+   // integralFeatures.push_back(cv::Rect(w, integrMat.rows, rW, rH));
+    /*std::stringstream ss;
+    ss << "Rects " << integralFeatures.size();
+    Logs::writeLog("gestures", ss.str());*/
 }

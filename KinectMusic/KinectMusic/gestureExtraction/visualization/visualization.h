@@ -40,6 +40,8 @@ public:
     static void tracks2img(const std::vector<Track>& tracks, cv::Mat& matImg);
     //static void gestures2img(const std::vector<std::shared_ptr<Gesture>>& handsTrackedStreams, cv::Mat& matImg, size_t length = 0);
      static void drawText(cv::Mat& mat, std::string text, double fontScale, int thickness, cv::Scalar color, cv::Point2f textCenter);
+    
+    static void vecs2img(cv::Mat& matVecs, cv::Mat& matImg);
 private:
 
     static void blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::Scalar& color, bool colorFromNormal = false);

@@ -42,6 +42,9 @@ private:
     void tracking();
     void shareFrameData();
     void visualize();
+    
+    void gradientMat();
+    void computeIntegral();
    
 private:
      static pthread_mutex_t visualisation_mutex;
@@ -52,6 +55,9 @@ private:
     cv::Mat matResized;
     cv::Mat matResized1;
     std::list<BlobFinal> blobsExt;
+    
+    cv::Mat matVec;
+    std::vector<cv::Rect> integralFeatures1, integralFeatures2;
     
     friend class Visualization;
 };

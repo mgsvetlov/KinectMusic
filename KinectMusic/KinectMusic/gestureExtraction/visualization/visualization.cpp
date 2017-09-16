@@ -230,6 +230,31 @@ void Visualization::tracks2img(const std::vector<Track>& tracks, cv::Mat& matImg
         cv::circle(matImg, cv::Point(keyPoint.x, keyPoint.y), 5, color, -1);
     }
 }
+
+void Visualization::vecs2img(cv::Mat& matVec, cv::Mat& matImg){
+    static const int resizePow = log2(matImg.cols/matVec.cols);
+    cv::Vec2f* p_matVec = (cv::Vec2f*)(matVec.data);
+    int ind(0);
+    for( ; p_matVec < (cv::Vec2f*)(matVec.data) + matVec.total(); ++p_matVec, ++ind){
+        auto x = ind % matVec.cols;
+        auto y = (ind - x) / matVec.cols;
+        x <<= resizePow;
+        y <<= resizePow;
+        const cv::Vec2f& vec = *p_matVec;
+        double length = cv::norm(vec);
+        unsigned char col = length > 255 ? 255 : 0;//static_cast<unsigned char>(length);
+        if(!col)
+            continue;
+        unsigned char col1 = vec[0] + vec[1] > 0? col : 0;
+        unsigned char col2 = vec[0] + vec[1] < 0? col : 0;
+        //auto ind = y * matImg.cols + x;
+        //*((unsigned char*)(matImg.data) + ind * 3) = col1;
+        //*((unsigned char*)(matImg.data) + ind * 3 + 1) = col2;
+        //*((unsigned char*)(matImg.data) + ind * 3 + 2) = 0;
+        cv::circle(matImg, cv::Point(x, y), 3, cv::Scalar(col1,col2,0), -1);
+    }
+    
+}
 /*void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg, size_t length){
  int pointSize(5);
  cv::Scalar color = gesture->handInd == 0 ? cv::Scalar(0,255,255) : cv::Scalar(255,255, 0);
