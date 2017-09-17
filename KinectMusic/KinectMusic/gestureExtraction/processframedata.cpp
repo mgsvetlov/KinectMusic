@@ -257,32 +257,47 @@ void ProcessFrameData::computeIntegral(){
     IntegralImage integralImage(matFilt);
     cv::Mat integrMat = integralImage.getMatIntegral();
     
-    static const int cellSize(32);
+    static const int cellSize(64);
     static const int step (cellSize >> 2);
-    IntegralGrid integralGrid(integrMat, cellSize, step);
+    static const size_t edge(64);
+    IntegralGrid integralGrid(integrMat, cellSize, step, edge);
     const auto& s  = integralGrid.getSize();
-    int thresh = -25000;
+    int thresh = -300 * cellSize * cellSize;
     {
-        std::vector<cv::Vec2i> geometry {{-1, 0}, {1,0}};
+        std::vector<cv::Vec2i> geometry {{-cellSize/step, 0}, {cellSize/step,0}};
         std::vector<std::vector<float>> vecResponse = integralGrid.getVecResponses(geometry);
         for(int i = 0; i < vecResponse.size(); ++i){
             const std::vector<float>& resp = vecResponse[i];
-            if(resp[0] < thresh && resp[1] <thresh){
+            bool isFeature(true);
+            for(auto res : resp){
+                if(res == FLT_MAX || res > thresh) {
+                    isFeature = false;
+                    break;
+                }
+            }
+            if(isFeature){
                 int x = i % s.width;
                 int y = (i - x) / s.width;
-                integralFeatures1.emplace_back(x * step + (cellSize >>1), y * step + cellSize * 1.5, cellSize, cellSize);
+                integralFeatures1.emplace_back(x * step + (cellSize >>1), y * step + (cellSize >>1), cellSize, cellSize);
             }
         }
     }
     {
-        std::vector<cv::Vec2i> geometry {{0, -1}, {0,1}};
+        std::vector<cv::Vec2i> geometry {{0, -cellSize/step}, {0,cellSize/step}};
         std::vector<std::vector<float>> vecResponse = integralGrid.getVecResponses(geometry);
         for(int i = 0; i < vecResponse.size(); ++i){
             const std::vector<float>& resp = vecResponse[i];
-            if(resp[0] < thresh && resp[1] <thresh){
+            bool isFeature(true);
+            for(auto res : resp){
+                if(res == FLT_MAX || res > thresh) {
+                    isFeature = false;
+                    break;
+                }
+            }
+            if(isFeature){
                 int x = i % s.width;
                 int y = (i - x) / s.width;
-                integralFeatures2.emplace_back(x * step + (cellSize >>1), y * step + cellSize * 1.5, cellSize, cellSize);
+                integralFeatures2.emplace_back(x * step + (cellSize >>1), y * step + (cellSize >>1), cellSize, cellSize);
             }
         }
     }
