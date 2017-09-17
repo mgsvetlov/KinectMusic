@@ -14,6 +14,8 @@
 #include "../log/logs.h"
 #include "../config/config.h"
 #include "visualization/visualization.h"
+#include "integral/integralimage.h"
+#include "integral/integralgrid.h"
 
 
 pthread_mutex_t ProcessFrameData::visualisation_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -251,18 +253,43 @@ void ProcessFrameData::gradientMat(){
 }
 
 void ProcessFrameData::computeIntegral(){
-    cv::Mat integrMat;
-    cv::Mat matFiltFloat(mat.rows, mat.cols, cv::DataType<float>::type);
-    uint16_t* p_matFilt = (uint16_t*)(matFilt.data);
-    float* p_matFiltFloat = (float*)(matFiltFloat.data);
-    for(int i = 0; i < matFilt.total(); ++i)
-        *p_matFiltFloat++ = static_cast<float>(*p_matFilt++);
-    cv::integral(matFiltFloat, integrMat, CV_32F);
-    cv::resize(integrMat, integrMat, matFilt.size());
     
-    int w = integrMat.cols;
+    IntegralImage integralImage(matFilt);
+    cv::Mat integrMat = integralImage.getMatIntegral();
+    
+    static const int cellSize(32);
+    static const int step (cellSize >> 2);
+    IntegralGrid integralGrid(integrMat, cellSize, step);
+    const auto& s  = integralGrid.getSize();
+    int thresh = -25000;
+    {
+        std::vector<cv::Vec2i> geometry {{-1, 0}, {1,0}};
+        std::vector<std::vector<float>> vecResponse = integralGrid.getVecResponses(geometry);
+        for(int i = 0; i < vecResponse.size(); ++i){
+            const std::vector<float>& resp = vecResponse[i];
+            if(resp[0] < thresh && resp[1] <thresh){
+                int x = i % s.width;
+                int y = (i - x) / s.width;
+                integralFeatures1.emplace_back(x * step + (cellSize >>1), y * step + cellSize * 1.5, cellSize, cellSize);
+            }
+        }
+    }
+    {
+        std::vector<cv::Vec2i> geometry {{0, -1}, {0,1}};
+        std::vector<std::vector<float>> vecResponse = integralGrid.getVecResponses(geometry);
+        for(int i = 0; i < vecResponse.size(); ++i){
+            const std::vector<float>& resp = vecResponse[i];
+            if(resp[0] < thresh && resp[1] <thresh){
+                int x = i % s.width;
+                int y = (i - x) / s.width;
+                integralFeatures2.emplace_back(x * step + (cellSize >>1), y * step + cellSize * 1.5, cellSize, cellSize);
+            }
+        }
+    }
+    
+    /*int w = integrMat.cols;
     static const int size(32);
-    static const int step (size >> 2);  
+    static const int step (size >> 2);
     static const int vertShift (w*step);
     static const float thresh(size * size * 300);
     float* p0 = (float*)(integrMat.data);
@@ -289,8 +316,5 @@ void ProcessFrameData::computeIntegral(){
         if(area0 - area_a > thresh && area_b - area_a > thresh)
             integralFeatures2.emplace_back(x + size * 1.5, (i - x)/w + (size >>1), size, size);
     }
-   // integralFeatures.push_back(cv::Rect(w, integrMat.rows, rW, rH));
-    /*std::stringstream ss;
-    ss << "Rects " << integralFeatures.size();
-    Logs::writeLog("gestures", ss.str());*/
+    */
 }

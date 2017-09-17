@@ -46,6 +46,8 @@
 		7262274B1D90737D00644016 /* libopencv_superres.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7262273D1D90737D00644016 /* libopencv_superres.2.4.9.dylib */; };
 		7262274C1D90737D00644016 /* libopencv_video.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7262273E1D90737D00644016 /* libopencv_video.2.4.9.dylib */; };
 		7262274D1D90737D00644016 /* libopencv_videostab.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7262273F1D90737D00644016 /* libopencv_videostab.2.4.9.dylib */; };
+		726DB4331F6E53D100B71F57 /* integralimage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 726DB4311F6E53D100B71F57 /* integralimage.cpp */; };
+		726DB4361F6E56AD00B71F57 /* integralgrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 726DB4341F6E56AD00B71F57 /* integralgrid.cpp */; };
 		7274B8BB1F1CEA5300F1D30D /* convex3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7274B8B91F1CEA5300F1D30D /* convex3d.cpp */; };
 		7274B8C41F1F2B3800F1D30D /* cell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7274B8C11F1F2B3800F1D30D /* cell.cpp */; };
 		72799BA71DC61E5800BAC3DC /* extractframedata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72799BA41DC61E5800BAC3DC /* extractframedata.cpp */; };
@@ -229,6 +231,10 @@
 		7262273D1D90737D00644016 /* libopencv_superres.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_superres.2.4.9.dylib; path = opencv/lib/libopencv_superres.2.4.9.dylib; sourceTree = "<group>"; };
 		7262273E1D90737D00644016 /* libopencv_video.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_video.2.4.9.dylib; path = opencv/lib/libopencv_video.2.4.9.dylib; sourceTree = "<group>"; };
 		7262273F1D90737D00644016 /* libopencv_videostab.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_videostab.2.4.9.dylib; path = opencv/lib/libopencv_videostab.2.4.9.dylib; sourceTree = "<group>"; };
+		726DB4311F6E53D100B71F57 /* integralimage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = integralimage.cpp; path = gestureExtraction/integral/integralimage.cpp; sourceTree = "<group>"; };
+		726DB4321F6E53D100B71F57 /* integralimage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = integralimage.h; path = gestureExtraction/integral/integralimage.h; sourceTree = "<group>"; };
+		726DB4341F6E56AD00B71F57 /* integralgrid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = integralgrid.cpp; path = gestureExtraction/integral/integralgrid.cpp; sourceTree = "<group>"; };
+		726DB4351F6E56AD00B71F57 /* integralgrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = integralgrid.h; path = gestureExtraction/integral/integralgrid.h; sourceTree = "<group>"; };
 		7274B8B91F1CEA5300F1D30D /* convex3d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = convex3d.cpp; path = gestureExtraction/convex3d/convex3d.cpp; sourceTree = "<group>"; };
 		7274B8BA1F1CEA5300F1D30D /* convex3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = convex3d.h; path = gestureExtraction/convex3d/convex3d.h; sourceTree = "<group>"; };
 		7274B8BC1F1E7E3800F1D30D /* blobext.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = blobext.hpp; path = gestureExtraction/blobs/blobext.hpp; sourceTree = "<group>"; };
@@ -704,6 +710,17 @@
 			name = nn;
 			sourceTree = "<group>";
 		};
+		726DB4301F6E53B700B71F57 /* integral */ = {
+			isa = PBXGroup;
+			children = (
+				726DB4311F6E53D100B71F57 /* integralimage.cpp */,
+				726DB4321F6E53D100B71F57 /* integralimage.h */,
+				726DB4341F6E56AD00B71F57 /* integralgrid.cpp */,
+				726DB4351F6E56AD00B71F57 /* integralgrid.h */,
+			);
+			name = integral;
+			sourceTree = "<group>";
+		};
 		7274B8C01F1F2B1C00F1D30D /* cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -762,6 +779,7 @@
 				723028961F23BB04003A8770 /* processframedata.cpp */,
 				72048F6E1EDA00BE006381E9 /* share.cpp */,
 				72048F6F1EDA00BE006381E9 /* share.h */,
+				726DB4301F6E53B700B71F57 /* integral */,
 				722141A51D9FC2BD00B697E8 /* blobs */,
 				728233201F07950D00B6E4D4 /* convex3d */,
 				72424B1D1F5482D8006F1AF5 /* graphs */,
@@ -849,6 +867,7 @@
 				7252AB8A1F3476E700521714 /* NN.cpp in Sources */,
 				720164C01A6C058B00BC721A /* tilt.c in Sources */,
 				72424B201F55D46D006F1AF5 /* shortestpath.cpp in Sources */,
+				726DB4361F6E56AD00B71F57 /* integralgrid.cpp in Sources */,
 				720164BE1A6C058B00BC721A /* loader.c in Sources */,
 				725B1BA01ED768A60028AE34 /* gestureStop.cpp in Sources */,
 				720164BD1A6C058B00BC721A /* flags.c in Sources */,
@@ -857,6 +876,7 @@
 				728233C31F11525700B6E4D4 /* pclsegmentation.cpp in Sources */,
 				72799BA71DC61E5800BAC3DC /* extractframedata.cpp in Sources */,
 				728233C01F114CC200B6E4D4 /* pclutility.cpp in Sources */,
+				726DB4331F6E53D100B71F57 /* integralimage.cpp in Sources */,
 				7207E6351EE2F5CC0021824C /* gestureAll.cpp in Sources */,
 				7252AB891F3476E700521714 /* Neuron.cpp in Sources */,
 				72AC89EF1F62F4700099C575 /* pclconvexhull.cpp in Sources */,

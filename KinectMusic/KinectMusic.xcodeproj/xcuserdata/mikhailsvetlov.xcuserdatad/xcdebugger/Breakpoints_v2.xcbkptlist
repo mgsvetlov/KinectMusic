@@ -618,11 +618,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/processframedata.cpp"
-            timestampString = "525633236.398124"
+            timestampString = "527327994.658933"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "24"
-            endingLineNumber = "24"
+            startingLineNumber = "26"
+            endingLineNumber = "26"
             landmarkName = "ProcessFrameData::ProcessFrameData(cv::Mat mat_, int frameNum)"
             landmarkType = "7">
          </BreakpointContent>
@@ -634,11 +634,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/processframedata.cpp"
-            timestampString = "527283397.605284"
+            timestampString = "527327994.658933"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "121"
-            endingLineNumber = "121"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
             landmarkName = "ProcessFrameData::tracking()"
             landmarkType = "7">
          </BreakpointContent>
@@ -650,11 +650,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/processframedata.cpp"
-            timestampString = "527283397.605284"
+            timestampString = "527327994.658933"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "93"
-            endingLineNumber = "93"
+            startingLineNumber = "95"
+            endingLineNumber = "95"
             landmarkName = "ProcessFrameData::resize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -666,11 +666,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/processframedata.cpp"
-            timestampString = "527283397.605284"
+            timestampString = "527327994.658933"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
+            startingLineNumber = "94"
+            endingLineNumber = "94"
             landmarkName = "ProcessFrameData::resize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -682,11 +682,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/processframedata.cpp"
-            timestampString = "527283397.605284"
+            timestampString = "527327994.658933"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "110"
-            endingLineNumber = "110"
+            startingLineNumber = "112"
+            endingLineNumber = "112"
             landmarkName = "ProcessFrameData::createBlobsAndBorders()"
             landmarkType = "7">
          </BreakpointContent>
@@ -698,11 +698,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/processframedata.cpp"
-            timestampString = "527283397.605284"
+            timestampString = "527327994.658933"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "109"
-            endingLineNumber = "109"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
             landmarkName = "ProcessFrameData::createBlobsAndBorders()"
             landmarkType = "7">
          </BreakpointContent>
@@ -714,11 +714,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/processframedata.cpp"
-            timestampString = "527283397.605284"
+            timestampString = "527327994.658933"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "60"
-            endingLineNumber = "60"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
             landmarkName = "ProcessFrameData::markEdges()"
             landmarkType = "7">
          </BreakpointContent>
@@ -778,11 +778,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/processframedata.cpp"
-            timestampString = "526145505.169811"
+            timestampString = "527327994.658933"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "25"
-            endingLineNumber = "25"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
             landmarkName = "ProcessFrameData::ProcessFrameData(cv::Mat mat_, int frameNum)"
             landmarkType = "7">
          </BreakpointContent>
@@ -794,11 +794,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KinectMusic/gestureExtraction/processframedata.cpp"
-            timestampString = "526145505.686314"
+            timestampString = "527327994.658933"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "26"
-            endingLineNumber = "26"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
             landmarkName = "ProcessFrameData::ProcessFrameData(cv::Mat mat_, int frameNum)"
             landmarkType = "7">
          </BreakpointContent>
@@ -817,66 +817,6 @@
             endingLineNumber = "50"
             landmarkName = "main(int argc, char **argv)"
             landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KinectMusic/gestureExtraction/processframedata.cpp"
-            timestampString = "527283433.790946"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "283"
-            endingLineNumber = "283">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ProcessFrameData::computeIntegral()"
-                  moduleName = "KinectMusic"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/processframedata.cpp"
-                  timestampString = "527283435.370075"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "284"
-                  endingLineNumber = "284"
-                  offsetFromSymbolStart = "274">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ProcessFrameData::computeIntegral()"
-                  moduleName = "KinectMusic"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mikhailsvetlov/Dropbox/Politech/Diplom/prototype/KinectMusic/KinectMusic/gestureExtraction/processframedata.cpp"
-                  timestampString = "527283435.373056"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "284"
-                  endingLineNumber = "284"
-                  offsetFromSymbolStart = "301">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KinectMusic/gestureExtraction/processframedata.cpp"
-            timestampString = "527283448.613448"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "280"
-            endingLineNumber = "280">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
