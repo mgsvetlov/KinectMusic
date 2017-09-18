@@ -13,7 +13,9 @@
 class IntegralImage {
 public:
     IntegralImage(cv::Mat mat, size_t resizePow = 0);
-    cv::Mat getMatIntegral() {return matIntegral;}
+    cv::Mat getMatIntegral() const {return matIntegral;}
+    size_t getResizePow() const {return resizePow;}
+    
 private:
     size_t resizePow;
     cv::Mat mat;

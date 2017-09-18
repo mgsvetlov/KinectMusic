@@ -42,6 +42,8 @@ public:
      static void drawText(cv::Mat& mat, std::string text, double fontScale, int thickness, cv::Scalar color, cv::Point2f textCenter);
     
     static void vecs2img(cv::Mat& matVecs, cv::Mat& matImg);
+    
+    static void integralFeatures2img(const std::vector<std::vector<cv::Rect>>& integralFeatures, cv::Mat& matImg);
 private:
 
     static void blob2img(const BlobFinal& blob, cv::Mat& matImg, const cv::Scalar& color, bool colorFromNormal = false);

@@ -57,7 +57,7 @@ private:
     std::list<BlobFinal> blobsExt;
     
     cv::Mat matVec;
-    std::vector<cv::Rect> integralFeatures1, integralFeatures2;
+    std::vector<std::vector<cv::Rect>> integralFeatures;
     
     friend class Visualization;
 };

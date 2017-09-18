@@ -48,6 +48,7 @@
 		7262274D1D90737D00644016 /* libopencv_videostab.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7262273F1D90737D00644016 /* libopencv_videostab.2.4.9.dylib */; };
 		726DB4331F6E53D100B71F57 /* integralimage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 726DB4311F6E53D100B71F57 /* integralimage.cpp */; };
 		726DB4361F6E56AD00B71F57 /* integralgrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 726DB4341F6E56AD00B71F57 /* integralgrid.cpp */; };
+		726DB4401F70348900B71F57 /* integralfeatures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 726DB43E1F70348900B71F57 /* integralfeatures.cpp */; };
 		7274B8BB1F1CEA5300F1D30D /* convex3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7274B8B91F1CEA5300F1D30D /* convex3d.cpp */; };
 		7274B8C41F1F2B3800F1D30D /* cell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7274B8C11F1F2B3800F1D30D /* cell.cpp */; };
 		72799BA71DC61E5800BAC3DC /* extractframedata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72799BA41DC61E5800BAC3DC /* extractframedata.cpp */; };
@@ -235,6 +236,8 @@
 		726DB4321F6E53D100B71F57 /* integralimage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = integralimage.h; path = gestureExtraction/integral/integralimage.h; sourceTree = "<group>"; };
 		726DB4341F6E56AD00B71F57 /* integralgrid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = integralgrid.cpp; path = gestureExtraction/integral/integralgrid.cpp; sourceTree = "<group>"; };
 		726DB4351F6E56AD00B71F57 /* integralgrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = integralgrid.h; path = gestureExtraction/integral/integralgrid.h; sourceTree = "<group>"; };
+		726DB43E1F70348900B71F57 /* integralfeatures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = integralfeatures.cpp; path = gestureExtraction/integral/integralfeatures.cpp; sourceTree = "<group>"; };
+		726DB43F1F70348900B71F57 /* integralfeatures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = integralfeatures.h; path = gestureExtraction/integral/integralfeatures.h; sourceTree = "<group>"; };
 		7274B8B91F1CEA5300F1D30D /* convex3d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = convex3d.cpp; path = gestureExtraction/convex3d/convex3d.cpp; sourceTree = "<group>"; };
 		7274B8BA1F1CEA5300F1D30D /* convex3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = convex3d.h; path = gestureExtraction/convex3d/convex3d.h; sourceTree = "<group>"; };
 		7274B8BC1F1E7E3800F1D30D /* blobext.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = blobext.hpp; path = gestureExtraction/blobs/blobext.hpp; sourceTree = "<group>"; };
@@ -717,6 +720,8 @@
 				726DB4321F6E53D100B71F57 /* integralimage.h */,
 				726DB4341F6E56AD00B71F57 /* integralgrid.cpp */,
 				726DB4351F6E56AD00B71F57 /* integralgrid.h */,
+				726DB43E1F70348900B71F57 /* integralfeatures.cpp */,
+				726DB43F1F70348900B71F57 /* integralfeatures.h */,
 			);
 			name = integral;
 			sourceTree = "<group>";
@@ -851,6 +856,7 @@
 				7298B7271D8D85840093134C /* main.cpp in Sources */,
 				72B332AF1BAF0733003DA9DA /* kinect.cpp in Sources */,
 				720164C11A6C058B00BC721A /* usb_libusb10.c in Sources */,
+				726DB4401F70348900B71F57 /* integralfeatures.cpp in Sources */,
 				7274B8BB1F1CEA5300F1D30D /* convex3d.cpp in Sources */,
 				720164BC1A6C058B00BC721A /* core.c in Sources */,
 				728233BD1F11390400B6E4D4 /* pcldownsample.cpp in Sources */,

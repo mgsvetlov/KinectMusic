@@ -11,17 +11,19 @@
 
 #include "types.h"
 
+class IntegralImage;
+
 class IntegralGrid {
 public:
-    IntegralGrid(cv::Mat matIntegral, size_t cellSize, size_t step, size_t edge = 0, size_t resizePow = 0);
-    std::vector<std::vector<float>> getVecResponses(const std::vector<cv::Vec2i>& geometry);
+    IntegralGrid(const IntegralImage& integralImage, size_t cellSize, size_t step, cv::Vec2i edge = cv::Vec2i(0,0));
+    std::vector<std::vector<float>> getVecResponses(const std::vector<cv::Vec2i>& geometry, std::function<float (float, float)> func = std::minus<float>());
     const cv::Size getSize() const {return matGrid.size();}
 private:
     size_t resizePow;
     size_t cellSize;
     size_t step;
-    size_t edge;
-    cv::Mat matIntegral;
+    cv::Vec2i edge;
+    const cv::Mat matIntegral;
     cv::Mat matGrid;
     
 };

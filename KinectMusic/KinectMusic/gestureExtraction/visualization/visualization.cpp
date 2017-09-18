@@ -255,6 +255,16 @@ void Visualization::vecs2img(cv::Mat& matVec, cv::Mat& matImg){
     }
     
 }
+
+void Visualization::integralFeatures2img(const std::vector<std::vector<cv::Rect>>& integralFeatures, cv::Mat& matImg){
+    static const std::vector<cv::Scalar> colors {{0,0,255}, {0,255,0}, {255,0,0}, {0,255,255}, {255,0,255}, {255,255,0}};
+    int i(0);
+    for(const auto& v : integralFeatures){
+        for(const auto& r : v)
+            cv::rectangle(matImg, r, colors[i],2);
+        i = (++i) % colors.size();
+    }
+}
 /*void Visualization::gesture2img(const std::shared_ptr<Gesture>& gesture, cv::Mat& matImg, size_t length){
  int pointSize(5);
  cv::Scalar color = gesture->handInd == 0 ? cv::Scalar(0,255,255) : cv::Scalar(255,255, 0);

@@ -7,19 +7,19 @@
 //
 
 #include "integralgrid.h"
+#include "integralimage.h"
 
-IntegralGrid::IntegralGrid(cv::Mat matIntegral, size_t cellSize, size_t step, size_t edge, size_t resizePow) :
-resizePow(resizePow),
-cellSize(cellSize >> resizePow),
-step(step >> resizePow),
-edge((edge / step) >> resizePow),
-matIntegral(matIntegral),
+IntegralGrid::IntegralGrid(const IntegralImage& integralImage, size_t cellSize, size_t step, cv::Vec2i edge) :
+cellSize(cellSize >> integralImage.getResizePow()),
+step(step >> integralImage.getResizePow()),
+edge((edge[0] / step) >> integralImage.getResizePow(), (edge[1] / step) >> integralImage.getResizePow()),
+matIntegral(integralImage.getMatIntegral()),
 matGrid(cv::Size(matIntegral.cols /step, matIntegral.rows / step), cv::DataType<float>::type, NO_DATA_VALUE)
 {
     const size_t w = matIntegral.cols;
     const size_t h = matIntegral.rows;
-    size_t edgeRight = w - cellSize;
-    size_t edgeLow = h - edge * 1.75;
+    size_t edgeRight = w - (edge[0] > cellSize ?  edge[0] : cellSize);
+    size_t edgeLow = h - edge[1];
     const size_t vertShift (w * (step - 1));
     float* p0 = (float*)(matIntegral.data);
     float* p1 = p0 + cellSize;
@@ -39,7 +39,7 @@ matGrid(cv::Size(matIntegral.cols /step, matIntegral.rows / step), cv::DataType<
     }
 }
 
-std::vector<std::vector<float>> IntegralGrid::getVecResponses(const std::vector<cv::Vec2i>& geometry){
+std::vector<std::vector<float>> IntegralGrid::getVecResponses(const std::vector<cv::Vec2i>& geometry, std::function<float (float, float)> func){
     std::vector<std::vector<float>> vecResponses(matGrid.total(), std::vector<float>(geometry.size(), FLT_MAX));
     auto itResp = vecResponses.begin();
     float* pBegin = (float*)(matGrid.data);
@@ -51,24 +51,13 @@ std::vector<std::vector<float>> IntegralGrid::getVecResponses(const std::vector<
         p_geom[i] = (float*)(matGrid.data) + geom[1] * matGrid.cols + geom[0];
     }
     
-   while(p < pEnd){
-       if(*p != NO_DATA_VALUE){
-            bool isInside(true);
-            for(auto& p_g : p_geom){
-                if(p_g < pBegin || p_g >= pEnd || *p_g == NO_DATA_VALUE ){
-                    isInside = false;
-                    break;
-                }
-            }
-            
-            if(isInside) {
-                for(int i = 0; i < geometry.size(); ++i)
-                    (*itResp)[i] = *p - *p_geom[i];
-            }
-       }
-       ++p, ++itResp;
-        for(auto& p_g : p_geom)
+    for( ;p < pEnd; ++p, ++itResp){
+        for(int i = 0; i < geometry.size(); ++i){
+            auto& p_g = p_geom[i];
+            if(*p != NO_DATA_VALUE && p_g >= pBegin && p_g < pEnd && *p_g != NO_DATA_VALUE )
+                (*itResp)[i] = func(*p, *p_g);
             ++p_g;
+        }
     }
     return vecResponses;
 }

@@ -16,6 +16,7 @@
 #include "visualization/visualization.h"
 #include "integral/integralimage.h"
 #include "integral/integralgrid.h"
+#include "integral/integralfeatures.h"
 
 
 pthread_mutex_t ProcessFrameData::visualisation_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -145,10 +146,7 @@ void ProcessFrameData::visualize(){
         cv::Mat img;
         //Visualization::mat2img(mat, img);
         Visualization::mat2img(matFilt, img);
-        for(const auto& r : integralFeatures1)
-            cv::rectangle(img, r, cv::Scalar(0,0,255),2);
-        for(const auto& r : integralFeatures2)
-            cv::rectangle(img, r, cv::Scalar(255,0,0),2);
+        Visualization::integralFeatures2img(integralFeatures, img);
         //Visualization::vecs2img(matVec, img);
         const auto& point = frameData.averagedBodyPoint;
         cv::circle(img, cv::Point(point.x , point.y), 5,  cv::Scalar(255, 0, 255), -1);
@@ -211,6 +209,41 @@ void ProcessFrameData::visualize(){
     }
 }
 
+void ProcessFrameData::computeIntegral(){
+    size_t resizePow = 0;
+    IntegralImage integralImage(matFilt, resizePow);
+    cv::Mat integrMat = integralImage.getMatIntegral();
+    
+    static const int cellSize(32);
+    static const int step (cellSize >> 2);
+    static const cv::Vec2i edge(64, 64 * 1.75);
+    IntegralGrid integralGrid(integralImage, cellSize, step, edge);
+    
+    const auto& s  = integralGrid.getSize();
+    std::vector<int> thresh {-200 * cellSize * cellSize, -200 * cellSize * cellSize};
+    std::vector<std::vector<cv::Vec2i>> geometries {{{-cellSize/step, 0}, {cellSize/step,0}}, {{0, -cellSize/step}, {0,cellSize/step}}};
+    for(const auto& geometry : geometries){
+        integralFeatures.push_back(std::vector<cv::Rect>());
+        std::vector<std::vector<float>> vecResponse = integralGrid.getVecResponses(geometry);
+        for(int i = 0; i < vecResponse.size(); ++i){
+            const std::vector<float>& resp = vecResponse[i];
+            bool isFeature(true);
+            for(int i = 0; i < resp.size(); ++i){
+                if(resp[i] == FLT_MAX || resp[i] > thresh[i]) {
+                    isFeature = false;
+                    break;
+                }
+            }
+            if(isFeature){
+                int x = i % s.width;
+                int y = (i - x) / s.width;
+                integralFeatures.back().emplace_back((x << resizePow) * step + (cellSize >>1), (y << resizePow) * step + (cellSize >>1), cellSize, cellSize);
+            }
+        }
+    }
+
+}
+
 void ProcessFrameData::gradientMat(){
     std::vector<std::pair<int,int>> neighbours {
         {-1, 0}, {-1, 1}, {0, 1}, {1, 1},
@@ -252,84 +285,4 @@ void ProcessFrameData::gradientMat(){
     }
 }
 
-void ProcessFrameData::computeIntegral(){
-    
-    IntegralImage integralImage(matFilt);
-    cv::Mat integrMat = integralImage.getMatIntegral();
-    
-    static const int cellSize(64);
-    static const int step (cellSize >> 2);
-    static const size_t edge(64);
-    IntegralGrid integralGrid(integrMat, cellSize, step, edge);
-    const auto& s  = integralGrid.getSize();
-    int thresh = -300 * cellSize * cellSize;
-    {
-        std::vector<cv::Vec2i> geometry {{-cellSize/step, 0}, {cellSize/step,0}};
-        std::vector<std::vector<float>> vecResponse = integralGrid.getVecResponses(geometry);
-        for(int i = 0; i < vecResponse.size(); ++i){
-            const std::vector<float>& resp = vecResponse[i];
-            bool isFeature(true);
-            for(auto res : resp){
-                if(res == FLT_MAX || res > thresh) {
-                    isFeature = false;
-                    break;
-                }
-            }
-            if(isFeature){
-                int x = i % s.width;
-                int y = (i - x) / s.width;
-                integralFeatures1.emplace_back(x * step + (cellSize >>1), y * step + (cellSize >>1), cellSize, cellSize);
-            }
-        }
-    }
-    {
-        std::vector<cv::Vec2i> geometry {{0, -cellSize/step}, {0,cellSize/step}};
-        std::vector<std::vector<float>> vecResponse = integralGrid.getVecResponses(geometry);
-        for(int i = 0; i < vecResponse.size(); ++i){
-            const std::vector<float>& resp = vecResponse[i];
-            bool isFeature(true);
-            for(auto res : resp){
-                if(res == FLT_MAX || res > thresh) {
-                    isFeature = false;
-                    break;
-                }
-            }
-            if(isFeature){
-                int x = i % s.width;
-                int y = (i - x) / s.width;
-                integralFeatures2.emplace_back(x * step + (cellSize >>1), y * step + (cellSize >>1), cellSize, cellSize);
-            }
-        }
-    }
-    
-    /*int w = integrMat.cols;
-    static const int size(32);
-    static const int step (size >> 2);
-    static const int vertShift (w*step);
-    static const float thresh(size * size * 300);
-    float* p0 = (float*)(integrMat.data);
-    float* p1 = (float*)(integrMat.data) + size * w;
-    float* p2 = (float*)(integrMat.data) + 2 * size * w;
-    float* p3 = (float*)(integrMat.data) + 3 * size * w;
-    for(int i = 0 ; p3 < (float*)(integrMat.data) + integrMat.total(); i+=step, p0+=step, p1+=step, p2+=step, p3+=step){
-        int x = i % w;
-        if(x == 0)
-            i+=vertShift, p0+=vertShift, p1+=vertShift, p2+=vertShift, p3+=vertShift;
-        if(x >= w - size)
-            continue;
-        float v0 (*p0), v1(*p1), v2(*p2), v3(*p3), v0_(*(p0 + size)), v1_(*(p1 + size)), v2_(*(p2 + size)), v3_(*(p3 + size));
-        float area0 = v1_ + v0 - v1 - v0_;
-        float area1 = v2_ + v1 - v2 - v1_;
-        float area2 = v3_ + v2 - v3 - v2_;
-        if(area0 - area1 > thresh && area2 - area1 > thresh)
-            integralFeatures1.emplace_back(x + (size >>1), (i - x)/w + size * 1.5, size, size);
-        if(x >= w - 3 * size)
-            continue;
-        float v0a(*(p0 + 2 * size)), v0b(*(p0 + 3 * size)), v1a(*(p1 + 2 * size)), v1b(*(p1 + 3 * size));
-        float area_a = v1a + v0_ - v1_ - v0a;
-        float area_b = v1b + v0a - v1a - v0b;
-        if(area0 - area_a > thresh && area_b - area_a > thresh)
-            integralFeatures2.emplace_back(x + size * 1.5, (i - x)/w + (size >>1), size, size);
-    }
-    */
-}
+
