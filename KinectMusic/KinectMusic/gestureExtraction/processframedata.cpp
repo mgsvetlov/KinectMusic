@@ -210,7 +210,7 @@ void ProcessFrameData::visualize(){
 }
 
 void ProcessFrameData::computeIntegral(){
-    size_t resizePow = 0;
+    size_t resizePow = 2;
     IntegralImage integralImage(matFilt, resizePow);
     cv::Mat integrMat = integralImage.getMatIntegral();
     
@@ -220,7 +220,8 @@ void ProcessFrameData::computeIntegral(){
     IntegralGrid integralGrid(integralImage, cellSize, step, edge);
     
     const auto& s  = integralGrid.getSize();
-    std::vector<int> thresh {-200 * cellSize * cellSize, -200 * cellSize * cellSize};
+    int area = cellSize * cellSize >> (resizePow * 2);
+    std::vector<int> thresh {-200 * area, -200 * area};
     std::vector<std::vector<cv::Vec2i>> geometries {{{-cellSize/step, 0}, {cellSize/step,0}}, {{0, -cellSize/step}, {0,cellSize/step}}};
     for(const auto& geometry : geometries){
         integralFeatures.push_back(std::vector<cv::Rect>());
@@ -237,7 +238,7 @@ void ProcessFrameData::computeIntegral(){
             if(isFeature){
                 int x = i % s.width;
                 int y = (i - x) / s.width;
-                integralFeatures.back().emplace_back((x << resizePow) * step + (cellSize >>1), (y << resizePow) * step + (cellSize >>1), cellSize, cellSize);
+                integralFeatures.back().emplace_back((x << resizePow) * (step >> resizePow) + (cellSize >>1), (y << resizePow) * (step >> resizePow) + (cellSize >>1), cellSize, cellSize);
             }
         }
     }

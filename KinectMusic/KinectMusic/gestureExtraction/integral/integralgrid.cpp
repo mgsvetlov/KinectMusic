@@ -9,10 +9,10 @@
 #include "integralgrid.h"
 #include "integralimage.h"
 
-IntegralGrid::IntegralGrid(const IntegralImage& integralImage, size_t cellSize, size_t step, cv::Vec2i edge) :
-cellSize(cellSize >> integralImage.getResizePow()),
-step(step >> integralImage.getResizePow()),
-edge((edge[0] / step) >> integralImage.getResizePow(), (edge[1] / step) >> integralImage.getResizePow()),
+IntegralGrid::IntegralGrid(const IntegralImage& integralImage, size_t cellSize_, size_t step_, cv::Vec2i edge_) :
+cellSize(cellSize_ >> integralImage.getResizePow()),
+step(step_ >> integralImage.getResizePow()),
+edge(edge_[0] >> integralImage.getResizePow(), edge_[1] >> integralImage.getResizePow()),
 matIntegral(integralImage.getMatIntegral()),
 matGrid(cv::Size(matIntegral.cols /step, matIntegral.rows / step), cv::DataType<float>::type, NO_DATA_VALUE)
 {
